@@ -1,17 +1,18 @@
-#include <stdio.h>
+//#include <stdio.h>
 
 #include <stdlib.h>
 
 //#include<mpi.h>
 
 #include "os_extended.h"
+#include <os.h>
 
-struct rbtNode {          
+/*struct rbtNode {          
   int key; //this should be the releaseTime
   node *tasks; //list of tasks
   char color;
   struct rbtNode *left, *right,*parent;
-};         
+};*/         
 
 struct rbtNode* root = NULL;
 
@@ -101,21 +102,40 @@ void color_insert(struct rbtNode *z){
   root->color = 'b';
 }
 
-void insert(int val, OS_TCB *task){
+void insert(int val, OS_TCB *task, CPU_INT32U period){
   struct rbtNode *z = searchRB(val);
   if(z!=NULL)
   {
-    printf("\nEntered element already exists in the tree\n");
+    //printf("\nEntered element already exists in the tree\n");
     //I think this is the case where a node with the given time already exists
     //We have to add the new task to the list of the node with the given time.
-    append(z->tasks, (int) task); //cast pointer to int - remember to cast back
+    append(z->tasks, (int) task, period); //cast pointer to int - remember to cast back
     return;
   }
   struct rbtNode *x, *y;
   //struct rbtNode *z = (struct rbtNode*)malloc(sizeof(struct rbtNode));
-  z = (struct rbtNode*)malloc(sizeof(struct rbtNode));
+  //z = (struct rbtNode*)malloc(sizeof(struct rbtNode)); //apparently malloc does not work
+  OS_ERR  err;
+  z =(struct rbtNode*) OSMemGet(&CommMem2, &err);
+    switch(err){
+      case OS_ERR_NONE:
+        break;
+      case OS_ERR_MEM_INVALID_P_MEM:
+        exit(0);
+        break;
+      case OS_ERR_MEM_NO_FREE_BLKS:
+        exit(0);
+        break;
+      case OS_ERR_OBJ_TYPE:
+        exit(0);
+        break;
+    }
+  if(z==NULL){
+    //printf("Error allocating z");
+    exit(0);
+  }
   z->key = val;
-  z->tasks = create((int) task, NULL); //cast pointer to int - remember to cast back
+  z->tasks = create((int) task, period, NULL); //cast pointer to int - remember to cast back
   z->left = NULL;
   z->right = NULL;
   z->color = 'r';
@@ -156,7 +176,7 @@ if (temp != NULL)
 
 {          inorderTree(temp->left);
 
-printf(" %d--%c ",temp->key,temp->color);
+//printf(" %d--%c ",temp->key,temp->color);
 
 inorderTree(temp->right);
 
@@ -174,7 +194,7 @@ if (temp != NULL)
 
 postorderTree(temp->right);
 
-printf(" %d--%c ",temp->key,temp->color);
+//printf(" %d--%c ",temp->key,temp->color);
 
 }return;
 
@@ -184,9 +204,9 @@ void traversal(struct rbtNode* root)
 
 {          if (root != NULL)
   
-{          printf("root is %d-- %c",root->key,root->color);
+{          //printf("root is %d-- %c",root->key,root->color);
 
-printf("\nInorder tree traversal\n");
+//printf("\nInorder tree traversal\n");
 
 inorderTree(root);
 
@@ -210,22 +230,23 @@ struct rbtNode* searchRB(int val){
       temp = temp->left;
     }
     else{
-      printf("Search Element Found!!\n");
+      //printf("Search Element Found!!\n");
       return temp; //return node instead of just 1
     }
   }
-  printf("Given Data Not Found in RB Tree!!\n");
+  //printf("Given Data Not Found in RB Tree!!\n");
   return NULL; //return NULL
 }
 
-struct rbtNode* min(struct rbtNode *x)
+struct rbtNode* RBFindMin(){
+  return min(root);
+}
 
-{          while (x->left)
-  
-{          x = x->left;
-
-} return x;
-
+struct rbtNode* min(struct rbtNode *x){
+  while (x->left){
+    x = x->left;
+  }
+  return x;
 }
 
 struct rbtNode* successor(struct rbtNode *x)
@@ -384,7 +405,7 @@ if((z->left ==NULL ) &&(z->right==NULL) && (z->key==var))
 
 {          root=NULL;
 
-printf("\nRBTREE is empty\n");
+//printf("\nRBTREE is empty\n");
 
 return NULL;
 

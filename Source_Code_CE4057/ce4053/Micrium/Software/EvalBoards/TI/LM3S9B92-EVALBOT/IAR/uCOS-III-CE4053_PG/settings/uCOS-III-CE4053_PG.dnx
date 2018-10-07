@@ -21,7 +21,7 @@
         <StopOnThrow>_ 0</StopOnThrow>
     </Exceptions>
     <DebugChecksum>
-        <Checksum>1482175823</Checksum>
+        <Checksum>4216808512</Checksum>
     </DebugChecksum>
     <CallStack>
         <ShowArgs>0</ShowArgs>
@@ -48,47 +48,45 @@
         <Fmt0>OS_TCB-PendStatus	3	0</Fmt0>
         <Fmt1>OS_TCB-Prio	3	0</Fmt1>
     </struct_types>
-    <TermIOLog>
-        <LoggingEnabled>_ 0</LoggingEnabled>
-        <LogFile>_ ""</LogFile>
-    </TermIOLog>
+    <DisassembleMode>
+        <mode>0</mode>
+    </DisassembleMode>
+    <Breakpoints>
+        <Bp0>_ "STD_CODE" "{$PROJ_DIR$\app.c}.391.1" 0 0 0 0 "" 0 ""</Bp0>
+        <Bp1>_ "STD_CODE" "{$PROJ_DIR$\app.c}.391.1" 0 0 0 0 "" 0 ""</Bp1>
+        <Bp2>_ "STD_CODE" "{$PROJ_DIR$\app.c}.391.1" 0 0 0 0 "" 0 ""</Bp2>
+        <Bp3>_ "STD_CODE" "{$PROJ_DIR$\app.c}.391.1" 0 0 0 0 "" 0 ""</Bp3>
+        <Bp4>_ "STD_CODE" "{$PROJ_DIR$\app.c}.391.1" 0 0 0 0 "" 0 ""</Bp4>
+        <Bp5>_ "STD_CODE" "{$PROJ_DIR$\app.c}.391.1" 0 0 0 0 "" 0 ""</Bp5>
+        <Bp6>_ "STD_CODE" "{$PROJ_DIR$\app.c}.391.1" 0 0 0 0 "" 0 ""</Bp6>
+        <Bp7>_ "STD_CODE" "{$PROJ_DIR$\app.c}.391.1" 0 0 0 0 "" 0 ""</Bp7>
+        <Bp8>_ "STD_CODE" "{$PROJ_DIR$\app.c}.391.1" 0 0 0 0 "" 0 ""</Bp8>
+        <Bp9>_ "STD_CODE" "{$PROJ_DIR$\app.c}.391.1" 0 0 0 0 "" 0 ""</Bp9>
+        <Bp10>_ "STD_CODE" "{$PROJ_DIR$\app.c}.391.1" 0 0 0 0 "" 0 ""</Bp10>
+        <Bp11>_ "STD_CODE" "{$PROJ_DIR$\app.c}.391.1" 0 0 0 0 "" 0 ""</Bp11>
+        <Bp12>_ "STD_CODE" "{C:\Users\ankita003\Documents\CE4053\ce4053\Micrium\Software\uCOS-III\Source\os_mutex.c}.827.5" 0 0 0 0 "" 0 ""</Bp12>
+        <Bp13>_ "STD_CODE" "{C:\Users\ankita003\Documents\CE4053\ce4053\Micrium\Software\uCOS-III\Source\os_task.c}.341.5" 0 0 0 0 "" 0 ""</Bp13>
+        <Bp14>_ "STD_CODE" "{C:\Users\ankita003\Documents\CE4053\ce4053\Micrium\Software\uCOS-III\Source\os_mutex.c}.407.9" 0 0 0 0 "" 0 ""</Bp14>
+        <Bp15>_ "STD_CODE" "{C:\Users\ahj\Desktop\CE4057\Source_Code_CE4057\ce4053\Micrium\Software\uCOS-III\Source\OS_RecTaskServices.c}.198.1" 0 0 0 0 "" 0 ""</Bp15>
+        <Count>16</Count>
+    </Breakpoints>
     <LogFile>
         <LoggingEnabled>_ 0</LoggingEnabled>
         <LogFile>_ ""</LogFile>
         <Category>_ 0</Category>
     </LogFile>
+    <Aliases>
+        <Count>0</Count>
+        <SuppressDialog>0</SuppressDialog>
+    </Aliases>
     <CallStackLog>
         <Enabled>0</Enabled>
     </CallStackLog>
     <CallStackStripe>
         <ShowTiming>1</ShowTiming>
     </CallStackStripe>
-    <DisassembleMode>
-        <mode>0</mode>
-    </DisassembleMode>
-    <Breakpoints>
-        <Bp0>_ "STD_CODE" "{$PROJ_DIR$\app.c}.363.1" 0 0 0 0 "" 0 ""</Bp0>
-        <Bp1>_ "STD_CODE" "{$PROJ_DIR$\app.c}.363.1" 0 0 0 0 "" 0 ""</Bp1>
-        <Bp2>_ "STD_CODE" "{$PROJ_DIR$\app.c}.363.1" 0 0 0 0 "" 0 ""</Bp2>
-        <Bp3>_ "STD_CODE" "{$PROJ_DIR$\app.c}.363.1" 0 0 0 0 "" 0 ""</Bp3>
-        <Bp4>_ "STD_CODE" "{$PROJ_DIR$\app.c}.363.1" 0 0 0 0 "" 0 ""</Bp4>
-        <Bp5>_ "STD_CODE" "{$PROJ_DIR$\app.c}.363.1" 0 0 0 0 "" 0 ""</Bp5>
-        <Bp6>_ "STD_CODE" "{$PROJ_DIR$\app.c}.363.1" 0 0 0 0 "" 0 ""</Bp6>
-        <Bp7>_ "STD_CODE" "{$PROJ_DIR$\app.c}.363.1" 0 0 0 0 "" 0 ""</Bp7>
-        <Bp8>_ "STD_CODE" "{$PROJ_DIR$\app.c}.363.1" 0 0 0 0 "" 0 ""</Bp8>
-        <Bp9>_ "STD_CODE" "{$PROJ_DIR$\app.c}.363.1" 0 0 0 0 "" 0 ""</Bp9>
-        <Bp10>_ "STD_CODE" "{$PROJ_DIR$\app.c}.363.1" 0 0 0 0 "" 0 ""</Bp10>
-        <Bp11>_ "STD_CODE" "{$PROJ_DIR$\app.c}.363.1" 0 0 0 0 "" 0 ""</Bp11>
-        <Bp12>_ "STD_CODE" "{C:\Users\ankita003\Documents\CE4053\ce4053\Micrium\Software\uCOS-III\Source\os_mutex.c}.827.5" 0 0 0 0 "" 0 ""</Bp12>
-        <Bp13>_ "STD_CODE" "{C:\Users\ankita003\Documents\CE4053\ce4053\Micrium\Software\uCOS-III\Source\os_task.c}.341.5" 0 0 0 0 "" 0 ""</Bp13>
-        <Bp14>_ "STD_CODE" "{C:\Users\ankita003\Documents\CE4053\ce4053\Micrium\Software\uCOS-III\Source\os_mutex.c}.407.9" 0 0 0 0 "" 0 ""</Bp14>
-        <Bp15>_ "STD_CODE" "{$PROJ_DIR$\app.c}.252.1" 1 0 0 0 "" 0 ""</Bp15>
-        <Bp16>_ "STD_CODE" "{$PROJ_DIR$\app.c}.225.1" 1 0 0 0 "" 0 ""</Bp16>
-        <Bp17>_ "STD_CODE" "{C:\Users\ahj\Desktop\CE4057\Source_Code_CE4057\ce4053\Micrium\Software\uCOS-III\Source\os_tick.c}.69.9" 1 0 0 0 "" 0 ""</Bp17>
-        <Count>18</Count>
-    </Breakpoints>
-    <Aliases>
-        <Count>0</Count>
-        <SuppressDialog>0</SuppressDialog>
-    </Aliases>
+    <TermIOLog>
+        <LoggingEnabled>_ 0</LoggingEnabled>
+        <LogFile>_ ""</LogFile>
+    </TermIOLog>
 </settings>

@@ -1,5 +1,5 @@
 #include "os_extended.h"
-#include <stdio.h>
+//#include <stdio.h>
 #include <os.h>
 //#include "fatal.h"
 
@@ -64,7 +64,7 @@ RedBlackTree retrieveTree(void){ //added
  
 void
 Output(ElementType Element) {
-    printf("%d\n", Element);
+    //printf("%d\n", Element);
 }
  
 /* Print the tree, watch out for NullNode, */
@@ -202,7 +202,7 @@ void HandleReorient(ElementType Item, RedBlackTree T) {
 }
  
 RedBlackTree
-Insert(ElementType Item, OS_TCB *task, RedBlackTree T) { //added OS_TCB (pointer or not?)
+Insert(ElementType Item, OS_TCB *task, CPU_INT32U period, RedBlackTree T) { //added OS_TCB (pointer or not?) and period
     X = P = GP = T;
     NullNode->ReleaseTime = Item;
     while (X->ReleaseTime != Item) /* Descend down the tree */ {
@@ -221,7 +221,7 @@ Insert(ElementType Item, OS_TCB *task, RedBlackTree T) { //added OS_TCB (pointer
         return NullNode; /* Duplicate */
         //I think this is the case where a node with the given time already exists
         //We have to add the new task to the list of the node with the given time.
-        append(X->tasks, (int) task); //cast pointer to int - remember to cast back
+        append(X->tasks, (int) task, period); //cast pointer to int - remember to cast back
  
     X = malloc(sizeof ( struct RedBlackNode));
     if (X == NULL){
@@ -231,7 +231,7 @@ Insert(ElementType Item, OS_TCB *task, RedBlackTree T) { //added OS_TCB (pointer
     }
     //creates new node for given time with new list of tasks
     X->ReleaseTime = Item;
-    X->tasks = create((int) task, NULL); //cast pointer to int - remember to cast back
+    X->tasks = create((int) task, period, NULL); //cast pointer to int - remember to cast back
     X->ReleaseTime = Item;
     X->Left = X->Right = NullNode;
  
@@ -246,7 +246,7 @@ Insert(ElementType Item, OS_TCB *task, RedBlackTree T) { //added OS_TCB (pointer
  
 RedBlackTree
 Remove(ElementType Item, RedBlackTree T) {
-    printf("Remove is unimplemented\n");
+    //printf("Remove is unimplemented\n");
     if (Item)
         return T;
     return T;

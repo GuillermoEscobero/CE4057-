@@ -1,11 +1,9 @@
-#include <stdio.h>
+//#include <stdio.h>
 #include <stdlib.h>
+#include <os.h>
+#include "os_extended.h"
  
-typedef struct node
-{
-    int data;
-    struct node* next;
-} node;
+
  
 typedef void (*callback)(node* data);
  
@@ -15,15 +13,34 @@ typedef void (*callback)(node* data);
  
     return the newly created node
 */
-node* create(int data,node* next)
+node* create(int data, CPU_INT32U period, node* next)
 {
-    node* new_node = (node*)malloc(sizeof(node));
+    //node* new_node = (node*)malloc(sizeof(node));
+    //malloc does not work
+    OS_ERR  err;
+    node* new_node = (node*)OSMemGet(&CommMem2, &err);
+    switch(err){
+      case OS_ERR_NONE:
+        break;
+      case OS_ERR_MEM_INVALID_P_MEM:
+        exit(0);
+        break;
+      case OS_ERR_MEM_NO_FREE_BLKS:
+        exit(0);
+        break;
+      case OS_ERR_OBJ_TYPE:
+        exit(0);
+        break;
+    }
+    /*
     if(new_node == NULL)
     {
-        printf("Error creating a new node.\n");
+        //printf("Error creating a new node.\n");
         exit(0);
     }
+*/
     new_node->data = data;
+    new_node->period = period;
     new_node->next = next;
  
     return new_node;
@@ -32,9 +49,9 @@ node* create(int data,node* next)
 /*
     add a new node at the beginning of the list
 */
-node* prepend(node* head,int data)
+node* prepend(node* head,int data, CPU_INT32U period)
 {
-    node* new_node = create(data,head);
+    node* new_node = create(data, period, head);
     head = new_node;
     return head;
 }
@@ -42,7 +59,7 @@ node* prepend(node* head,int data)
 /*
     add a new node at the end of the list
 */
-node* append(node* head, int data)
+node* append(node* head, int data, CPU_INT32U period)
 {
     if(head == NULL)
         return NULL;
@@ -52,7 +69,7 @@ node* append(node* head, int data)
         cursor = cursor->next;
  
     /* create a new node */
-    node* new_node =  create(data,NULL);
+    node* new_node =  create(data, period, NULL);
     cursor->next = new_node;
  
     return head;
@@ -61,7 +78,7 @@ node* append(node* head, int data)
 /*
     insert a new node after the prev node
 */
-node* insert_after(node *head, int data, node* prev)
+node* insert_after(node *head, int data, CPU_INT32U period, node* prev)
 {
     if(head == NULL || prev == NULL)
         return NULL;
@@ -72,7 +89,7 @@ node* insert_after(node *head, int data, node* prev)
  
     if(cursor != NULL)
     {
-        node* new_node = create(data,cursor->next);
+        node* new_node = create(data, period, cursor->next);
         cursor->next = new_node;
         return head;
     }
@@ -85,14 +102,14 @@ node* insert_after(node *head, int data, node* prev)
 /*
     insert a new node before the nxt node
 */
-node* insert_before(node *head, int data, node* nxt)
+node* insert_before(node *head, int data, CPU_INT32U period, node* nxt)
 {
     if(nxt == NULL || head == NULL)
         return NULL;
  
     if(head == nxt)
     {
-        head = prepend(head,data);
+        head = prepend(head,data, period);
         return head;
     }
  
@@ -107,7 +124,7 @@ node* insert_before(node *head, int data, node* nxt)
  
     if(cursor != NULL)
     {
-        node* new_node = create(data,cursor->next);
+        node* new_node = create(data, period, cursor->next);
         cursor->next = new_node;
         return head;
     }
@@ -213,8 +230,9 @@ node* remove_any(node* head,node* nd)
 */
 void display(node* n)
 {
-    if(n != NULL)
-        printf("%d ", n->data);
+  if(n != NULL){
+        //printf("%d ", n->data);
+  }
 }
  
 /*
@@ -250,7 +268,7 @@ void dispose(node *head)
         while(cursor != NULL)
         {
             tmp = cursor->next;
-            free(cursor);
+            free(cursor); //we should use OSMemPut here instead
             cursor = tmp;
         }
     }

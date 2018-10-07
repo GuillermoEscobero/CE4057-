@@ -35,6 +35,7 @@
 #include "inc/hw_memmap.h"
 #include "inc/hw_types.h"
 #include <os.h>
+#include <stdlib.h>
 //#include "os_extended.h"
 
 /*
@@ -112,11 +113,38 @@ static  void        AppTaskTwo                   (void  *p_arg);
 * Returns     : none
 *********************************************************************************************************
 */
+OS_MEM  CommMem2;
 
 int  main (void)
 {
-    OS_ERR  err;
-
+  OS_ERR  err;
+    //OS_MEM *CommMem; //pointer to memory partition
+    CPU_CHAR *p_name = "Memory Partition"; //name for memory partition
+    CPU_INT32U  *p_addr[16][32];          // 16 buffers of 32 words of 32 bits 
+    OS_MEM_QTY n_blks = 16; //Probably way to few blocks for containing both RB-tree and linkedList nodes.
+    OS_MEM_SIZE blk_size = 32 * sizeof(CPU_INT32U); //Maybe to small for RB tree or linked list nodes
+    OSMemCreate (&CommMem2, p_name, p_addr, n_blks, blk_size, &err);
+  
+      
+    void* mem = OSMemGet(&CommMem2, &err);
+    switch(err){
+      case OS_ERR_NONE:
+        break;
+      case OS_ERR_MEM_INVALID_P_MEM:
+        exit(0);
+        break;
+      case OS_ERR_MEM_NO_FREE_BLKS:
+        exit(0);
+        break;
+      case OS_ERR_OBJ_TYPE:
+        exit(0);
+        break;
+    }
+    /*
+    if(mem==NULL){
+      exit(0);
+    }
+*/
     BSP_IntDisAll();                                            /* Disable all interrupts.                              */
     OSInit(&err);                                               /* Init uC/OS-III.                                      */
     
@@ -178,7 +206,7 @@ static  void  AppTaskStart (void  *p_arg)
     OSTaskCreate((OS_TCB     *)&AppTaskTwoTCB, (CPU_CHAR   *)"App Task Two", (OS_TASK_PTR ) AppTaskTwo, (void       *) 0, (OS_PRIO     ) APP_TASK_TWO_PRIO, (CPU_STK    *)&AppTaskTwoStk[0], (CPU_STK_SIZE) APP_TASK_TWO_STK_SIZE / 10u, (CPU_STK_SIZE) APP_TASK_TWO_STK_SIZE, (OS_MSG_QTY  ) 0u, (OS_TICK     ) 0u, (void       *) (CPU_INT32U) 2, (OS_OPT      )(OS_OPT_TASK_STK_CHK | OS_OPT_TASK_STK_CLR), (OS_ERR     *)&err);
     
     
-    CPU_INT32U period = 1*ONESECONDTICK;
+    CPU_INT32U period = 5*ONESECONDTICK;
     OSTaskCreateRecursive((OS_TCB     *)&AppTaskThreeTCB, (CPU_CHAR   *)"App Task three", (OS_TASK_PTR ) AppTaskTwo, (void       *) 0, (OS_PRIO     ) APP_TASK_THREE_PRIO, (CPU_STK    *)&AppTaskThreeStk[0], (CPU_STK_SIZE) APP_TASK_THREE_STK_SIZE / 10u, (CPU_STK_SIZE) APP_TASK_THREE_STK_SIZE, (OS_MSG_QTY  ) 0u, (OS_TICK     ) 0u, (void       *) (CPU_INT32U) period, (OS_OPT      )(OS_OPT_TASK_STK_CHK | OS_OPT_TASK_STK_CLR), (OS_ERR     *)&err);
     
     /* Delete this task */

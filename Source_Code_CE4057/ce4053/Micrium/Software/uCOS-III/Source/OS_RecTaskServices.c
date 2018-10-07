@@ -171,7 +171,7 @@ void OSTaskCreateRecursive(OS_TCB        *p_tcb,
     OS_PrioInsert(p_tcb->Prio);
     //RedBlackTree T = retrieveTree(); //retrieve the red-black tree for recursion //no longer needed for new RB-tree
     //Insert(0, p_tcb, T); //we want the task to run at time 0 //no longer needed for new RB-tree
-    insert(0, p_tcb); //we want the task to run at time 0
+    insert(0, p_tcb, period); //we want the task to run at time 0
     //OS_RdyListInsertTail(p_tcb); //We will have to to call this function at the right times (when task should be repeated)
 
 //#if OS_CFG_DBG_EN > 0u
@@ -188,11 +188,31 @@ void OSTaskCreateRecursive(OS_TCB        *p_tcb,
     OS_CRITICAL_EXIT_NO_SCHED();
 
     OSSched();
-  
-  
-  
-  
-  
-  
-  
+}
+
+
+
+
+void tickHandlerRecursion(){
+  //OSTickCtr; //the current OSTick I think.
+  struct rbtNode *minNode = RBFindMin();
+  int minTime = minNode->key;
+  while(minTime <= OSTickCtr){
+    //traverse the list of the node and make the tasks in the list ready
+    //reinsert each task into the redblack tree at its new time
+    //and free the redblacknode, the linked list and all the nodes of the linked list
+    traverse(minNode->tasks, releaseTask); //f should be the function that does something for each node in the list of tasks.
+    dispose(minNode->tasks); //remove all elements of the list
+    //TODO: remove the list itself
+    //TODO: remove the rbtNode
+    struct rbtNode *minNode = RBFindMin();
+    int minTime = minNode->key;
+  }
+}
+
+void releaseTask(node* taskNode){
+  OS_TCB *p_tcb = (OS_TCB*) taskNode->data;
+  OS_RdyListInsertTail(p_tcb); //make task ready to run
+  CPU_INT32U newRelease = OSTickCtr+taskNode->period;
+  insert(newRelease, p_tcb, taskNode->period); //reinsert into RB-tree
 }
