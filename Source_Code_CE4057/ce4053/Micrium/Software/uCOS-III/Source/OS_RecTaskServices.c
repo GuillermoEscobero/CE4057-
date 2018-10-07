@@ -27,7 +27,7 @@ void OSTaskCreateRecursive(OS_TCB        *p_tcb,
   
   
       CPU_STK_SIZE   i;
-      CPU_INT32U period = (CPU_INT32U) p_ext;
+      CPU_INT32U period = (CPU_INT32U) p_ext; //added
 
 //#if OS_CFG_TASK_REG_TBL_SIZE > 0u
 //    OS_OBJ_QTY     reg_nbr;
@@ -169,7 +169,10 @@ void OSTaskCreateRecursive(OS_TCB        *p_tcb,
                                                             /* --------------- ADD TASK TO READY LIST --------------- */
     OS_CRITICAL_ENTER();
     OS_PrioInsert(p_tcb->Prio);
-    OS_RdyListInsertTail(p_tcb); //We will have to to call this function at the right times (when task should be repeated)
+    //RedBlackTree T = retrieveTree(); //retrieve the red-black tree for recursion //no longer needed for new RB-tree
+    //Insert(0, p_tcb, T); //we want the task to run at time 0 //no longer needed for new RB-tree
+    insert(0, p_tcb); //we want the task to run at time 0
+    //OS_RdyListInsertTail(p_tcb); //We will have to to call this function at the right times (when task should be repeated)
 
 //#if OS_CFG_DBG_EN > 0u
 //    OS_TaskDbgListAdd(p_tcb);

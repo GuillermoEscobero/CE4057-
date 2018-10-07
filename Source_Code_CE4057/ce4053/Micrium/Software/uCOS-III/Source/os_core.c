@@ -31,6 +31,7 @@
 */
 
 #include  <os.h>
+#include  "os_extended.h" //added
 
 #ifdef VSC_INCLUDE_SOURCE_FILE_NAMES
 const  CPU_CHAR  *os_core__c = "$Id: $";
@@ -64,7 +65,9 @@ void  OSInit (OS_ERR  *p_err)
         return;
     }
 #endif
-
+    
+    //Initialize(); //initializes the RedBlackTree (added) //might no longer be needed for the new RB-tree
+    
     OSInitHook();                                           /* Call port specific initialization code                 */
 
     OSIntNestingCtr                 = (OS_NESTING_CTR)0;    /* Clear the interrupt nesting counter                    */

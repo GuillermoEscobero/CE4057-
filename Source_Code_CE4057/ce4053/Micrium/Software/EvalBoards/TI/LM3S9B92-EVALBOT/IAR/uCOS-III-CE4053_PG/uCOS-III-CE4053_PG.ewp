@@ -1735,6 +1735,9 @@
         <group>
             <name>Source</name>
             <file>
+                <name>$PROJ_DIR$\..\..\..\..\..\uCOS-III\Source\linkedList.c</name>
+            </file>
+            <file>
                 <name>$PROJ_DIR$\..\..\..\..\..\uCOS-III\Source\os_cfg_app.c</name>
             </file>
             <file>
@@ -1799,6 +1802,9 @@
             </file>
             <file>
                 <name>$PROJ_DIR$\..\..\..\..\..\uCOS-III\Source\RBTree.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\..\..\..\..\uCOS-III\Source\RBTree2.c</name>
             </file>
         </group>
     </group>

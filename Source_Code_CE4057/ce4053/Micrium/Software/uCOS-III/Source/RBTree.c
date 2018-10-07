@@ -2,13 +2,21 @@
 #include <stdio.h>
 #include <os.h>
 //#include "fatal.h"
+
+static RedBlackTree T;
  
 typedef enum ColorType {
     Red, Black
 } ColorType;
  
+/*struct Element {
+  int releaseTime;
+};*/
+
 struct RedBlackNode {
-    ElementType Element;
+    //ElementType Element;
+  ElementType ReleaseTime; //ElementType is int
+  node *tasks; //list of tasks
     RedBlackTree Left;
     RedBlackTree Right;
     ColorType Color;
@@ -17,28 +25,39 @@ struct RedBlackNode {
 static Position NullNode = NULL; /* Needs initialization */
  
 /* Initialization procedure */
-RedBlackTree
-Initialize(void) {
-    RedBlackTree T;
+//RedBlackTree
+void Initialize(void) {
+    //RedBlackTree T;
  
     if (NullNode == NULL) {
         NullNode = malloc(sizeof ( struct RedBlackNode));
-        if (NullNode == NULL)
-            FatalError("Out of space!!!");
-        NullNode->Left = NullNode->Right = NullNode;
+        if (NullNode == NULL){
+            //FatalError("Out of space!!!");
+          //what to do: no FatalError definition
+          return;
+        }
+        //NullNode->Left = NullNode->Right = NullNode;
+        NullNode->Left = NullNode->Right = NULL;
         NullNode->Color = Black;
-        NullNode->Element = 12345;
+        NullNode->ReleaseTime = 12345;
     }
  
     /* Create the header node */
     T = malloc(sizeof ( struct RedBlackNode));
-    if (T == NULL)
-        FatalError("Out of space!!!");
-    T->Element = NegInfinity;
+    if (T == NULL){
+        //FatalError("Out of space!!!");
+      //what to do: no FatalError definition
+      return;
+    }
+    T->ReleaseTime = NegInfinity;
     T->Left = T->Right = NullNode;
     T->Color = Black;
  
-    return T;
+    //return T;
+}
+
+RedBlackTree retrieveTree(void){ //added
+  return T;
 }
  
 /* END */
@@ -56,7 +75,7 @@ static void
 DoPrint(RedBlackTree T) {
     if (T != NullNode) {
         DoPrint(T->Left);
-        Output(T->Element);
+        Output(T->ReleaseTime);
         DoPrint(T->Right);
     }
 }
@@ -88,10 +107,10 @@ Position
 Find(ElementType X, RedBlackTree T) {
     if (T == NullNode)
         return NullNode;
-    if (X < T->Element)
+    if (X < T->ReleaseTime)
         return Find(X, T->Left);
     else
-        if (X > T->Element)
+        if (X > T->ReleaseTime)
         return Find(X, T->Right);
     else
         return T;
@@ -154,12 +173,12 @@ SingleRotateWithRight(Position K1) {
 static Position
 Rotate(ElementType Item, Position Parent) {
  
-    if (Item < Parent->Element)
-        return Parent->Left = Item < Parent->Left->Element ?
+    if (Item < Parent->ReleaseTime)
+        return Parent->Left = Item < Parent->Left->ReleaseTime ?
             SingleRotateWithLeft(Parent->Left) :
         SingleRotateWithRight(Parent->Left);
     else
-        return Parent->Right = Item < Parent->Right->Element ?
+        return Parent->Right = Item < Parent->Right->ReleaseTime ?
             SingleRotateWithLeft(Parent->Right) :
         SingleRotateWithRight(Parent->Right);
 }
@@ -174,7 +193,7 @@ void HandleReorient(ElementType Item, RedBlackTree T) {
  
     if (P->Color == Red) /* Have to rotate */ {
         GP->Color = Red;
-        if ((Item < GP->Element) != (Item < P->Element))
+        if ((Item < GP->ReleaseTime) != (Item < P->ReleaseTime))
             P = Rotate(Item, GP); /* Start double rotate */
         X = Rotate(Item, GGP);
         X->Color = Black;
@@ -183,31 +202,40 @@ void HandleReorient(ElementType Item, RedBlackTree T) {
 }
  
 RedBlackTree
-Insert(ElementType Item, RedBlackTree T) {
+Insert(ElementType Item, OS_TCB *task, RedBlackTree T) { //added OS_TCB (pointer or not?)
     X = P = GP = T;
-    NullNode->Element = Item;
-    while (X->Element != Item) /* Descend down the tree */ {
+    NullNode->ReleaseTime = Item;
+    while (X->ReleaseTime != Item) /* Descend down the tree */ {
         GGP = GP;
         GP = P;
         P = X;
-        if (Item < X->Element)
+        if (Item < X->ReleaseTime)
             X = X->Left;
         else
             X = X->Right;
-        if (X->Left->Color == Red && X->Right->Color == Red)
+        if (X!=NullNode && (X->Left->Color == Red && X->Right->Color == Red))
             HandleReorient(Item, T);
     }
  
     if (X != NullNode)
         return NullNode; /* Duplicate */
+        //I think this is the case where a node with the given time already exists
+        //We have to add the new task to the list of the node with the given time.
+        append(X->tasks, (int) task); //cast pointer to int - remember to cast back
  
     X = malloc(sizeof ( struct RedBlackNode));
-    if (X == NULL)
-        FatalError("Out of space!!!");
-    X->Element = Item;
+    if (X == NULL){
+        //FatalError("Out of space!!!");
+      //what to do: no FatalError definition
+      return NULL;
+    }
+    //creates new node for given time with new list of tasks
+    X->ReleaseTime = Item;
+    X->tasks = create((int) task, NULL); //cast pointer to int - remember to cast back
+    X->ReleaseTime = Item;
     X->Left = X->Right = NullNode;
  
-    if (Item < P->Element) /* Attach to its parent */
+    if (Item < P->ReleaseTime) /* Attach to its parent */
         P->Left = X;
     else
         P->Right = X;
@@ -226,5 +254,5 @@ Remove(ElementType Item, RedBlackTree T) {
  
 ElementType
 Retrieve(Position P) {
-    return P->Element;
+    return P->ReleaseTime;
 }
