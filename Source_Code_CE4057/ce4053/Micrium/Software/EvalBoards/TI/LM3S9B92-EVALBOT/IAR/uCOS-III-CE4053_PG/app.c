@@ -114,16 +114,25 @@ static  void        AppTaskTwo                   (void  *p_arg);
 *********************************************************************************************************
 */
 OS_MEM  CommMem2;
+CPU_INT32U  *p_addr[16][8];          // 16 buffers of 32 words of 32 bits
 
 int  main (void)
 {
   OS_ERR  err;
+    /*void *data = malloc(10);
+    if(data == NULL){
+      exit(0);
+    }*/
+    
+    BSP_IntDisAll();                                            /* Disable all interrupts.                              */
+    OSInit(&err);                                               /* Init uC/OS-III.                                      */
+    
     //OS_MEM *CommMem; //pointer to memory partition
     CPU_CHAR *p_name = "Memory Partition"; //name for memory partition
-    CPU_INT32U  *p_addr[16][32];          // 16 buffers of 32 words of 32 bits 
+    //CPU_INT32U  *p_addr[16][32];          // 16 buffers of 32 words of 32 bits 
     OS_MEM_QTY n_blks = 16; //Probably way to few blocks for containing both RB-tree and linkedList nodes.
-    OS_MEM_SIZE blk_size = 32 * sizeof(CPU_INT32U); //Maybe to small for RB tree or linked list nodes
-    OSMemCreate (&CommMem2, p_name, p_addr, n_blks, blk_size, &err);
+    OS_MEM_SIZE blk_size = 8 * sizeof(CPU_INT32U); //Maybe to small for RB tree or linked list nodes
+    OSMemCreate (&CommMem2, p_name, &p_addr[0][0], n_blks, blk_size, &err);
   
       
     void* mem = OSMemGet(&CommMem2, &err);
@@ -145,8 +154,6 @@ int  main (void)
       exit(0);
     }
 */
-    BSP_IntDisAll();                                            /* Disable all interrupts.                              */
-    OSInit(&err);                                               /* Init uC/OS-III.                                      */
     
     //RedBlackTree RBTree = Initialize();
 
@@ -202,8 +209,8 @@ static  void  AppTaskStart (void  *p_arg)
     
     /* Initialise the 2 Main Tasks to  Deleted State */
 
-    OSTaskCreate((OS_TCB     *)&AppTaskOneTCB, (CPU_CHAR   *)"App Task One", (OS_TASK_PTR ) AppTaskOne, (void       *) 0, (OS_PRIO     ) APP_TASK_ONE_PRIO, (CPU_STK    *)&AppTaskOneStk[0], (CPU_STK_SIZE) APP_TASK_ONE_STK_SIZE / 10u, (CPU_STK_SIZE) APP_TASK_ONE_STK_SIZE, (OS_MSG_QTY  ) 0u, (OS_TICK     ) 0u, (void       *)(CPU_INT32U) 1, (OS_OPT      )(OS_OPT_TASK_STK_CHK | OS_OPT_TASK_STK_CLR), (OS_ERR     *)&err);
-    OSTaskCreate((OS_TCB     *)&AppTaskTwoTCB, (CPU_CHAR   *)"App Task Two", (OS_TASK_PTR ) AppTaskTwo, (void       *) 0, (OS_PRIO     ) APP_TASK_TWO_PRIO, (CPU_STK    *)&AppTaskTwoStk[0], (CPU_STK_SIZE) APP_TASK_TWO_STK_SIZE / 10u, (CPU_STK_SIZE) APP_TASK_TWO_STK_SIZE, (OS_MSG_QTY  ) 0u, (OS_TICK     ) 0u, (void       *) (CPU_INT32U) 2, (OS_OPT      )(OS_OPT_TASK_STK_CHK | OS_OPT_TASK_STK_CLR), (OS_ERR     *)&err);
+    //OSTaskCreate((OS_TCB     *)&AppTaskOneTCB, (CPU_CHAR   *)"App Task One", (OS_TASK_PTR ) AppTaskOne, (void       *) 0, (OS_PRIO     ) APP_TASK_ONE_PRIO, (CPU_STK    *)&AppTaskOneStk[0], (CPU_STK_SIZE) APP_TASK_ONE_STK_SIZE / 10u, (CPU_STK_SIZE) APP_TASK_ONE_STK_SIZE, (OS_MSG_QTY  ) 0u, (OS_TICK     ) 0u, (void       *)(CPU_INT32U) 1, (OS_OPT      )(OS_OPT_TASK_STK_CHK | OS_OPT_TASK_STK_CLR), (OS_ERR     *)&err);
+    //OSTaskCreate((OS_TCB     *)&AppTaskTwoTCB, (CPU_CHAR   *)"App Task Two", (OS_TASK_PTR ) AppTaskTwo, (void       *) 0, (OS_PRIO     ) APP_TASK_TWO_PRIO, (CPU_STK    *)&AppTaskTwoStk[0], (CPU_STK_SIZE) APP_TASK_TWO_STK_SIZE / 10u, (CPU_STK_SIZE) APP_TASK_TWO_STK_SIZE, (OS_MSG_QTY  ) 0u, (OS_TICK     ) 0u, (void       *) (CPU_INT32U) 2, (OS_OPT      )(OS_OPT_TASK_STK_CHK | OS_OPT_TASK_STK_CLR), (OS_ERR     *)&err);
     
     
     CPU_INT32U period = 5*ONESECONDTICK;
@@ -275,7 +282,7 @@ static  void  AppTaskTwo (void  *p_arg)
     }
     
     BSP_LED_Off(0u);
-   OSTaskDel((OS_TCB *)0, &err);
+   //OSTaskDel((OS_TCB *)0, &err);
 
 }
 

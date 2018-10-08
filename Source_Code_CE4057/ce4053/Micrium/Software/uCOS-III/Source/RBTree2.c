@@ -395,96 +395,59 @@ x = root;
 
 }
 
-struct rbtNode* delete(int var)
+struct rbtNode* delete(int var){
+  struct rbtNode *x = NULL, *y = NULL, *z;
+  z=root;
+  if((z->left ==NULL ) &&(z->right==NULL) && (z->key==var)){
+    root=NULL;
+    //printf("\nRBTREE is empty\n");
+    return NULL;
+  }
 
-{          struct rbtNode *x = NULL, *y = NULL, *z;
-
-z=root;
-
-if((z->left ==NULL ) &&(z->right==NULL) && (z->key==var))
-
-{          root=NULL;
-
-//printf("\nRBTREE is empty\n");
-
-return NULL;
-
-}
-
-while(z->key !=var && z!=NULL)
-
-{          if(var<z->key)
+  while(z->key !=var && z!=NULL){
+    if(var<z->key)
+      z=z->left;
+    else
+      z=z->right;
+    
+    if(z== NULL)
+     return NULL;
+  }
   
-  z=z->left;
+  if((z->left==NULL)||(z->right==NULL)){
+    y = z;
+  }
+  else{
+    y = successor(z);
+  }
   
-else
-
-z=z->right;
-
-if(z== NULL)
-
-return NULL;
-
-}
-
-if((z->left==NULL)||(z->right==NULL))
-
-{          y = z;
-
-}
-
-else
-
-{          y = successor(z);
-
-}
-
-if (y->left!=NULL)
-
-{          x = y->left;
-
-}
-
-else
-
-{          if(y->right !=NULL)
+  if (y->left!=NULL){
+    x = y->left;
+  }
+  else{
+    if(y->right !=NULL)
+      x = y->right;
+  }
   
-  x = y->right;
+  if((x!=NULL) && (y->parent !=NULL))
+    x->parent = y->parent;
+
+  if ((y !=NULL) && (x!=NULL) && (y->parent==NULL)){
+    root=x;
+  }
+  else if (y == y->parent->left){
+    y->parent->left = x;
+  }
+  else{
+    y->parent->right = x;
+  }
   
-}
+  if (y != z){
+    z->key = y->key;
+  }
 
-if((x!=NULL) && (y->parent !=NULL))
-
-x->parent = y->parent;
-
-if ((y !=NULL) && (x!=NULL) && (y->parent==NULL))
-
-{          root=x;
-
-}
-
-else if (y == y->parent->left)
-
-{          y->parent->left = x;
-
-}
-
-else
-
-{          y->parent->right = x;
-
-}
-
-if (y != z)
-
-{          z->key = y->key;
-
-}
-
-if ((y!=NULL) && (x!=NULL) && (y->color == 'b'))
-
-{          color_delete(x);
-
-}return y;
-
+  if ((y!=NULL) && (x!=NULL) && (y->color == 'b')){
+    color_delete(x);
+  }
+  return y;
 }

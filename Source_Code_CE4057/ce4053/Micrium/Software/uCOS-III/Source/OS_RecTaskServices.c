@@ -197,6 +197,7 @@ void tickHandlerRecursion(){
   //OSTickCtr; //the current OSTick I think.
   struct rbtNode *minNode = RBFindMin();
   int minTime = minNode->key;
+  int x = OSTickCtr;
   while(minTime <= OSTickCtr){
     //traverse the list of the node and make the tasks in the list ready
     //reinsert each task into the redblack tree at its new time
@@ -205,8 +206,12 @@ void tickHandlerRecursion(){
     dispose(minNode->tasks); //remove all elements of the list
     //TODO: remove the list itself
     //TODO: remove the rbtNode
-    struct rbtNode *minNode = RBFindMin();
-    int minTime = minNode->key;
+    delete(minTime); //remove rbtNode from tree (does not free memory)
+    struct rbtNode *minNode = RBFindMin(); //THE problems seem to occur here as we do not retrieve our the correct node.
+    if(minNode == NULL){
+      break;
+    }
+    minTime = minNode->key;
   }
 }
 

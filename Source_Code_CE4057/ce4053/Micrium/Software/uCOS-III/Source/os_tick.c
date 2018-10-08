@@ -31,6 +31,7 @@
 */
 
 #include <os.h>
+#include "os_extended.h"
 
 #ifdef VSC_INCLUDE_SOURCE_FILE_NAMES
 const  CPU_CHAR  *os_tick__c = "$Id: $";
@@ -414,6 +415,9 @@ void  OS_TickListUpdate (void)
 
 
     OS_CRITICAL_ENTER();
+    
+    tickHandlerRecursion(); //added
+    
     ts_start = OS_TS_GET();
     OSTickCtr++;                                                       /* Keep track of the number of ticks           */
     spoke    = (OS_TICK_SPOKE_IX)(OSTickCtr % OSCfg_TickWheelSize);
@@ -502,5 +506,8 @@ void  OS_TickListUpdate (void)
     if (ts_end > OSTickTaskTimeMax) {
         OSTickTaskTimeMax = ts_end;
     }
+    
+    
+    
     OS_CRITICAL_EXIT();
 }
