@@ -21,7 +21,7 @@ Position Find(ElementType X, RedBlackTree T);
 Position FindMin(RedBlackTree T);
 Position FindMax(RedBlackTree T);
 void Initialize(void); //return type changed to void from RedBlackTree
-RedBlackTree Insert(ElementType Item, OS_TCB *task, CPU_INT32U period, RedBlackTree T);
+RedBlackTree Insert(ElementType Item, OS_TCB *task, CPU_INT32U period, TCBInfo* tcbInfo, RedBlackTree T);
 RedBlackTree Remove(ElementType X, RedBlackTree T);
 ElementType Retrieve(Position P);
 void PrintTree(RedBlackTree T);
@@ -40,23 +40,24 @@ RedBlackTree retrieveTree(void); //added
 //typedef struct node node;
 typedef struct node
 {
-    int data;
+    OS_TCB* data;
     CPU_INT32U period;
+    TCBInfo* tcbInfo;
     struct node* next;
 } node;
 typedef void (*callback)(node* data);
 
-node* create(int data, CPU_INT32U period, node* next);
-node* prepend(node* head,int data, CPU_INT32U period);
-node* append(node* head, int data, CPU_INT32U period);
-node* insert_after(node *head, int data, CPU_INT32U period, node* prev);
-node* insert_before(node *head, int data, CPU_INT32U period, node* nxt);
+node* create(OS_TCB* data, CPU_INT32U period, TCBInfo* tcbInfo, node* next);
+node* prepend(node* head,OS_TCB* data, CPU_INT32U period, TCBInfo* tcbInfo);
+node* append(node* head, OS_TCB* data, CPU_INT32U period, TCBInfo* tcbInfo);
+node* insert_after(node *head, OS_TCB* data, CPU_INT32U period, TCBInfo* tcbInfo, node* prev);
+node* insert_before(node *head, OS_TCB* data, CPU_INT32U period, TCBInfo* tcbInfo, node* nxt);
 void traverse(node* head,callback f);
 node* remove_front(node* head);
 node* remove_back(node* head);
 node* remove_any(node* head,node* nd);
 void display(node* n);
-node* search(node* head,int data);
+node* search(node* head,OS_TCB* data);
 void dispose(node *head);
 int count(node *head);
 node* insertion_sort(node* head);
@@ -82,7 +83,7 @@ struct rbtNode {
 void leftRotate(struct rbtNode *x);
 void rightRotate(struct rbtNode *y);
 void color_insert(struct rbtNode *z);
-void insert(int val, OS_TCB *task, CPU_INT32U period);
+void insert(int val, OS_TCB *task, CPU_INT32U period, TCBInfo* tcbInfo);
 void inorderTree(struct rbtNode* root);
 struct rbtNode* searchRB(int val);
 struct rbtNode* min(struct rbtNode *x);
