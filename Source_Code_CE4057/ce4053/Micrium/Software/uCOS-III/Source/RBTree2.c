@@ -154,12 +154,12 @@ void insert(int val, OS_TCB *task, CPU_INT32U period){
     }
     else x = x->right;
   }
-  z->parent = y;
+  z->parent = y; //set parent
   if ( y == NULL)
   {
     root = z;
   }
-  else if( z->key < y->key ){
+  else if( z->key < y->key ){ //set z-as the left or right child of y (parent)
     y->left = z;
   }
   else
@@ -269,130 +269,68 @@ y = y->parent;
 
 }
 
-void color_delete(struct rbtNode *x)
-
-{          while (x != root && x->color == 'b')
-  
-{          struct rbtNode *w = NULL;
-
-if ((x->parent->left!=NULL) && (x == x->parent->left))
-
-{          w = x->parent->right;
-
-if ((w!=NULL) && (w->color == 'r'))
-
-{          w->color = 'b';
-
-x->parent->color = 'r';
-
-leftRotate(x->parent);
-
-w = x->parent->right;
-
-}
-
-if ((w!=NULL) && (w->right!=NULL) && (w->left!=NULL) && (w->left->color == 'b') && (w->right->color == 'b'))
-
-{
-  
-  w->color = 'r';
-  
-  x = x->parent;
-  
-}
-
-else if((w!=NULL) && (w->right->color == 'b'))
-
-{          w->left->color = 'b';
-
-w->color = 'r';
-
-rightRotate(w);
-
-w = x->parent->right;
-
-}
-
-if(w!=NULL)
-
-{          w->color = x->parent->color;
-
-x->parent->color = 'b';
-
-w->right->color = 'b';
-
-leftRotate(x->parent);
-
-x = root;
-
-}
-
-}
-
-else if(x->parent!=NULL)
-
-{          w = x->parent->left;
-
-if ((w!=NULL) && (w->color == 'r'))
-
-{
-  
-  w->color = 'b';
-  
-  x->parent->color = 'r';
-  
-  leftRotate(x->parent);
-  
-  if(x->parent!=NULL)
-    
-    w = x->parent->left;
-  
-}
-
-if ((w!=NULL) && (w->right!=NULL) && (w->left!=NULL) && (w->right->color == 'b') && (w->left->color == 'b'))
-
-{
-  
-  x = x->parent;
-  
-}
-
-else if((w!=NULL) && (w->right!=NULL) && (w->left!=NULL) && (w->left->color == 'b'))
-
-{
-  
-  w->right->color = 'b';
-  
-  w->color = 'r';
-  
-  rightRotate(w);
-  
-  w = x->parent->left;
-  
-}
-
-if(x->parent!=NULL)
-
-{          w->color = x->parent->color;
-
-x->parent->color = 'b';
-
-}
-
-if(w->left!=NULL)
-
-w->left->color = 'b';
-
-if(x->parent !=NULL)
-
-leftRotate(x->parent);
-
-x = root;
-
-}
-
-} x->color = 'b';
-
+void color_delete(struct rbtNode *x){
+  while (x != root && x->color == 'b'){
+    struct rbtNode *w = NULL;
+    if ((x->parent->left!=NULL) && (x == x->parent->left)){
+      w = x->parent->right;
+      if ((w!=NULL) && (w->color == 'r')){
+        w->color = 'b';
+        x->parent->color = 'r';
+        leftRotate(x->parent);
+        w = x->parent->right;
+      }
+      
+      if ((w!=NULL) && (w->right!=NULL) && (w->left!=NULL) && (w->left->color == 'b') && (w->right->color == 'b')){
+        w->color = 'r';
+        x = x->parent;
+      }
+      else if((w!=NULL) && (w->right->color == 'b')){
+        w->left->color = 'b';
+        w->color = 'r';
+        rightRotate(w);
+        w = x->parent->right;
+      }
+      
+      if(w!=NULL){
+        w->color = x->parent->color;
+        x->parent->color = 'b';
+        w->right->color = 'b';
+        leftRotate(x->parent);
+        x = root;
+      }
+    }
+    else if(x->parent!=NULL){
+      w = x->parent->left;
+      if ((w!=NULL) && (w->color == 'r')){
+        w->color = 'b';
+        x->parent->color = 'r';
+        leftRotate(x->parent);
+        if(x->parent!=NULL)
+          w = x->parent->left;
+      }
+      if ((w!=NULL) && (w->right!=NULL) && (w->left!=NULL) && (w->right->color == 'b') && (w->left->color == 'b')){
+        x = x->parent;
+      }
+      else if((w!=NULL) && (w->right!=NULL) && (w->left!=NULL) && (w->left->color == 'b')){
+        w->right->color = 'b';
+        w->color = 'r';
+        rightRotate(w);
+        w = x->parent->left;
+      }
+      if(x->parent!=NULL){
+        w->color = x->parent->color;
+        x->parent->color = 'b';
+      }
+      
+      if(w->left!=NULL)
+        w->left->color = 'b';
+      if(x->parent !=NULL)
+        leftRotate(x->parent);
+      x = root;
+    }
+  }
+  x->color = 'b';
 }
 
 struct rbtNode* delete(int var){
@@ -428,12 +366,14 @@ struct rbtNode* delete(int var){
     if(y->right !=NULL)
       x = y->right;
   }
-  
-  if((x!=NULL) && (y->parent !=NULL))
+  //setting the child of y's parent to y.
+  if((x!=NULL)) //removed && y->parente != NULL
     x->parent = y->parent;
 
   if ((y !=NULL) && (x!=NULL) && (y->parent==NULL)){
-    root=x;
+      //x->parent = NULL;
+      root=x; //root updated here when node->key = 0 exists
+    //this one is skipped when node->key = 35000000
   }
   else if (y == y->parent->left){
     y->parent->left = x;

@@ -415,7 +415,7 @@ void  OS_TickListUpdate (void)
 
 
     OS_CRITICAL_ENTER();
-    
+    int blah = OSTickCtr;
     tickHandlerRecursion(); //added
     
     ts_start = OS_TS_GET();

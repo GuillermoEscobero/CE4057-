@@ -259,6 +259,7 @@ node* search(node* head,int data)
 */
 void dispose(node *head)
 {
+  OS_ERR  err; //memory error handling
     node *cursor, *tmp;
  
     if(head != NULL)
@@ -268,7 +269,8 @@ void dispose(node *head)
         while(cursor != NULL)
         {
             tmp = cursor->next;
-            free(cursor); //we should use OSMemPut here instead
+            //free(cursor); //we should use OSMemPut here instead
+            OSMemPut(&CommMem2,cursor,&err); //commMem2 is the memory partition
             cursor = tmp;
         }
     }
