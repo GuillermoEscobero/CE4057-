@@ -36,7 +36,7 @@
 #include "inc/hw_types.h"
 #include <os.h>
 #include <stdlib.h>
-//#include "os_extended.h"
+#include "os_extended.h" //outcomment
 
 /*
 *********************************************************************************************************
@@ -114,7 +114,7 @@ static  void        AppTaskTwo                   (void  *p_arg);
 *********************************************************************************************************
 */
 OS_MEM  CommMem2;
-CPU_INT32U  *p_addr[16][8];          // 16 buffers of 32 words of 32 bits
+CPU_INT32U  *p_addr[12][12];          // 16 buffers of 32 words of 32 bits
 
 int  main (void)
 {
@@ -123,6 +123,12 @@ int  main (void)
     if(data == NULL){
       exit(0);
     }*/
+  
+  int x = sizeof(char); //1 byte
+  int y = sizeof(OS_TCB); //140 byte
+  int z = sizeof(TCBInfo); //60 byte
+  int v = sizeof(node); //16 bytes
+  int w = sizeof(struct rbtNode); //24 bytes
     
     BSP_IntDisAll();                                            /* Disable all interrupts.                              */
     OSInit(&err);                                               /* Init uC/OS-III.                                      */
@@ -130,12 +136,13 @@ int  main (void)
     //OS_MEM *CommMem; //pointer to memory partition
     CPU_CHAR *p_name = "Memory Partition"; //name for memory partition
     //CPU_INT32U  *p_addr[16][32];          // 16 buffers of 32 words of 32 bits 
-    OS_MEM_QTY n_blks = 16; //Probably way to few blocks for containing both RB-tree and linkedList nodes.
-    OS_MEM_SIZE blk_size = 8 * sizeof(CPU_INT32U); //Maybe to small for RB tree or linked list nodes
+    OS_MEM_QTY n_blks = 12; //Probably way to few blocks for containing both RB-tree and linkedList nodes.
+    OS_MEM_SIZE blk_size = 12 * sizeof(CPU_INT32U); //Maybe to small for RB tree or linked list nodes
     OSMemCreate (&CommMem2, p_name, &p_addr[0][0], n_blks, blk_size, &err);
   
       
     void* mem = OSMemGet(&CommMem2, &err);
+    int u = sizeof(mem); //This has only size 4 bytes (size of void pointer). Not blok size.
     switch(err){
       case OS_ERR_NONE:
         break;

@@ -167,12 +167,59 @@ void OSTaskCreateRecursive(OS_TCB        *p_tcb,
 
     OSTaskCreateHook(p_tcb);                                /* Call user defined hook                                 */
 
-                                                            /* --------------- ADD TASK TO READY LIST --------------- */
+    //only for restoring TCB, when releasing
+    OS_ERR  err;
+    TCBInfo* tcbInfo = (TCBInfo*) OSMemGet(&CommMem2, &err);
+    /*
+    tcbInfo->p_name = p_name;
+    tcbInfo->p_task = p_task;
+    tcbInfo->p_arg = p_arg;
+    tcbInfo->prio = prio;
+    tcbInfo->p_stk_base = p_stk_base;
+    tcbInfo->stk_limit = stk_limit;
+    tcbInfo->stk_size = stk_size;
+    tcbInfo->q_size = q_size;
+    tcbInfo->time_quanta = time_quanta;
+    tcbInfo->p_ext = p_ext;
+    tcbInfo->opt = opt;
+    */
+    
+    tcbInfo->StkPtr=p_tcb->StkPtr;
+    tcbInfo->ExtPtr=p_tcb->ExtPtr;
+    tcbInfo->StkLimitPtr=p_tcb->StkLimitPtr;
+    tcbInfo->NextPtr=p_tcb->NextPtr;
+    tcbInfo->PrevPtr=p_tcb->PrevPtr;
+    tcbInfo->TickNextPtr=p_tcb->TickNextPtr;
+    tcbInfo->TickPrevPtr=p_tcb->TickPrevPtr;
+    tcbInfo->TickSpokePtr=p_tcb->TickSpokePtr;
+    tcbInfo->NamePtr=p_tcb->NamePtr;
+    tcbInfo->StkBasePtr=p_tcb->StkBasePtr;
+    tcbInfo->TaskEntryAddr=p_tcb->TaskEntryAddr;
+    tcbInfo->TaskEntryArg=p_tcb->TaskEntryArg;
+    tcbInfo->PendDataTblPtr=p_tcb->PendDataTblPtr;
+    tcbInfo->PendOn=p_tcb->PendOn;
+    tcbInfo->PendStatus=p_tcb->PendStatus;
+    tcbInfo->TaskState=p_tcb->TaskState;
+    tcbInfo->Prio=p_tcb->Prio;
+    tcbInfo->StkSize=p_tcb->StkSize;
+//    tcbInfo->Opt=p_tcb->Opt;
+//    tcbInfo->PendDataTblEntries=p_tcb->PendDataTblEntries;
+//    tcbInfo->TS=p_tcb->TS;
+//    tcbInfo->SemCtr=p_tcb->SemCtr;
+//    tcbInfo->TickCtrPrev=p_tcb->TickCtrPrev;
+//    tcbInfo->TickCtrMatch=p_tcb->TickCtrMatch;
+//    tcbInfo->TickRemain=p_tcb->TickRemain;
+//    tcbInfo->TimeQuanta=p_tcb->TimeQuanta;
+//    tcbInfo->TimeQuantaCtr=p_tcb->TimeQuantaCtr;
+    
+    
+    
+                                                              /* --------------- ADD TASK TO READY LIST --------------- */
     OS_CRITICAL_ENTER();
     OS_PrioInsert(p_tcb->Prio);
     //RedBlackTree T = retrieveTree(); //retrieve the red-black tree for recursion //no longer needed for new RB-tree
     //Insert(0, p_tcb, T); //we want the task to run at time 0 //no longer needed for new RB-tree
-    insert(0, p_tcb, period); //we want the task to run at time 0
+    insert(0, p_tcb, period, tcbInfo); //we want the task to run at time 0
     //OS_RdyListInsertTail(p_tcb); //We will have to to call this function at the right times (when task should be repeated)
 
 #if OS_CFG_DBG_EN > 0u
@@ -219,8 +266,54 @@ void tickHandlerRecursion(){
 
 void releaseTask(node* taskNode){
   OS_TCB *p_tcb = (OS_TCB*) taskNode->data;
+  TCBInfo* tcbInfo = taskNode->tcbInfo;
   p_tcb->TaskState = 0;
+  /*
+  //TCBInfo* tcbInfo = (TCBInfo*) OSMemGet();
+  p_tcb->NamePtr = tcbInfo->p_name;
+  //p_tcb->?? = tcbInfo->p_task;
+  //p_tcb->?? = tcbInfo->p_arg;
+  p_tcb->Prio = tcbInfo->prio;
+  p_tcb->StkBasePtr = tcbInfo->p_stk_base;
+  p_tcb->StkLimitPtr = tcbInfo->stk_limit;
+  p_tcb->StkSize = tcbInfo->stk_size;
+  //p_tcb->?? = tcbInfo->q_size;
+  //p_tcb->?? = tcbInfo->time_quanta;
+  //p_tcb->?? = tcbInfo->p_ext; //period
+  //p_tcb->?? = tcbInfo->opt;
+  */
+  
+  p_tcb->StkPtr=tcbInfo->StkPtr;
+  p_tcb->ExtPtr=tcbInfo->ExtPtr;
+  p_tcb->StkLimitPtr=tcbInfo->StkLimitPtr;
+  p_tcb->NextPtr=tcbInfo->NextPtr;
+  p_tcb->PrevPtr=tcbInfo->PrevPtr;
+  p_tcb->TickNextPtr=tcbInfo->TickNextPtr;
+  p_tcb->TickPrevPtr=tcbInfo->TickPrevPtr;
+  p_tcb->TickSpokePtr=tcbInfo->TickSpokePtr;
+  p_tcb->NamePtr=tcbInfo->NamePtr;
+  p_tcb->StkBasePtr=tcbInfo->StkBasePtr;
+  p_tcb->TaskEntryAddr=tcbInfo->TaskEntryAddr;
+  p_tcb->TaskEntryArg=tcbInfo->TaskEntryArg;
+  p_tcb->PendDataTblPtr=tcbInfo->PendDataTblPtr;
+  p_tcb->PendOn=tcbInfo->PendOn;
+  p_tcb->PendStatus=tcbInfo->PendStatus;
+  p_tcb->TaskState=tcbInfo->TaskState;
+  p_tcb->Prio=tcbInfo->Prio;
+  p_tcb->StkSize=tcbInfo->StkSize;
+//  p_tcb->Opt=tcbInfo->Opt;
+//  p_tcb->PendDataTblEntries=tcbInfo->PendDataTblEntries;
+//  p_tcb->TS=tcbInfo->TS;
+//  p_tcb->SemCtr=tcbInfo->SemCtr;
+//  p_tcb->TickCtrPrev=tcbInfo->TickCtrPrev;
+//  p_tcb->TickCtrMatch=tcbInfo->TickCtrMatch;
+//  p_tcb->TickRemain=tcbInfo->TickRemain;
+//  p_tcb->TimeQuanta=tcbInfo->TimeQuanta;
+//  p_tcb->TimeQuantaCtr=tcbInfo->TimeQuantaCtr;
+  
+  
+  
   OS_RdyListInsertTail(p_tcb); //make task ready to run
   CPU_INT32U newRelease = OSTickCtr+taskNode->period;
-  insert(newRelease, p_tcb, taskNode->period); //reinsert into RB-tree
+  insert(newRelease, p_tcb, taskNode->period, tcbInfo); //reinsert into RB-tree
 }
