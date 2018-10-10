@@ -1806,6 +1806,9 @@
             <file>
                 <name>$PROJ_DIR$\..\..\..\..\..\uCOS-III\Source\RBTree2.c</name>
             </file>
+            <file>
+                <name>$PROJ_DIR$\..\..\..\..\..\uCOS-III\Source\skiplist.c</name>
+            </file>
         </group>
     </group>
 </project>

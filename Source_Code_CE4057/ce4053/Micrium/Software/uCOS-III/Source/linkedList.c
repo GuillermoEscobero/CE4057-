@@ -148,20 +148,43 @@ void traverse(node* head,callback f)
     }
 }
 /*
-    remove node from the front of list
+    removes and returns node from the front of list
+    updates head of the list
 */
-node* remove_front(node* head)
+node* remove_front(node** head)
 {
     if(head == NULL)
         return NULL;
-    node *front = head;
-    head = head->next;
+    node *front = *head;
+    (*head) = (*head)->next;
     front->next = NULL;
     /* is this the last node in the list */
-    if(front == head)
+    if(front == *head)
         head = NULL;
-    free(front);
-    return head;
+    /*
+    OS_ERR err;
+    OSMemPut(&CommMem2, (void *)front, &err);
+
+    switch(err){
+      case OS_ERR_NONE:
+        break;
+      case OS_ERR_MEM_FULL:
+        exit(0);
+        break;
+      case OS_ERR_MEM_INVALID_P_BLK:
+        exit(0);
+        break;
+      case OS_ERR_MEM_INVALID_P_MEM:
+        exit(0);
+        break;
+      case OS_ERR_OBJ_TYPE:
+        exit(0);
+        break;
+    }
+    */
+    
+    //free(front);
+    return front;
 }
  
 /*
@@ -192,40 +215,40 @@ node* remove_back(node* head)
     return head;
 }
  
-/*
-    remove a node from the list
-*/
-node* remove_any(node* head,node* nd)
-{
-    if(nd == NULL)
-        return NULL;
-    /* if the node is the first node */
-    if(nd == head)
-        return remove_front(head);
- 
-    /* if the node is the last node */
-    if(nd->next == NULL)
-        return remove_back(head);
- 
-    /* if the node is in the middle */
-    node* cursor = head;
-    while(cursor != NULL)
-    {
-        if(cursor->next == nd)
-            break;
-        cursor = cursor->next;
-    }
- 
-    if(cursor != NULL)
-    {
-        node* tmp = cursor->next;
-        cursor->next = tmp->next;
-        tmp->next = NULL;
-        free(tmp);
-    }
-    return head;
- 
-}
+///*
+//    remove a node from the list
+//*/
+//node* remove_any(node* head,node* nd)
+//{
+//    if(nd == NULL)
+//        return NULL;
+//    /* if the node is the first node */
+//    if(nd == head)
+//        return remove_front(head);
+// 
+//    /* if the node is the last node */
+//    if(nd->next == NULL)
+//        return remove_back(head);
+// 
+//    /* if the node is in the middle */
+//    node* cursor = head;
+//    while(cursor != NULL)
+//    {
+//        if(cursor->next == nd)
+//            break;
+//        cursor = cursor->next;
+//    }
+// 
+//    if(cursor != NULL)
+//    {
+//        node* tmp = cursor->next;
+//        cursor->next = tmp->next;
+//        tmp->next = NULL;
+//        free(tmp);
+//    }
+//    return head;
+// 
+//}
 /*
     display a node
 */
@@ -348,4 +371,8 @@ node* reverse(node* head)
     }
     head = prev;
     return head;
+}
+
+node* getHead(node* head){
+  return head;
 }

@@ -103,7 +103,7 @@ node* append(node* head, OS_TCB* data, CPU_INT32U period, TaskInfo* taskInfo);
 node* insert_after(node *head, OS_TCB* data, CPU_INT32U period, TaskInfo* taskInfo, node* prev);
 node* insert_before(node *head, OS_TCB* data, CPU_INT32U period, TaskInfo* taskInfo, node* nxt);
 void traverse(node* head,callback f);
-node* remove_front(node* head);
+node* remove_front(node** head);
 node* remove_back(node* head);
 node* remove_any(node* head,node* nd);
 void display(node* n);
@@ -147,7 +147,12 @@ struct rbtNode* delete(int var);
 #ifndef _SKIPLIST_H
 #define _SKIPLIST_H
 
+
+
 typedef struct skiplist * Skiplist;
+
+extern Skiplist readyQueue;
+
 /* create an empty skiplist */
 Skiplist skiplistCreate(void);
 
@@ -186,3 +191,4 @@ void  OSTaskDelRecursive (OS_TCB  *p_tcb,
 
 void tickHandlerRecursion();
 void releaseTask(node* taskNode);
+Skiplist minNode = getMinKeyNode();

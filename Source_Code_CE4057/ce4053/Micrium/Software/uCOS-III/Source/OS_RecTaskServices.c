@@ -713,3 +713,43 @@ void releaseTask(node* taskNode){
   CPU_INT32U newRelease = OSTickCtr+taskNode->period;
   insert(newRelease, p_tcb, taskNode->period, NULL); //reinsert into RB-tree
 }
+
+void RMSChed(){
+  
+  
+  
+  CPU_SR_ALLOC();
+
+
+
+    if (OSIntNestingCtr > (OS_NESTING_CTR)0) {              /* ISRs still nested?                                     */
+        return;                                             /* Yes ... only schedule when no nested ISRs              */
+    }
+
+    if (OSSchedLockNestingCtr > (OS_NESTING_CTR)0) {        /* Scheduler locked?                                      */
+        return;                                             /* Yes                                                    */
+    }
+
+    CPU_INT_DIS();
+    
+    Skiplist minNode = getMinKeyNode(); //get highets priority task
+    if(minNode == NULL){
+      return; //no more tasks in readyqueue;
+    }
+    CPU_INT32U taskPrio = minNode->key; //get priority
+    //node* highestPrioNode = remove_front(&minNode->tasks)
+    OS_TCB *highTCB = minNode->tasks->data; //get the TCB of the first task/element of the list of the minNode
+    if (highTCB == OSTCBCurPtr) {                   /* Current task is still highest priority task?           */
+        CPU_INT_EN();                                       /* Yes ... no need to context switch                      */
+        return;
+    }
+
+#if OS_CFG_TASK_PROFILE_EN > 0u
+    OSTCBHighRdyPtr->CtxSwCtr++;                            /* Inc. # of context switches to this task                */
+#endif
+    OSTaskCtxSwCtr++;                                       /* Increment context switch counter                       */
+
+    OS_TASK_SW();                                           /* Perform a task level context switch                    */
+    CPU_INT_EN();
+  
+}

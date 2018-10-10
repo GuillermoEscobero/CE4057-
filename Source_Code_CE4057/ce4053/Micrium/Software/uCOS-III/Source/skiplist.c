@@ -5,9 +5,12 @@
 
 #define MAX_HEIGHT (32)
 
+readyQueue = skiplistCreate();
+
 struct skiplist {
-    int key;
+    int key;                    /*period*/
     int height;                /* number of next pointers */
+    node* tasks;            /*list of tasks with this period*/
     struct skiplist *next[1];  /* first of many */
 };
 
@@ -25,9 +28,14 @@ chooseHeight(void)
 /* create a skiplist node with the given key and height */
 /* does not fill in next pointers */
 static Skiplist
-skiplistCreateNode(int key, int height)
+skiplistCreateNode(CPU_INT32 key, int height, OS_TCB *p_tcb, CPU_INT32U period)
 {
-    Skiplist s;
+  
+    Skiplist s = searchSkiplist(readyQueue, key);
+    if(s!=NULL){
+      append(s->tasks, p_tcb, period, NULL);
+      //insert_after(s->tasks, p_tcb, period, NULL, NULL)
+    }
 
     // assert(height > 0);
     if (height <= 0) {
@@ -58,7 +66,8 @@ skiplistCreateNode(int key, int height)
     }
 
     // assert(s);
-
+    
+    s->tasks = create(p_tcb, period, NULL, NULL);
     s->key = key;
     s->height = height;
 
@@ -122,7 +131,7 @@ skiplistDestroy(Skiplist s)
 
 /* return maximum key less than or equal to key */
 /* or INT_MIN if there is none */
-int
+SkipList
 skiplistSearch(Skiplist s, int key)
 {
     int level;
@@ -132,18 +141,20 @@ skiplistSearch(Skiplist s, int key)
             s = s->next[level];
         }
     }
-
-    return s->key;
+    if(s->key == key)
+      return s;
+    else
+      return NULL;
 }
 
 /* insert a new key into s */
 void
-skiplistInsert(Skiplist s, int key)
+skiplistInsert(Skiplist s, int key, OS_TCB *p_tcb, CPU_INT32U period)
 {
     int level;
     Skiplist elt;
 
-    elt = skiplistCreateNode(key, chooseHeight());
+    elt = skiplistCreateNode(key, chooseHeight(), p_tcb, period);
 
     // assert(elt);
 
@@ -204,7 +215,7 @@ skiplistDelete(Skiplist s, int key)
             s->next[level] = target->next[level];
         }
     }
-
+    OS_ERR err;
     OSMemPut(&CommMem2, (void *)target, &err);
 
     switch(err){
@@ -225,4 +236,8 @@ skiplistDelete(Skiplist s, int key)
     }
 
     // free(target);
+}
+
+struct skiplist* getMinKeyNode(struct skipList* list){
+  return list->next[0]; //get the first element of the first level (level 0)
 }
