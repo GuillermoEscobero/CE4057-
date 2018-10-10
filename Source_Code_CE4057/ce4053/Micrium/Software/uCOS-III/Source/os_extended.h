@@ -61,11 +61,11 @@ typedef struct TaskInfo {
 typedef int ElementType;
 #define NegInfinity (-10000)
 
- 
+
 struct RedBlackNode;
 typedef struct RedBlackNode *Position;
 typedef struct RedBlackNode *RedBlackTree;
- 
+
 RedBlackTree MakeEmpty(RedBlackTree T);
 Position Find(ElementType X, RedBlackTree T);
 Position FindMin(RedBlackTree T);
@@ -76,7 +76,7 @@ RedBlackTree Remove(ElementType X, RedBlackTree T);
 ElementType Retrieve(Position P);
 void PrintTree(RedBlackTree T);
 RedBlackTree retrieveTree(void); //added
- 
+
 #endif  /* _RedBlack_H */
 
 
@@ -86,7 +86,7 @@ RedBlackTree retrieveTree(void); //added
 
 #ifndef _LinkedList_H
 #define _LinkedList_H
- 
+
 //typedef struct node node;
 typedef struct node
 {
@@ -121,13 +121,13 @@ node* reverse(node* head);
 #ifndef _RedBlack2_H
 #define _RedBlack2_H
 
-//struct rbtNode;  
-struct rbtNode {          
+//struct rbtNode;
+struct rbtNode {
   int key; //this should be the releaseTime
   node *tasks; //list of tasks
   char color;
   struct rbtNode *left, *right,*parent;
-};         
+};
 //struct rbtNode* root = NULL; //should maybe not be here
 
 void leftRotate(struct rbtNode *x);
@@ -143,6 +143,28 @@ void color_delete(struct rbtNode *x);
 struct rbtNode* delete(int var);
 
 #endif  /* _RedBlack2_H */
+
+#ifndef _SKIPLIST_H
+#define _SKIPLIST_H
+
+typedef struct skiplist * Skiplist;
+/* create an empty skiplist */
+Skiplist skiplistCreate(void);
+
+/* destroy a skiplist */
+void skiplistDestroy(Skiplist s);
+
+/* return maximum key less than or equal to key */
+/* or INT_MIN if there is none */
+int skiplistSearch(Skiplist s, int key);
+
+/* insert a new key into s */
+void skiplistInsert(Skiplist s, int key);
+
+/* delete a key from s */
+void skiplistDelete(Skiplist s, int key);
+
+#endif /* _SKIPLIST_H */
 
 /*OS_RecTaskServices*/
 void OSTaskCreateRecursive(OS_TCB        *p_tcb,
