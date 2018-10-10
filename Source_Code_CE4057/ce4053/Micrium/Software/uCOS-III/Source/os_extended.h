@@ -149,25 +149,34 @@ struct rbtNode* delete(int var);
 
 
 
+
+struct skiplist {
+    int key;                    /*period*/
+    int height;                /* number of next pointers */
+    node* tasks;            /*list of tasks with this period*/
+    struct skiplist *next[1];  /* first of many */
+};
 typedef struct skiplist * Skiplist;
 
 extern Skiplist readyQueue;
 
 /* create an empty skiplist */
-Skiplist skiplistCreate(void);
+void skiplistCreate(void);
 
 /* destroy a skiplist */
 void skiplistDestroy(Skiplist s);
 
 /* return maximum key less than or equal to key */
 /* or INT_MIN if there is none */
-int skiplistSearch(Skiplist s, int key);
+Skiplist skiplistSearch(Skiplist s, int key);
 
 /* insert a new key into s */
-void skiplistInsert(Skiplist s, int key);
+void skiplistInsert(Skiplist s, int key, OS_TCB *p_tcb, CPU_INT32U period);
 
 /* delete a key from s */
 void skiplistDelete(Skiplist s, int key);
+
+struct skiplist* getMinKeyNode2(struct skiplist* list);
 
 #endif /* _SKIPLIST_H */
 
@@ -191,4 +200,6 @@ void  OSTaskDelRecursive (OS_TCB  *p_tcb,
 
 void tickHandlerRecursion();
 void releaseTask(node* taskNode);
-Skiplist minNode = getMinKeyNode();
+//Skiplist minNode = getMinKeyNode();
+
+void RMSched();

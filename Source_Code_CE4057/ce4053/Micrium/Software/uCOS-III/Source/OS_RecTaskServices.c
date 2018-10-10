@@ -252,7 +252,9 @@ void OSTaskCreateRecursive(OS_TCB        *p_tcb,
 
     OS_CRITICAL_EXIT_NO_SCHED();
 
-    OSSched();
+    //OSSched(); //old scheduler
+    RMSched(); //new scheduler
+    
 }
 
 void OSTaskReCreateRecursive(OS_TCB        *p_tcb,
@@ -503,7 +505,8 @@ void OSTaskReCreateRecursive(OS_TCB        *p_tcb,
 
     OS_CRITICAL_EXIT_NO_SCHED();
 
-    OSSched();
+    //OSSched(); //old scheduler
+    RMSched(); //new scheduler
 }
 
 
@@ -608,7 +611,8 @@ void  OSTaskDelRecursive (OS_TCB  *p_tcb,
     p_tcb->TaskState = (OS_STATE)OS_TASK_STATE_PEND;  //not sure which to choose.
 
     OS_CRITICAL_EXIT_NO_SCHED();
-    OSSched();                                              /* Find new highest priority task                         */
+    //OSSched();                                              /* Find new highest priority task                         */
+    RMSched(); //new scheduler
 
     *p_err = OS_ERR_NONE;
 }
@@ -709,12 +713,13 @@ void releaseTask(node* taskNode){
   
   
   
-  OS_RdyListInsertTail(p_tcb); //make task ready to run
+  //OS_RdyListInsertTail(p_tcb); //make task ready to run
+  skiplistInsert(readyQueue, taskNode->period, p_tcb, taskNode->period); //insert into our readyqueue
   CPU_INT32U newRelease = OSTickCtr+taskNode->period;
   insert(newRelease, p_tcb, taskNode->period, NULL); //reinsert into RB-tree
 }
 
-void RMSChed(){
+void RMSched(){
   
   
   
@@ -732,13 +737,13 @@ void RMSChed(){
 
     CPU_INT_DIS();
     
-    Skiplist minNode = getMinKeyNode(); //get highets priority task
+    Skiplist minNode = getMinKeyNode2(readyQueue); //get highets priority task
     if(minNode == NULL){
       return; //no more tasks in readyqueue;
     }
     CPU_INT32U taskPrio = minNode->key; //get priority
     //node* highestPrioNode = remove_front(&minNode->tasks)
-    OS_TCB *highTCB = minNode->tasks->data; //get the TCB of the first task/element of the list of the minNode
+    OS_TCB *highTCB = minNode->tasks->data; //!!!!Problems here Hard-fault!!!! //get the TCB of the first task/element of the list of the minNode
     if (highTCB == OSTCBCurPtr) {                   /* Current task is still highest priority task?           */
         CPU_INT_EN();                                       /* Yes ... no need to context switch                      */
         return;

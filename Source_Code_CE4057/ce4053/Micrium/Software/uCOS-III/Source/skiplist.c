@@ -5,14 +5,7 @@
 
 #define MAX_HEIGHT (32)
 
-readyQueue = skiplistCreate();
-
-struct skiplist {
-    int key;                    /*period*/
-    int height;                /* number of next pointers */
-    node* tasks;            /*list of tasks with this period*/
-    struct skiplist *next[1];  /* first of many */
-};
+Skiplist readyQueue = NULL;
 
 /* choose a height according to a geometric distribution */
 static int
@@ -28,10 +21,10 @@ chooseHeight(void)
 /* create a skiplist node with the given key and height */
 /* does not fill in next pointers */
 static Skiplist
-skiplistCreateNode(CPU_INT32 key, int height, OS_TCB *p_tcb, CPU_INT32U period)
+skiplistCreateNode(CPU_INT32U key, int height, OS_TCB *p_tcb, CPU_INT32U period)
 {
   
-    Skiplist s = searchSkiplist(readyQueue, key);
+    Skiplist s = skiplistSearch(readyQueue, key);
     if(s!=NULL){
       append(s->tasks, p_tcb, period, NULL);
       //insert_after(s->tasks, p_tcb, period, NULL, NULL)
@@ -75,23 +68,24 @@ skiplistCreateNode(CPU_INT32 key, int height, OS_TCB *p_tcb, CPU_INT32U period)
 }
 
 /* create an empty skiplist */
-Skiplist
-skiplistCreate(void)
+void //Skiplist
+skiplistCreate(void) //remember to call this function at some point in time!! Initializes readyQueue!!
 {
-    Skiplist s;
+    //Skiplist s;
+    //readyQueue = skiplistCreate(); //This is a recursive call?
     int i;
 
     /* s is a dummy head element */
-    s = skiplistCreateNode(INT_MIN, MAX_HEIGHT);
+    readyQueue = skiplistCreateNode(INT_MIN, MAX_HEIGHT, NULL, NULL);//no TCB and no period for head
 
     /* this tracks the maximum height of any node */
-    s->height = 1;
+    readyQueue->height = 1;
 
     for(i = 0; i < MAX_HEIGHT; i++) {
-        s->next[i] = 0;
+        readyQueue->next[i] = 0;
     }
 
-    return s;
+    //return s;
 }
 
 /* free a skiplist */
@@ -131,8 +125,7 @@ skiplistDestroy(Skiplist s)
 
 /* return maximum key less than or equal to key */
 /* or INT_MIN if there is none */
-SkipList
-skiplistSearch(Skiplist s, int key)
+Skiplist skiplistSearch(Skiplist s, int key)
 {
     int level;
 
@@ -238,6 +231,6 @@ skiplistDelete(Skiplist s, int key)
     // free(target);
 }
 
-struct skiplist* getMinKeyNode(struct skipList* list){
+struct skiplist* getMinKeyNode2(struct skiplist* list){
   return list->next[0]; //get the first element of the first level (level 0)
 }
