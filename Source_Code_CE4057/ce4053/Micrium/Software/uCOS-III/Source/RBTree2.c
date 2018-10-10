@@ -102,14 +102,14 @@ void color_insert(struct rbtNode *z){
   root->color = 'b';
 }
 
-void insert(int val, OS_TCB *task, CPU_INT32U period, TCBInfo *tcbInfo){
+void insert(int val, OS_TCB *task, CPU_INT32U period, TaskInfo *taskInfo){
   struct rbtNode *z = searchRB(val);
   if(z!=NULL)
   {
     //printf("\nEntered element already exists in the tree\n");
     //I think this is the case where a node with the given time already exists
     //We have to add the new task to the list of the node with the given time.
-    append(z->tasks, task, period, tcbInfo); //cast pointer to int - remember to cast back
+    append(z->tasks, task, period, taskInfo); //cast pointer to int - remember to cast back
     return;
   }
   struct rbtNode *x, *y;
@@ -135,7 +135,7 @@ void insert(int val, OS_TCB *task, CPU_INT32U period, TCBInfo *tcbInfo){
     exit(0);
   }
   z->key = val;
-  z->tasks = create(task, period, tcbInfo, NULL); //cast pointer to int - remember to cast back
+  z->tasks = create(task, period, taskInfo, NULL); //cast pointer to int - remember to cast back
   z->left = NULL;
   z->right = NULL;
   z->color = 'r';

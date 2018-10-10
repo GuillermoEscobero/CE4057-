@@ -13,7 +13,7 @@ typedef void (*callback)(node* data);
  
     return the newly created node
 */
-node* create(OS_TCB* data, CPU_INT32U period, TCBInfo* tcbInfo, node* next)
+node* create(OS_TCB* data, CPU_INT32U period, TaskInfo* taskInfo, node* next)
 {
     //node* new_node = (node*)malloc(sizeof(node));
     //malloc does not work
@@ -42,7 +42,7 @@ node* create(OS_TCB* data, CPU_INT32U period, TCBInfo* tcbInfo, node* next)
     new_node->data = data; //these four lines does not work as intended. Go through values in debugger!!!!
     new_node->period = period;
     new_node->next = next;
-    new_node->tcbInfo = tcbInfo;
+    new_node->taskInfo = taskInfo;
  
     return new_node;
 }
@@ -50,9 +50,9 @@ node* create(OS_TCB* data, CPU_INT32U period, TCBInfo* tcbInfo, node* next)
 /*
     add a new node at the beginning of the list
 */
-node* prepend(node* head,OS_TCB* data, CPU_INT32U period, TCBInfo* tcbInfo)
+node* prepend(node* head,OS_TCB* data, CPU_INT32U period, TaskInfo* taskInfo)
 {
-    node* new_node = create(data, period, tcbInfo, head);
+    node* new_node = create(data, period, taskInfo, head);
     head = new_node;
     return head;
 }
@@ -60,7 +60,7 @@ node* prepend(node* head,OS_TCB* data, CPU_INT32U period, TCBInfo* tcbInfo)
 /*
     add a new node at the end of the list
 */
-node* append(node* head, OS_TCB* data, CPU_INT32U period, TCBInfo* tcbInfo)
+node* append(node* head, OS_TCB* data, CPU_INT32U period, TaskInfo* taskInfo)
 {
     if(head == NULL)
         return NULL;
@@ -70,7 +70,7 @@ node* append(node* head, OS_TCB* data, CPU_INT32U period, TCBInfo* tcbInfo)
         cursor = cursor->next;
  
     /* create a new node */
-    node* new_node =  create(data, period, tcbInfo, NULL);
+    node* new_node =  create(data, period, taskInfo, NULL);
     cursor->next = new_node;
  
     return head;
@@ -79,7 +79,7 @@ node* append(node* head, OS_TCB* data, CPU_INT32U period, TCBInfo* tcbInfo)
 /*
     insert a new node after the prev node
 */
-node* insert_after(node *head, OS_TCB* data, CPU_INT32U period, TCBInfo* tcbInfo, node* prev)
+node* insert_after(node *head, OS_TCB* data, CPU_INT32U period, TaskInfo* taskInfo, node* prev)
 {
     if(head == NULL || prev == NULL)
         return NULL;
@@ -90,7 +90,7 @@ node* insert_after(node *head, OS_TCB* data, CPU_INT32U period, TCBInfo* tcbInfo
  
     if(cursor != NULL)
     {
-        node* new_node = create(data, period, tcbInfo, cursor->next);
+        node* new_node = create(data, period, taskInfo, cursor->next);
         cursor->next = new_node;
         return head;
     }
@@ -103,14 +103,14 @@ node* insert_after(node *head, OS_TCB* data, CPU_INT32U period, TCBInfo* tcbInfo
 /*
     insert a new node before the nxt node
 */
-node* insert_before(node *head, OS_TCB* data, CPU_INT32U period, TCBInfo* tcbInfo, node* nxt)
+node* insert_before(node *head, OS_TCB* data, CPU_INT32U period, TaskInfo* taskInfo, node* nxt)
 {
     if(nxt == NULL || head == NULL)
         return NULL;
  
     if(head == nxt)
     {
-        head = prepend(head,data, period, tcbInfo);
+        head = prepend(head,data, period, taskInfo);
         return head;
     }
  
@@ -125,7 +125,7 @@ node* insert_before(node *head, OS_TCB* data, CPU_INT32U period, TCBInfo* tcbInf
  
     if(cursor != NULL)
     {
-        node* new_node = create(data, period, tcbInfo, cursor->next);
+        node* new_node = create(data, period, taskInfo, cursor->next);
         cursor->next = new_node;
         return head;
     }

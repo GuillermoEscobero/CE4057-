@@ -202,7 +202,7 @@ void HandleReorient(ElementType Item, RedBlackTree T) {
 }
  
 RedBlackTree
-Insert(ElementType Item, OS_TCB *task, CPU_INT32U period, TCBInfo* tcbInfo, RedBlackTree T) { //added OS_TCB (pointer or not?) and period
+Insert(ElementType Item, OS_TCB *task, CPU_INT32U period, TaskInfo* taskInfo, RedBlackTree T) { //added OS_TCB (pointer or not?) and period
     X = P = GP = T;
     NullNode->ReleaseTime = Item;
     while (X->ReleaseTime != Item) /* Descend down the tree */ {
@@ -221,7 +221,7 @@ Insert(ElementType Item, OS_TCB *task, CPU_INT32U period, TCBInfo* tcbInfo, RedB
         return NullNode; /* Duplicate */
         //I think this is the case where a node with the given time already exists
         //We have to add the new task to the list of the node with the given time.
-        append(X->tasks, task, period, tcbInfo); //cast pointer to int - remember to cast back
+        append(X->tasks, task, period, taskInfo); //cast pointer to int - remember to cast back
  
     X = malloc(sizeof ( struct RedBlackNode));
     if (X == NULL){
@@ -231,7 +231,7 @@ Insert(ElementType Item, OS_TCB *task, CPU_INT32U period, TCBInfo* tcbInfo, RedB
     }
     //creates new node for given time with new list of tasks
     X->ReleaseTime = Item;
-    X->tasks = create(task, period, tcbInfo, NULL); //cast pointer to int - remember to cast back
+    X->tasks = create(task, period, taskInfo, NULL); //cast pointer to int - remember to cast back
     X->ReleaseTime = Item;
     X->Left = X->Right = NullNode;
  

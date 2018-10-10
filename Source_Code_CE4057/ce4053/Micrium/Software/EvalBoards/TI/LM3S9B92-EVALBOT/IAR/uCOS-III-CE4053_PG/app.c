@@ -126,7 +126,8 @@ int  main (void)
   
   int x = sizeof(char); //1 byte
   int y = sizeof(OS_TCB); //140 byte
-  int z = sizeof(TCBInfo); //60 byte
+  //int z = sizeof(TCBInfo); //60 byte
+  int z = sizeof(TaskInfo);
   int v = sizeof(node); //16 bytes
   int w = sizeof(struct rbtNode); //24 bytes
     
@@ -290,6 +291,7 @@ static  void  AppTaskTwo (void  *p_arg)
     
     BSP_LED_Off(0u);
    //OSTaskDel((OS_TCB *)0, &err);
+    //OSTaskDelRecursive((OS_TCB *)0, &err);
 
 }
 
