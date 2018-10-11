@@ -2378,11 +2378,3 @@ ElementType Retrieve(Position P);
 void PrintTree(RedBlackTree T);
 
 #endif */ /* _RedBlack_H */
-
-
-#ifndef _MEMORY_H
-#define _MEMORY_H
-
-extern OS_MEM  CommMem2; //memory heap
-
-#endif /* _MEMORY_H */

@@ -1,5 +1,7 @@
 #include <stdlib.h>
 #include <limits.h>
+#include <stdio.h>
+//#include <string.h>
 
 #include "os_extended.h"
 
@@ -23,12 +25,15 @@ chooseHeight(void)
 static Skiplist
 skiplistCreateNode(CPU_INT32U key, int height, OS_TCB *p_tcb, CPU_INT32U period)
 {
-  
-    Skiplist s = skiplistSearch(readyQueue, key);
+  Skiplist s = NULL;
+  if(readyQueue != NULL){
+    s = skiplistSearch(readyQueue, key);
     if(s!=NULL){
       append(s->tasks, p_tcb, period, NULL);
       //insert_after(s->tasks, p_tcb, period, NULL, NULL)
+      return NULL;
     }
+  }
 
     // assert(height > 0);
     if (height <= 0) {
@@ -60,7 +65,9 @@ skiplistCreateNode(CPU_INT32U key, int height, OS_TCB *p_tcb, CPU_INT32U period)
 
     // assert(s);
     
-    s->tasks = create(p_tcb, period, NULL, NULL);
+    if(readyQueue != NULL){
+      s->tasks = create(p_tcb, period, NULL, NULL);
+    }
     s->key = key;
     s->height = height;
 
@@ -98,7 +105,8 @@ skiplistDestroy(Skiplist s)
 
     while(s) {
         next = s->next[0];
-
+        
+        memset((void *) s, 0, (size_t) BLK_SIZE*sizeof(CPU_INT32U));
         OSMemPut(&CommMem2, (void *)s, &err);
         // free(s);
 
@@ -148,7 +156,9 @@ skiplistInsert(Skiplist s, int key, OS_TCB *p_tcb, CPU_INT32U period)
     Skiplist elt;
 
     elt = skiplistCreateNode(key, chooseHeight(), p_tcb, period);
-
+    if(elt == NULL){
+      return;
+    }
     // assert(elt);
 
     if(elt->height > s->height) {
@@ -209,6 +219,7 @@ skiplistDelete(Skiplist s, int key)
         }
     }
     OS_ERR err;
+    memset((void *) target, 0, (size_t) BLK_SIZE*sizeof(CPU_INT32U));
     OSMemPut(&CommMem2, (void *)target, &err);
 
     switch(err){

@@ -36,7 +36,7 @@
 #include "inc/hw_types.h"
 #include <os.h>
 #include <stdlib.h>
-#include "os_extended.h" //outcomment
+#include "os_extended.h"
 #include "os_cfg_app.h"
 
 /*
@@ -115,7 +115,7 @@ static  void        AppTaskTwo                   (void  *p_arg);
 *********************************************************************************************************
 */
 OS_MEM  CommMem2;
-CPU_INT32U  *p_addr[12][12];          // 16 buffers of 32 words of 32 bits
+CPU_INT32U  *p_addr[N_BLKS][BLK_SIZE];          // 16 buffers of 32 words of 32 bits
 
 int  main (void)
 {
@@ -135,14 +135,41 @@ int  main (void)
     BSP_IntDisAll();                                            /* Disable all interrupts.                              */
     OSInit(&err);                                               /* Init uC/OS-III.                                      */
     
+    
     //OS_MEM *CommMem; //pointer to memory partition
     CPU_CHAR *p_name = "Memory Partition"; //name for memory partition
     //CPU_INT32U  *p_addr[16][32];          // 16 buffers of 32 words of 32 bits 
-    OS_MEM_QTY n_blks = 12; //Probably way to few blocks for containing both RB-tree and linkedList nodes.
-    OS_MEM_SIZE blk_size = 12 * sizeof(CPU_INT32U); //Maybe to small for RB tree or linked list nodes
-    OSMemCreate (&CommMem2, p_name, &p_addr[0][0], n_blks, blk_size, &err);
-  
-      
+    //n_blks = 12; //Probably way to few blocks for containing both RB-tree and linkedList nodes.
+    //blk_size = 12 * sizeof(CPU_INT32U); //Maybe to small for RB tree or linked list nodes
+    OSMemCreate (&CommMem2, p_name, &p_addr[0][0], N_BLKS, BLK_SIZE*sizeof(CPU_INT32U), &err);
+    
+    switch(err){
+      case OS_ERR_NONE:
+        break;
+      case OS_ERR_ILLEGAL_CREATE_RUN_TIME:
+        exit(0);
+        break;
+      case OS_ERR_MEM_CREATE_ISR:
+        exit(0);
+        break;
+      case OS_ERR_MEM_INVALID_BLKS:
+        exit(0);
+        break;
+      case OS_ERR_MEM_INVALID_P_ADDR:
+        exit(0);
+        break;
+      case OS_ERR_MEM_INVALID_SIZE:
+        exit(0);
+        break;
+    }
+    
+    
+    
+    //skiplistCreate(); //intializing skip list
+    
+    
+    
+    /*  
     void* mem = OSMemGet(&CommMem2, &err);
     int u = sizeof(mem); //This has only size 4 bytes (size of void pointer). Not blok size.
     switch(err){
@@ -158,6 +185,7 @@ int  main (void)
         exit(0);
         break;
     }
+*/
     /*
     if(mem==NULL){
       exit(0);

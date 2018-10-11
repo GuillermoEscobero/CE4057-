@@ -233,7 +233,7 @@ void OSTaskCreateRecursive(OS_TCB        *p_tcb,
     
                                                               /* --------------- ADD TASK TO READY LIST --------------- */
     OS_CRITICAL_ENTER();
-    OS_PrioInsert(p_tcb->Prio);
+    //OS_PrioInsert(p_tcb->Prio);
     //RedBlackTree T = retrieveTree(); //retrieve the red-black tree for recursion //no longer needed for new RB-tree
     //Insert(0, p_tcb, T); //we want the task to run at time 0 //no longer needed for new RB-tree
     insert(0, p_tcb, period, taskInfo); //we want the task to run at time 0
@@ -281,6 +281,8 @@ void OSTaskReCreateRecursive(OS_TCB        *p_tcb,
   
       CPU_STK_SIZE   i;
       CPU_INT32U period = (CPU_INT32U) p_ext; //added
+      OS_OPT blah = opt;
+      
       
       OS_ERR  err;
 //      TaskInfo* taskInfo = (TaskInfo*) OSMemGet(&CommMem2, &err);
@@ -435,7 +437,7 @@ void OSTaskReCreateRecursive(OS_TCB        *p_tcb,
                 q_size);
 #endif
 
-    OSTaskCreateHook(p_tcb);                                /* Call user defined hook                                 */
+    //OSTaskCreateHook(p_tcb);                                /* Call user defined hook                                 */
 
     //only for restoring TCB, when releasing
     //OS_ERR  err;
@@ -486,7 +488,7 @@ void OSTaskReCreateRecursive(OS_TCB        *p_tcb,
     
                                                               /* --------------- ADD TASK TO READY LIST --------------- */
     OS_CRITICAL_ENTER();
-    OS_PrioInsert(p_tcb->Prio);
+    //OS_PrioInsert(p_tcb->Prio);
     //RedBlackTree T = retrieveTree(); //retrieve the red-black tree for recursion //no longer needed for new RB-tree
     //Insert(0, p_tcb, T); //we want the task to run at time 0 //no longer needed for new RB-tree
     //insert(0, p_tcb, period, taskInfo); //we want the task to run at time 0
@@ -636,7 +638,9 @@ void tickHandlerRecursion(){
     dispose(minNode->tasks); //remove all elements of the list
     //TODO: remove the list itself
     //TODO: remove the rbtNode
-    delete(minTime); //remove rbtNode from tree (does not free memory)
+    struct rbtNode *rem = delete(minTime); //remove rbtNode from tree (does not free memory
+    OS_ERR err;
+    OSMemPut(&CommMem2,rem,&err);
     minNode = RBFindMin(); //THE problems seem to occur here as we do not retrieve our the correct node.
     if(minNode == NULL){
       break;
@@ -714,14 +718,17 @@ void releaseTask(node* taskNode){
 ////  p_tcb->TimeQuantaCtr=tcbInfo->TimeQuantaCtr;
   
   
-  
+  OS_PrioInsert(p_tcb->Prio);
   OS_RdyListInsertTail(p_tcb); //make task ready to run
   
+  
   //skiplistInsert(readyQueue, taskNode->period, p_tcb, taskNode->period); //insert into our readyqueue
+  
   CPU_INT32U newRelease = OSTickCtr+taskNode->period;
   insert(newRelease, p_tcb, taskNode->period, taskInfo); //reinsert into RB-tree
   
   OSSched(); //OSSemPend does not always schedule
+  //RMSched();
 }
 
 void RMSched(){

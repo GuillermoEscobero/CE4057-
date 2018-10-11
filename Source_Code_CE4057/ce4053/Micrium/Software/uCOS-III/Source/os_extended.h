@@ -23,6 +23,15 @@ typedef struct TaskInfo {
   OS_ERR        *p_err;
 } TaskInfo; 
 
+#ifndef _MEM_H
+#define _MEM_H
+
+#define N_BLKS 12 //Probably way to few blocks for containing both RB-tree and linkedList nodes.
+#define BLK_SIZE 12 //Maybe to small for RB tree or linked list nodes
+extern OS_MEM  CommMem2; //memory heap
+
+
+#endif  /* _MEM_H */
 
 //typedef struct TCBInfo {          
 //  CPU_STK             *StkPtr;                            /* Pointer to current top of stack                        */
