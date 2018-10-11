@@ -37,6 +37,7 @@
 #include <os.h>
 #include <stdlib.h>
 #include "os_extended.h" //outcomment
+#include "os_cfg_app.h"
 
 /*
 *********************************************************************************************************
@@ -221,7 +222,8 @@ static  void  AppTaskStart (void  *p_arg)
     //OSTaskCreate((OS_TCB     *)&AppTaskTwoTCB, (CPU_CHAR   *)"App Task Two", (OS_TASK_PTR ) AppTaskTwo, (void       *) 0, (OS_PRIO     ) APP_TASK_TWO_PRIO, (CPU_STK    *)&AppTaskTwoStk[0], (CPU_STK_SIZE) APP_TASK_TWO_STK_SIZE / 10u, (CPU_STK_SIZE) APP_TASK_TWO_STK_SIZE, (OS_MSG_QTY  ) 0u, (OS_TICK     ) 0u, (void       *) (CPU_INT32U) 2, (OS_OPT      )(OS_OPT_TASK_STK_CHK | OS_OPT_TASK_STK_CLR), (OS_ERR     *)&err);
     
     
-    CPU_INT32U period = 5*ONESECONDTICK;
+    //CPU_INT32U period = 5*ONESECONDTICK;
+    CPU_INT32U period = 5*OS_CFG_TICK_RATE_HZ;
     OSTaskCreateRecursive((OS_TCB     *)&AppTaskThreeTCB, (CPU_CHAR   *)"App Task three", (OS_TASK_PTR ) AppTaskTwo, (void       *) 0, (OS_PRIO     ) APP_TASK_THREE_PRIO, (CPU_STK    *)&AppTaskThreeStk[0], (CPU_STK_SIZE) APP_TASK_THREE_STK_SIZE / 10u, (CPU_STK_SIZE) APP_TASK_THREE_STK_SIZE, (OS_MSG_QTY  ) 0u, (OS_TICK     ) 0u, (void       *) (CPU_INT32U) period, (OS_OPT      )(OS_OPT_TASK_STK_CHK | OS_OPT_TASK_STK_CLR), (OS_ERR     *)&err);
     
     /* Delete this task */
@@ -291,7 +293,7 @@ static  void  AppTaskTwo (void  *p_arg)
     
     BSP_LED_Off(0u);
    //OSTaskDel((OS_TCB *)0, &err);
-    //OSTaskDelRecursive((OS_TCB *)0, &err);
+    OSTaskDelRecursive((OS_TCB *)0, &err);
 
 }
 

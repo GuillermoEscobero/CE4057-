@@ -252,8 +252,8 @@ void OSTaskCreateRecursive(OS_TCB        *p_tcb,
 
     OS_CRITICAL_EXIT_NO_SCHED();
 
-    //OSSched(); //old scheduler
-    RMSched(); //new scheduler
+    OSSched(); //old scheduler
+    //RMSched(); //new scheduler
     
 }
 
@@ -283,19 +283,19 @@ void OSTaskReCreateRecursive(OS_TCB        *p_tcb,
       CPU_INT32U period = (CPU_INT32U) p_ext; //added
       
       OS_ERR  err;
-      TaskInfo* taskInfo = (TaskInfo*) OSMemGet(&CommMem2, &err);
-      taskInfo->p_tcb = p_tcb;
-      taskInfo->p_name = p_name;
-      taskInfo->p_task = p_task;
-      taskInfo->p_arg = p_arg;
-      taskInfo->prio = prio;
-      taskInfo->p_stk_base = p_stk_base;
-      taskInfo->stk_limit = stk_limit;
-      taskInfo->stk_size = stk_size;
-      taskInfo->q_size = q_size;
-      taskInfo->time_quanta = time_quanta;
-      taskInfo->p_ext = p_ext;
-      taskInfo->opt = opt;
+//      TaskInfo* taskInfo = (TaskInfo*) OSMemGet(&CommMem2, &err);
+//      taskInfo->p_tcb = p_tcb;
+//      taskInfo->p_name = p_name;
+//      taskInfo->p_task = p_task;
+//      taskInfo->p_arg = p_arg;
+//      taskInfo->prio = prio;
+//      taskInfo->p_stk_base = p_stk_base;
+//      taskInfo->stk_limit = stk_limit;
+//      taskInfo->stk_size = stk_size;
+//      taskInfo->q_size = q_size;
+//      taskInfo->time_quanta = time_quanta;
+//      taskInfo->p_ext = p_ext;
+//      taskInfo->opt = opt;
     
 
 
@@ -505,8 +505,8 @@ void OSTaskReCreateRecursive(OS_TCB        *p_tcb,
 
     OS_CRITICAL_EXIT_NO_SCHED();
 
-    //OSSched(); //old scheduler
-    RMSched(); //new scheduler
+    OSSched(); //old scheduler //this one probably does not make sense, as have not put into the readyqueue yet.
+    //RMSched(); //new scheduler
 }
 
 
@@ -599,20 +599,20 @@ void  OSTaskDelRecursive (OS_TCB  *p_tcb,
     (void)OS_MsgQFreeAll(&p_tcb->MsgQ);                     /* Free task's message queue messages                     */
 #endif
 
-    OSTaskDelHook(p_tcb);                                   /* Call user defined hook                                 */
+    //OSTaskDelHook(p_tcb);                                   /* Call user defined hook                                 */
 
 #if OS_CFG_DBG_EN > 0u
     OS_TaskDbgListRemove(p_tcb);
 #endif
-    OSTaskQty--;                                            /* One less task being managed                            */
+    //OSTaskQty--;                                            /* One less task being managed                            */
 
-    OS_TaskInitTCB(p_tcb);                                  /* Initialize the TCB to default values                   */
+    //OS_TaskInitTCB(p_tcb);                                  /* Initialize the TCB to default values                   */
     //p_tcb->TaskState = (OS_STATE)OS_TASK_STATE_DEL;         /* Indicate that the task was deleted                     */
-    p_tcb->TaskState = (OS_STATE)OS_TASK_STATE_PEND;  //not sure which to choose.
+    //p_tcb->TaskState = (OS_STATE)OS_TASK_STATE_PEND;  //not sure which to choose.
 
     OS_CRITICAL_EXIT_NO_SCHED();
-    //OSSched();                                              /* Find new highest priority task                         */
-    RMSched(); //new scheduler
+    OSSched();                                              /* Find new highest priority task                         */
+    //RMSched(); //new scheduler
 
     *p_err = OS_ERR_NONE;
 }
@@ -650,6 +650,8 @@ void releaseTask(node* taskNode){
   TaskInfo* taskInfo = taskNode->taskInfo;
   p_tcb->TaskState = 0; //ready
   
+  //replacing below call
+  //p_tcb->StkBasePtr=taskInfo->p_stk_base
   OSTaskReCreateRecursive(
       (OS_TCB     *) taskInfo->p_tcb,
       (CPU_CHAR   *) taskInfo->p_name,
@@ -713,10 +715,13 @@ void releaseTask(node* taskNode){
   
   
   
-  //OS_RdyListInsertTail(p_tcb); //make task ready to run
-  skiplistInsert(readyQueue, taskNode->period, p_tcb, taskNode->period); //insert into our readyqueue
+  OS_RdyListInsertTail(p_tcb); //make task ready to run
+  
+  //skiplistInsert(readyQueue, taskNode->period, p_tcb, taskNode->period); //insert into our readyqueue
   CPU_INT32U newRelease = OSTickCtr+taskNode->period;
-  insert(newRelease, p_tcb, taskNode->period, NULL); //reinsert into RB-tree
+  insert(newRelease, p_tcb, taskNode->period, taskInfo); //reinsert into RB-tree
+  
+  OSSched(); //OSSemPend does not always schedule
 }
 
 void RMSched(){
