@@ -417,7 +417,7 @@ void  OS_TickListUpdate (void)
 
     OS_CRITICAL_ENTER();
     int blah = OSTickCtr;
-    tickHandlerRecursion(); //added
+    
     
     
     ts_start = OS_TS_GET();
@@ -504,6 +504,9 @@ void  OS_TickListUpdate (void)
             done  = DEF_TRUE;
         }
     }
+    
+    tickHandlerRecursion(); //added
+    
     ts_end = OS_TS_GET() - ts_start;                                   /* Measure execution time of tick task         */
     if (ts_end > OSTickTaskTimeMax) {
         OSTickTaskTimeMax = ts_end;

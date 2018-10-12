@@ -236,7 +236,7 @@ void OSTaskCreateRecursive(OS_TCB        *p_tcb,
     //OS_PrioInsert(p_tcb->Prio);
     //RedBlackTree T = retrieveTree(); //retrieve the red-black tree for recursion //no longer needed for new RB-tree
     //Insert(0, p_tcb, T); //we want the task to run at time 0 //no longer needed for new RB-tree
-    insert(0, p_tcb, period, taskInfo); //we want the task to run at time 0
+    insert(50, p_tcb, period, taskInfo); //we want the task to run at time 0
     //OS_RdyListInsertTail(p_tcb); //We will have to to call this function at the right times (when task should be repeated)
 
 #if OS_CFG_DBG_EN > 0u
@@ -630,22 +630,27 @@ void tickHandlerRecursion(){
   struct rbtNode *minNode = RBFindMin();
   int minTime = minNode->key;
   int x = OSTickCtr;
-  while(minTime <= OSTickCtr){
+  if(minTime == OSTickCtr){
     //traverse the list of the node and make the tasks in the list ready
     //reinsert each task into the redblack tree at its new time
     //and free the redblacknode, the linked list and all the nodes of the linked list
+    struct rbtNode *rem = delete(minTime); //remove rbtNode from tree (does not free memory
     traverse(minNode->tasks, releaseTask); //f should be the function that does something for each node in the list of tasks.
     dispose(minNode->tasks); //remove all elements of the list
     //TODO: remove the list itself
     //TODO: remove the rbtNode
-    struct rbtNode *rem = delete(minTime); //remove rbtNode from tree (does not free memory
+    
     OS_ERR err;
-    OSMemPut(&CommMem2,rem,&err);
+    if(rem != NULL){
+      OSMemPut(&CommMem2,rem,&err);
+    }
+    /*
     minNode = RBFindMin(); //THE problems seem to occur here as we do not retrieve our the correct node.
     if(minNode == NULL){
       break;
     }
     minTime = minNode->key;
+*/
   }
 }
 
@@ -655,7 +660,15 @@ void releaseTask(node* taskNode){
   p_tcb->TaskState = 0; //ready
   
   //replacing below call
-  //p_tcb->StkBasePtr=taskInfo->p_stk_base
+  //p_tcb->StkBasePtr=taskInfo->p_stk_base;
+  //p_tcb->StkPtr = p_tcb->StkBasePtr+48;
+  p_tcb->StkPtr = OSTaskStkInit(p_tcb->TaskEntryAddr,
+                         p_tcb->TaskEntryArg,
+                         p_tcb->StkBasePtr,
+                         p_tcb->StkLimitPtr,
+                         p_tcb->StkSize,
+                         p_tcb->Opt);
+    /*
   OSTaskReCreateRecursive(
       (OS_TCB     *) taskInfo->p_tcb,
       (CPU_CHAR   *) taskInfo->p_name,
@@ -671,7 +684,7 @@ void releaseTask(node* taskNode){
       (OS_OPT      ) taskInfo->opt,
       (OS_ERR     *) taskInfo->p_err
       );
-                        
+      */                  
         //                (OS_TCB     *)&AppTaskThreeTCB, (CPU_CHAR   *)"App Task three", (OS_TASK_PTR ) AppTaskTwo, (void       *) 0, (OS_PRIO     ) APP_TASK_THREE_PRIO, (CPU_STK    *)&AppTaskThreeStk[0], (CPU_STK_SIZE) APP_TASK_THREE_STK_SIZE / 10u, (CPU_STK_SIZE) APP_TASK_THREE_STK_SIZE, (OS_MSG_QTY  ) 0u, (OS_TICK     ) 0u, (void       *) (CPU_INT32U) period, (OS_OPT      )(OS_OPT_TASK_STK_CHK | OS_OPT_TASK_STK_CLR), (OS_ERR     *)&err);
     
   
@@ -727,7 +740,7 @@ void releaseTask(node* taskNode){
   CPU_INT32U newRelease = OSTickCtr+taskNode->period;
   insert(newRelease, p_tcb, taskNode->period, taskInfo); //reinsert into RB-tree
   
-  OSSched(); //OSSemPend does not always schedule
+  //OSSched(); //OSSemPend does not always schedule
   //RMSched();
 }
 

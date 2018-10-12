@@ -339,7 +339,7 @@ struct rbtNode* delete(int var){
   if((z->left ==NULL ) &&(z->right==NULL) && (z->key==var)){
     root=NULL;
     //printf("\nRBTREE is empty\n");
-    return NULL;
+    return z;
   }
 
   while(z->key !=var && z!=NULL){
