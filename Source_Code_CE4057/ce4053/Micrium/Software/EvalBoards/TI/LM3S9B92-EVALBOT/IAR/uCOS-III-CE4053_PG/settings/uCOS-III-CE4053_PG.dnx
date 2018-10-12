@@ -21,7 +21,7 @@
         <StopOnThrow>_ 0</StopOnThrow>
     </Exceptions>
     <DebugChecksum>
-        <Checksum>1911836721</Checksum>
+        <Checksum>2659106980</Checksum>
     </DebugChecksum>
     <CallStack>
         <ShowArgs>0</ShowArgs>
@@ -48,12 +48,6 @@
         <Fmt0>OS_TCB-PendStatus	3	0</Fmt0>
         <Fmt1>OS_TCB-Prio	3	0</Fmt1>
     </struct_types>
-    <CallStackLog>
-        <Enabled>0</Enabled>
-    </CallStackLog>
-    <CallStackStripe>
-        <ShowTiming>1</ShowTiming>
-    </CallStackStripe>
     <DisassembleMode>
         <mode>0</mode>
     </DisassembleMode>
@@ -61,12 +55,11 @@
         <Bp0>_ "STD_CODE" "{C:\Users\ankita003\Documents\CE4053\ce4053\Micrium\Software\uCOS-III\Source\os_mutex.c}.827.5" 0 0 0 0 "" 0 ""</Bp0>
         <Bp1>_ "STD_CODE" "{C:\Users\ankita003\Documents\CE4053\ce4053\Micrium\Software\uCOS-III\Source\os_task.c}.341.5" 0 0 0 0 "" 0 ""</Bp1>
         <Bp2>_ "STD_CODE" "{C:\Users\ankita003\Documents\CE4053\ce4053\Micrium\Software\uCOS-III\Source\os_mutex.c}.407.9" 0 0 0 0 "" 0 ""</Bp2>
-        <Bp3>_ "STD_CODE" "{C:\Users\ahj\Desktop\CE4057\Source_Code_CE4057\ce4053\Micrium\Software\uCOS-III\Source\OS_RecTaskServices.c}.239.5" 1 0 0 0 "" 0 ""</Bp3>
-        <Bp4>_ "STD_CODE" "{C:\Users\ahj\Desktop\CE4057\Source_Code_CE4057\ce4053\Micrium\Software\uCOS-III\Source\RBTree2.c}.138.3" 1 0 0 0 "" 0 ""</Bp4>
-        <Bp5>_ "STD_CODE" "{C:\Users\ahj\Desktop\CE4057\Source_Code_CE4057\ce4053\Micrium\Software\uCOS-III\Source\OS_RecTaskServices.c}.740.14" 1 0 0 0 "" 0 ""</Bp5>
-        <Bp6>_ "STD_CODE" "{C:\Users\ahj\Desktop\CE4057\Source_Code_CE4057\ce4053\Micrium\Software\uCOS-III\Source\OS_RecTaskServices.c}.637.27" 1 0 0 0 "" 0 ""</Bp6>
-        <Bp7>_ "STD_CODE" "{C:\Users\ahj\Desktop\CE4057\Source_Code_CE4057\ce4053\Micrium\Software\uCOS-III\Source\OS_RecTaskServices.c}.664.5" 1 0 0 0 "" 0 ""</Bp7>
-        <Count>8</Count>
+        <Bp3>_ "STD_CODE" "{C:\Users\ahj\Desktop\CE4057\Source_Code_CE4057\ce4053\Micrium\Software\uCOS-III\Source\OS_RecTaskServices.c}.763.3" 1 0 0 0 "" 0 ""</Bp3>
+        <Bp4>_ "STD_CODE" "{C:\Users\ahj\Desktop\CE4057\Source_Code_CE4057\ce4053\Micrium\Software\uCOS-III\Source\OS_RecTaskServices.c}.645.5" 1 0 0 0 "" 0 ""</Bp4>
+        <Bp5>_ "STD_CODE" "{$PROJ_DIR$\app.c}.300.5" 1 0 0 0 "" 0 ""</Bp5>
+        <Bp6>_ "STD_CODE" "{C:\Users\ahj\Desktop\CE4057\Source_Code_CE4057\ce4053\Micrium\Software\uCOS-III\Source\OS_RecTaskServices.c}.239.5" 1 0 0 0 "" 0 ""</Bp6>
+        <Count>7</Count>
     </Breakpoints>
     <LogFile>
         <LoggingEnabled>_ 0</LoggingEnabled>
@@ -77,6 +70,12 @@
         <Count>0</Count>
         <SuppressDialog>0</SuppressDialog>
     </Aliases>
+    <CallStackLog>
+        <Enabled>0</Enabled>
+    </CallStackLog>
+    <CallStackStripe>
+        <ShowTiming>1</ShowTiming>
+    </CallStackStripe>
     <TermIOLog>
         <LoggingEnabled>_ 0</LoggingEnabled>
         <LogFile>_ ""</LogFile>

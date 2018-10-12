@@ -51,7 +51,15 @@
 
 #define  APP_TASK_ONE_PRIO                              2u
 #define  APP_TASK_TWO_PRIO                              3u
-#define  APP_TASK_THREE_PRIO                            2u
+#define  APP_TASK_THREE_PRIO                            4u
+
+
+
+#define  APP_TASK_BLINK_PRIO                            5u
+#define  APP_TASK_FORWARD_PRIO                          6u
+#define  APP_TASK_BACKWARD_PRIO                         7u
+#define  APP_TASK_LEFT_PRIO                             8u
+#define  APP_TASK_RIGHT_PRIO                            9u
 
 
 
@@ -66,6 +74,14 @@
 #define  APP_TASK_ONE_STK_SIZE                      128u
 #define  APP_TASK_TWO_STK_SIZE                      128u
 #define  APP_TASK_THREE_STK_SIZE                    128u
+
+//#define  APP_TASK_BLINK_STK_SIZE                    128u
+//#define  APP_TASK_FORWARD_STK_SIZE                  128u
+//#define  APP_TASK_BACKWARD_STK_SIZE                 128u
+//#define  APP_TASK_LEFT_STK_SIZE                     128u
+//#define  APP_TASK_RIGHT_STK_SIZE                    128u
+
+#define  APP_TASK_STD_STK_SIZE                    128u
 
 
 /*

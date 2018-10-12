@@ -78,6 +78,25 @@ static  CPU_STK      AppTaskTwoStk[APP_TASK_TWO_STK_SIZE];
 static  OS_TCB       AppTaskThreeTCB;
 static  CPU_STK      AppTaskThreeStk[APP_TASK_THREE_STK_SIZE];
 
+static CPU_INT32U periodBlink = 5*OS_CFG_TICK_RATE_HZ;
+static CPU_INT32U periodForward = 10*OS_CFG_TICK_RATE_HZ;
+static CPU_INT32U periodBackward = 17*OS_CFG_TICK_RATE_HZ;
+static CPU_INT32U periodLeft = 25*OS_CFG_TICK_RATE_HZ;
+static CPU_INT32U periodRight = 47*OS_CFG_TICK_RATE_HZ;
+
+
+static  OS_TCB       AppTaskBlinkTCB;
+static  CPU_STK      AppTaskBlinkStk[APP_TASK_STD_STK_SIZE];
+static  OS_TCB       AppTaskForwardTCB;
+static  CPU_STK      AppTaskForwardStk[APP_TASK_STD_STK_SIZE];
+static  OS_TCB       AppTaskBackwardTCB;
+static  CPU_STK      AppTaskBackwardStk[APP_TASK_STD_STK_SIZE];
+static  OS_TCB       AppTaskLeftTCB;
+static  CPU_STK      AppTaskLeftStk[APP_TASK_STD_STK_SIZE];
+static  OS_TCB       AppTaskRightTCB;
+static  CPU_STK      AppTaskRightStk[APP_TASK_STD_STK_SIZE];
+
+
 CPU_INT32U      iCnt = 0;
 CPU_INT08U      Left_tgt;
 CPU_INT08U      Right_tgt;
@@ -100,6 +119,12 @@ static  void        AppRobotMotorDriveSensorEnable    ();
 static  void        AppTaskStart                 (void  *p_arg);
 static  void        AppTaskOne                   (void  *p_arg);
 static  void        AppTaskTwo                   (void  *p_arg);
+
+static  void        LEDBlink                     (void  *p_arg);
+static  void        moveForward                  (void  *p_arg);
+static  void        moveBackward                 (void  *p_arg);
+static  void        leftTurn                     (void  *p_arg);
+static  void        rightTurn                    (void  *p_arg);
 
 
 /*
@@ -251,8 +276,25 @@ static  void  AppTaskStart (void  *p_arg)
     
     
     //CPU_INT32U period = 5*ONESECONDTICK;
-    CPU_INT32U period = 5*OS_CFG_TICK_RATE_HZ;
-    OSTaskCreateRecursive((OS_TCB     *)&AppTaskThreeTCB, (CPU_CHAR   *)"App Task three", (OS_TASK_PTR ) AppTaskTwo, (void       *) 0, (OS_PRIO     ) APP_TASK_THREE_PRIO, (CPU_STK    *)&AppTaskThreeStk[0], (CPU_STK_SIZE) APP_TASK_THREE_STK_SIZE / 10u, (CPU_STK_SIZE) APP_TASK_THREE_STK_SIZE, (OS_MSG_QTY  ) 0u, (OS_TICK     ) 0u, (void       *) (CPU_INT32U) period, (OS_OPT      )(OS_OPT_TASK_STK_CHK | OS_OPT_TASK_STK_CLR), (OS_ERR     *)&err);
+    //CPU_INT32U period = 5*OS_CFG_TICK_RATE_HZ;
+    //OSTaskCreateRecursive((OS_TCB     *)&AppTaskThreeTCB, (CPU_CHAR   *)"App Task three", (OS_TASK_PTR ) AppTaskTwo, (void       *) 0, (OS_PRIO     ) APP_TASK_THREE_PRIO, (CPU_STK    *)&AppTaskThreeStk[0], (CPU_STK_SIZE) APP_TASK_THREE_STK_SIZE / 10u, (CPU_STK_SIZE) APP_TASK_THREE_STK_SIZE, (OS_MSG_QTY  ) 0u, (OS_TICK     ) 0u, (void       *) (CPU_INT32U) period, (OS_OPT      )(OS_OPT_TASK_STK_CHK | OS_OPT_TASK_STK_CLR), (OS_ERR     *)&err);
+    
+    
+//    CPU_INT32U APP_TASK_BLINK_PRIO  = periodBlink;
+//    CPU_INT32U APP_TASK_FORWARD_PRIO = periodForward;
+//    CPU_INT32U APP_TASK_BACKWARD_PRIO = periodBackward;
+//    CPU_INT32U APP_TASK_LEFT_PRIO = periodLeft;
+//    CPU_INT32U APP_TASK_RIGHT_PRIO = periodRight;
+
+    OSTaskCreateRecursive((OS_TCB     *)&AppTaskBlinkTCB, (CPU_CHAR   *)"App Task blink", (OS_TASK_PTR ) LEDBlink, (void       *) 0, (OS_PRIO     ) APP_TASK_BLINK_PRIO, (CPU_STK    *)&AppTaskBlinkStk[0], (CPU_STK_SIZE) APP_TASK_STD_STK_SIZE / 10u, (CPU_STK_SIZE) APP_TASK_STD_STK_SIZE, (OS_MSG_QTY  ) 0u, (OS_TICK     ) 0u, (void       *) (CPU_INT32U) periodBlink, (OS_OPT      )(OS_OPT_TASK_STK_CHK | OS_OPT_TASK_STK_CLR), (OS_ERR     *)&err);
+    OSTaskCreateRecursive((OS_TCB     *)&AppTaskForwardTCB, (CPU_CHAR   *)"App Task forward", (OS_TASK_PTR ) moveForward, (void       *) 0, (OS_PRIO     ) APP_TASK_FORWARD_PRIO, (CPU_STK    *)&AppTaskForwardStk[0], (CPU_STK_SIZE) APP_TASK_STD_STK_SIZE / 10u, (CPU_STK_SIZE) APP_TASK_STD_STK_SIZE, (OS_MSG_QTY  ) 0u, (OS_TICK     ) 0u, (void       *) (CPU_INT32U) periodForward, (OS_OPT      )(OS_OPT_TASK_STK_CHK | OS_OPT_TASK_STK_CLR), (OS_ERR     *)&err);
+    OSTaskCreateRecursive((OS_TCB     *)&AppTaskBackwardTCB, (CPU_CHAR   *)"App Task backward", (OS_TASK_PTR ) moveBackward, (void       *) 0, (OS_PRIO     ) APP_TASK_BACKWARD_PRIO, (CPU_STK    *)&AppTaskBackwardStk[0], (CPU_STK_SIZE) APP_TASK_STD_STK_SIZE / 10u, (CPU_STK_SIZE) APP_TASK_STD_STK_SIZE, (OS_MSG_QTY  ) 0u, (OS_TICK     ) 0u, (void       *) (CPU_INT32U) periodBackward, (OS_OPT      )(OS_OPT_TASK_STK_CHK | OS_OPT_TASK_STK_CLR), (OS_ERR     *)&err);
+    OSTaskCreateRecursive((OS_TCB     *)&AppTaskLeftTCB, (CPU_CHAR   *)"App Task left", (OS_TASK_PTR ) leftTurn, (void       *) 0, (OS_PRIO     ) APP_TASK_LEFT_PRIO, (CPU_STK    *)&AppTaskLeftStk[0], (CPU_STK_SIZE) APP_TASK_STD_STK_SIZE / 10u, (CPU_STK_SIZE) APP_TASK_STD_STK_SIZE, (OS_MSG_QTY  ) 0u, (OS_TICK     ) 0u, (void       *) (CPU_INT32U) periodLeft, (OS_OPT      )(OS_OPT_TASK_STK_CHK | OS_OPT_TASK_STK_CLR), (OS_ERR     *)&err);
+    OSTaskCreateRecursive((OS_TCB     *)&AppTaskRightTCB, (CPU_CHAR   *)"App Task right", (OS_TASK_PTR ) rightTurn, (void       *) 0, (OS_PRIO     ) APP_TASK_RIGHT_PRIO, (CPU_STK    *)&AppTaskRightStk[0], (CPU_STK_SIZE) APP_TASK_STD_STK_SIZE / 10u, (CPU_STK_SIZE) APP_TASK_STD_STK_SIZE, (OS_MSG_QTY  ) 0u, (OS_TICK     ) 0u, (void       *) (CPU_INT32U) periodRight, (OS_OPT      )(OS_OPT_TASK_STK_CHK | OS_OPT_TASK_STK_CLR), (OS_ERR     *)&err);
+    
+    
+    
+    
     
     /* Delete this task */
     OSTaskDel((OS_TCB *)0, &err);
@@ -295,6 +337,43 @@ static  void  AppTaskOne (void  *p_arg)
     RoboTurn(-1, 16, 50);
     OSTaskDel((OS_TCB *)0, &err);   
 
+}
+
+static void LEDBlink(void  *p_arg){
+  OS_ERR err;
+  CPU_INT32U  i,j=0;
+  BSP_LED_Off(0u);
+  BSP_LED_On(0u);
+      for(i=0; i <ONESECONDTICK/2; i++)
+         j = ((i * 2)+j);
+  BSP_LED_Off(0u);
+  
+  OSTaskDelRecursive((OS_TCB *)0, &err);
+}
+
+
+static void moveForward(void  *p_arg){
+  OS_ERR err;
+  RoboTurn(FRONT, 8, 50);
+  OSTaskDelRecursive((OS_TCB *)0, &err);
+}
+
+static void moveBackward(void  *p_arg){
+  OS_ERR err;
+  RoboTurn(BACK, 8, 50);
+  OSTaskDelRecursive((OS_TCB *)0, &err);
+}
+
+static void leftTurn(void  *p_arg){
+  OS_ERR err;
+  RoboTurn(LEFT_SIDE, 9, 50);
+  OSTaskDelRecursive((OS_TCB *)0, &err);
+}
+
+static void rightTurn(void  *p_arg){
+  OS_ERR err;
+  RoboTurn(RIGHT_SIDE, 9, 50);
+  OSTaskDelRecursive((OS_TCB *)0, &err);
 }
 
 

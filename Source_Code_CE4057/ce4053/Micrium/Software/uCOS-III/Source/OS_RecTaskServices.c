@@ -635,6 +635,12 @@ void tickHandlerRecursion(){
     //reinsert each task into the redblack tree at its new time
     //and free the redblacknode, the linked list and all the nodes of the linked list
     struct rbtNode *rem = delete(minTime); //remove rbtNode from tree (does not free memory
+    
+    
+    
+    
+    
+    
     traverse(minNode->tasks, releaseTask); //f should be the function that does something for each node in the list of tasks.
     dispose(minNode->tasks); //remove all elements of the list
     //TODO: remove the list itself
@@ -643,6 +649,22 @@ void tickHandlerRecursion(){
     OS_ERR err;
     if(rem != NULL){
       OSMemPut(&CommMem2,rem,&err);
+      switch(err){
+      case OS_ERR_NONE:
+        break;
+      case OS_ERR_MEM_FULL:
+        exit(0);
+        break;
+      case OS_ERR_MEM_INVALID_P_BLK:
+        exit(0);
+        break;
+      case OS_ERR_MEM_INVALID_P_MEM:
+        exit(0);
+        break;
+      case OS_ERR_OBJ_TYPE:
+        exit(0);
+        break;
+      }
     }
     /*
     minNode = RBFindMin(); //THE problems seem to occur here as we do not retrieve our the correct node.

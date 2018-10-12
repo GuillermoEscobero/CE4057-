@@ -221,7 +221,6 @@ skiplistDelete(Skiplist s, int key)
     OS_ERR err;
     memset((void *) target, 0, (size_t) BLK_SIZE*sizeof(CPU_INT32U));
     OSMemPut(&CommMem2, (void *)target, &err);
-
     switch(err){
       case OS_ERR_NONE:
         break;

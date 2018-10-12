@@ -290,11 +290,44 @@ void dispose(node *head)
     {
         cursor = head->next;
         head->next = NULL;
+        OSMemPut(&CommMem2,head,&err); //commMem2 is the memory partition
+            switch(err){
+              case OS_ERR_NONE:
+                break;
+              case OS_ERR_MEM_FULL:
+                exit(0);
+                break;
+              case OS_ERR_MEM_INVALID_P_BLK:
+                exit(0);
+                break;
+              case OS_ERR_MEM_INVALID_P_MEM:
+                exit(0);
+                break;
+              case OS_ERR_OBJ_TYPE:
+                exit(0);
+                break;
+            }
         while(cursor != NULL)
         {
             tmp = cursor->next;
             //free(cursor); //we should use OSMemPut here instead
             OSMemPut(&CommMem2,cursor,&err); //commMem2 is the memory partition
+            switch(err){
+              case OS_ERR_NONE:
+                break;
+              case OS_ERR_MEM_FULL:
+                exit(0);
+                break;
+              case OS_ERR_MEM_INVALID_P_BLK:
+                exit(0);
+                break;
+              case OS_ERR_MEM_INVALID_P_MEM:
+                exit(0);
+                break;
+              case OS_ERR_OBJ_TYPE:
+                exit(0);
+                break;
+            }
             cursor = tmp;
         }
     }
