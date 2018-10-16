@@ -133,7 +133,8 @@ void  OSTimeDly (OS_TICK   dly,
     }
     OS_RdyListRemove(OSTCBCurPtr);                          /* Remove current task from ready list                    */
     OS_CRITICAL_EXIT_NO_SCHED();
-    OSSched();                                              /* Find next task to run!                                 */
+    //OSSched();                                              /* Find next task to run!                                 */
+    RMSched();
    *p_err = OS_ERR_NONE;
 }
 
@@ -314,7 +315,8 @@ void  OSTimeDlyHMSM (CPU_INT16U  hours,
         }
         OS_RdyListRemove(OSTCBCurPtr);                      /* Remove current task from ready list                    */
         OS_CRITICAL_EXIT_NO_SCHED();
-        OSSched();                                          /* Find next task to run!                                 */
+        //OSSched();                                          /* Find next task to run!                                 */
+        RMSched();
        *p_err = OS_ERR_NONE;
     } else {
        *p_err = OS_ERR_TIME_ZERO_DLY;
@@ -428,7 +430,8 @@ void  OSTimeDlyResume (OS_TCB  *p_tcb,
              break;
     }
 
-    OSSched();
+    //OSSched();
+    RMSched();
 }
 #endif
 /*$PAGE*/

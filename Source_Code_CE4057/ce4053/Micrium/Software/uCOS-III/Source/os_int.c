@@ -287,7 +287,8 @@ void  OS_IntQTask (void *p_arg)
                 OSRdyList[0].TailPtr    = (OS_TCB   *)0;
                 OS_PrioRemove(0u);                          /* Remove from the priority table                         */
                 CPU_CRITICAL_EXIT();
-                OSSched();
+                //OSSched();
+                RMSched();
                 done = DEF_TRUE;                            /* No more entries in the queue, we are done              */
             } else {
                 ts_start = OS_TS_GET();

@@ -21,7 +21,7 @@
         <StopOnThrow>_ 0</StopOnThrow>
     </Exceptions>
     <DebugChecksum>
-        <Checksum>2659106980</Checksum>
+        <Checksum>3714980713</Checksum>
     </DebugChecksum>
     <CallStack>
         <ShowArgs>0</ShowArgs>
@@ -59,8 +59,13 @@
         <Bp4>_ "STD_CODE" "{C:\Users\ahj\Desktop\CE4057\Source_Code_CE4057\ce4053\Micrium\Software\uCOS-III\Source\OS_RecTaskServices.c}.645.5" 1 0 0 0 "" 0 ""</Bp4>
         <Bp5>_ "STD_CODE" "{$PROJ_DIR$\app.c}.300.5" 1 0 0 0 "" 0 ""</Bp5>
         <Bp6>_ "STD_CODE" "{C:\Users\ahj\Desktop\CE4057\Source_Code_CE4057\ce4053\Micrium\Software\uCOS-III\Source\OS_RecTaskServices.c}.239.5" 1 0 0 0 "" 0 ""</Bp6>
-        <Count>7</Count>
+        <Bp7>_ "STD_CODE" "{C:\Users\ahj\Desktop\CE4057\Source_Code_CE4057\ce4053\Micrium\Software\uCOS-III\Source\OS_RecTaskServices.c}.803.9" 1 0 0 0 "" 0 ""</Bp7>
+        <Count>8</Count>
     </Breakpoints>
+    <TermIOLog>
+        <LoggingEnabled>_ 0</LoggingEnabled>
+        <LogFile>_ ""</LogFile>
+    </TermIOLog>
     <LogFile>
         <LoggingEnabled>_ 0</LoggingEnabled>
         <LogFile>_ ""</LogFile>
@@ -76,8 +81,4 @@
     <CallStackStripe>
         <ShowTiming>1</ShowTiming>
     </CallStackStripe>
-    <TermIOLog>
-        <LoggingEnabled>_ 0</LoggingEnabled>
-        <LogFile>_ ""</LogFile>
-    </TermIOLog>
 </settings>

@@ -515,7 +515,8 @@ void  OSSchedUnlock (OS_ERR  *p_err)
 #endif
 
     CPU_CRITICAL_EXIT();                                    /* Scheduler should be re-enabled                         */
-    OSSched();                                              /* Run the scheduler                                      */
+    //OSSched();                                              /* Run the scheduler                                      */
+    RMSched();
    *p_err = OS_ERR_NONE;
 }
 
@@ -643,8 +644,9 @@ void  OSSchedRoundRobinYield (OS_ERR  *p_err)
 
     CPU_CRITICAL_EXIT();
 
-    OSSched();                                              /* Run new task                                           */
-   *p_err = OS_ERR_NONE;
+    //OSSched();                                              /* Run new task                                           */
+    RMSched();
+    *p_err = OS_ERR_NONE;
 }
 #endif
 

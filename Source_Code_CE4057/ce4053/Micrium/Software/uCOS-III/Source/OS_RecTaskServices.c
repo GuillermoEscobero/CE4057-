@@ -252,8 +252,8 @@ void OSTaskCreateRecursive(OS_TCB        *p_tcb,
 
     OS_CRITICAL_EXIT_NO_SCHED();
 
-    OSSched(); //old scheduler
-    //RMSched(); //new scheduler
+    //OSSched(); //old scheduler
+    RMSched(); //new scheduler
     
 }
 
@@ -507,8 +507,8 @@ void OSTaskReCreateRecursive(OS_TCB        *p_tcb,
 
     OS_CRITICAL_EXIT_NO_SCHED();
 
-    OSSched(); //old scheduler //this one probably does not make sense, as have not put into the readyqueue yet.
-    //RMSched(); //new scheduler
+    //OSSched(); //old scheduler //this one probably does not make sense, as have not put into the readyqueue yet.
+    RMSched(); //new scheduler
 }
 
 
@@ -613,8 +613,8 @@ void  OSTaskDelRecursive (OS_TCB  *p_tcb,
     //p_tcb->TaskState = (OS_STATE)OS_TASK_STATE_PEND;  //not sure which to choose.
 
     OS_CRITICAL_EXIT_NO_SCHED();
-    OSSched();                                              /* Find new highest priority task                         */
-    //RMSched(); //new scheduler
+    //OSSched();                                              /* Find new highest priority task                         */
+    RMSched(); //new scheduler
 
     *p_err = OS_ERR_NONE;
 }
@@ -762,8 +762,8 @@ void releaseTask(node* taskNode){
   CPU_INT32U newRelease = OSTickCtr+taskNode->period;
   insert(newRelease, p_tcb, taskNode->period, taskInfo); //reinsert into RB-tree
   
-  //OSSched(); //OSSemPend does not always schedule
-  //RMSched();
+  //OSSched(); //OSSemPend does not always schedule. This was orignally called from taskCreate, but as we do not put anything into the ready queue until now, we call it now instead
+  //RMSched(); //maybe we should let OSSched call this one if the OSSched decides that the idle task should run
 }
 
 void RMSched(){
@@ -784,16 +784,28 @@ void RMSched(){
 
     CPU_INT_DIS();
     
-    Skiplist minNode = getMinKeyNode2(readyQueue); //get highets priority task
-    if(minNode == NULL){
-      return; //no more tasks in readyqueue;
-    }
-    CPU_INT32U taskPrio = minNode->key; //get priority
-    //node* highestPrioNode = remove_front(&minNode->tasks)
-    OS_TCB *highTCB = minNode->tasks->data; //!!!!Problems here Hard-fault!!!! //get the TCB of the first task/element of the list of the minNode
-    if (highTCB == OSTCBCurPtr) {                   /* Current task is still highest priority task?           */
+    OSPrioHighRdy   = OS_PrioGetHighest();                  /* Find the highest priority ready from build in ready Queue */
+    OSTCBHighRdyPtr = OSRdyList[OSPrioHighRdy].HeadPtr;
+    if (OSTCBHighRdyPtr == OSTCBCurPtr) {                   /* Current task is still highest priority task?           */
         CPU_INT_EN();                                       /* Yes ... no need to context switch                      */
         return;
+    }
+    if(OSTCBHighRdyPtr == &OSIdleTaskTCB){ //is the highest priority task the idle task
+      Skiplist minNode = getMinKeyNode2(readyQueue); //get highets priority task from our ready queue
+      if(minNode == NULL){
+        //no more tasks in readyqueue;
+        //schedule idle task
+        OSTCBHighRdyPtr = &OSIdleTaskTCB;
+      }
+      else{
+        CPU_INT32U taskPrio = minNode->key; //get priority
+        //node* highestPrioNode = remove_front(&minNode->tasks)
+        OSTCBHighRdyPtr = minNode->tasks->data; //!!!!Problems here Hard-fault!!!! //get the TCB of the first task/element of the list of the minNode
+        if (OSTCBHighRdyPtr == OSTCBCurPtr) {                   /* Current task is still highest priority task?           */
+          CPU_INT_EN();                                       /* Yes ... no need to context switch                      */
+          return;
+        }
+      }
     }
 
 #if OS_CFG_TASK_PROFILE_EN > 0u

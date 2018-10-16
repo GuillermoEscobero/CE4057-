@@ -25,6 +25,7 @@ chooseHeight(void)
 static Skiplist
 skiplistCreateNode(CPU_INT32U key, int height, OS_TCB *p_tcb, CPU_INT32U period)
 {
+  key = period; //the priority is given directly from the period (shorter period->higher priority)
   Skiplist s = NULL;
   if(readyQueue != NULL){
     s = skiplistSearch(readyQueue, key);
@@ -84,6 +85,7 @@ skiplistCreate(void) //remember to call this function at some point in time!! In
 
     /* s is a dummy head element */
     readyQueue = skiplistCreateNode(INT_MIN, MAX_HEIGHT, NULL, NULL);//no TCB and no period for head
+    //will it be a problem to set key to NULL as the function above does?
 
     /* this tracks the maximum height of any node */
     readyQueue->height = 1;
@@ -155,7 +157,7 @@ skiplistInsert(Skiplist s, int key, OS_TCB *p_tcb, CPU_INT32U period)
     int level;
     Skiplist elt;
 
-    elt = skiplistCreateNode(key, chooseHeight(), p_tcb, period);
+    elt = skiplistCreateNode(key, chooseHeight(), p_tcb, period); //this function sets the period as key
     if(elt == NULL){
       return;
     }

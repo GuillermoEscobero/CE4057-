@@ -267,7 +267,8 @@ OS_OBJ_QTY  OSMutexDel (OS_MUTEX  *p_mutex,
              OSMutexQty--;
              OS_MutexClr(p_mutex);
              OS_CRITICAL_EXIT_NO_SCHED();
-             OSSched();                                                    /* Find highest priority task ready to run */
+             //OSSched();                                                    /* Find highest priority task ready to run */
+             RMSched();
              *p_err = OS_ERR_NONE;
              break;
 
@@ -453,7 +454,8 @@ void  OSMutexPend (OS_MUTEX   *p_mutex,
 
     OS_CRITICAL_EXIT_NO_SCHED();
 
-    OSSched();                                              /* Find the next highest priority task ready to run       */
+    //OSSched();                                              /* Find the next highest priority task ready to run       */
+    RMSched();
 
     CPU_CRITICAL_ENTER();
     switch (OSTCBCurPtr->PendStatus) {
@@ -598,7 +600,8 @@ OS_OBJ_QTY  OSMutexPendAbort (OS_MUTEX  *p_mutex,
     OS_CRITICAL_EXIT_NO_SCHED();
 
     if ((opt & OS_OPT_POST_NO_SCHED) == (OS_OPT)0u) {
-        OSSched();                                          /* Run the scheduler                                      */
+        //OSSched();                                          /* Run the scheduler                                      */
+        RMSched();
     }
 
    *p_err = OS_ERR_NONE;
@@ -720,7 +723,8 @@ void  OSMutexPost (OS_MUTEX  *p_mutex,
     OS_CRITICAL_EXIT_NO_SCHED();
 
     if ((opt & OS_OPT_POST_NO_SCHED) == (OS_OPT)0) {
-        OSSched();                                          /* Run the scheduler                                      */
+        //OSSched();                                          /* Run the scheduler                                      */
+      RMSched();
     }
 
     *p_err = OS_ERR_NONE;
