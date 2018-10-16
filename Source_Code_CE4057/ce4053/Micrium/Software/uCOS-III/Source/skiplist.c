@@ -7,7 +7,7 @@
 
 #define MAX_HEIGHT (32)
 
-Skiplist readyQueue = NULL;
+readyQueue = NULL;
 
 /* choose a height according to a geometric distribution */
 static int
@@ -65,7 +65,7 @@ skiplistCreateNode(CPU_INT32U key, int height, OS_TCB *p_tcb, CPU_INT32U period)
     }
 
     // assert(s);
-    
+
     if(readyQueue != NULL){
       s->tasks = create(p_tcb, period, NULL, NULL);
     }
@@ -107,8 +107,8 @@ skiplistDestroy(Skiplist s)
 
     while(s) {
         next = s->next[0];
-        
-        memset((void *) s, 0, (size_t) BLK_SIZE*sizeof(CPU_INT32U));
+
+        // memset((void *) s, 0, (size_t) BLK_SIZE*sizeof(CPU_INT32U));
         OSMemPut(&CommMem2, (void *)s, &err);
         // free(s);
 
@@ -244,5 +244,5 @@ skiplistDelete(Skiplist s, int key)
 }
 
 struct skiplist* getMinKeyNode2(struct skiplist* list){
-  return list->next[0]; //get the first element of the first level (level 0)
+  return list->next[0]->next[0]; //get the first element of the first level (level 0)
 }

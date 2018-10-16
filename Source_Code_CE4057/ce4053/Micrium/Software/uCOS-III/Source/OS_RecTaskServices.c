@@ -3,7 +3,7 @@
 /**
   Selected copy paste from OSTaskCreate function
 */
-     
+
 void OSTaskCreateRecursive(OS_TCB        *p_tcb,
                     CPU_CHAR      *p_name,
                     OS_TASK_PTR    p_task,
@@ -18,17 +18,17 @@ void OSTaskCreateRecursive(OS_TCB        *p_tcb,
                     OS_OPT         opt,
                     OS_ERR        *p_err)
 {
-  
+
   //Maybe we may let this function call the OSTaskCreate function
   //Before doing that we will however need to ensure that we put the task in the datastructure
   //keeping track of recursion
   //How do we know when to put the task back in the recursion structure?
   //Should it always be there such that we only update the time at which it is ready: that sounds like a good idea!!
-  
-  
+
+
       CPU_STK_SIZE   i;
       CPU_INT32U period = (CPU_INT32U) p_ext; //added
-      
+
       OS_ERR  err;
       TaskInfo* taskInfo = (TaskInfo*) OSMemGet(&CommMem2, &err);
       taskInfo->p_tcb = p_tcb;
@@ -43,7 +43,7 @@ void OSTaskCreateRecursive(OS_TCB        *p_tcb,
       taskInfo->time_quanta = time_quanta;
       taskInfo->p_ext = p_ext;
       taskInfo->opt = opt;
-    
+
 
 
 #if OS_CFG_TASK_REG_TBL_SIZE > 0u
@@ -200,7 +200,7 @@ void OSTaskCreateRecursive(OS_TCB        *p_tcb,
 //    tcbInfo->p_ext = p_ext;
 //    tcbInfo->opt = opt;
 //    */
-//    
+//
 //    tcbInfo->StkPtr=p_tcb->StkPtr;
 //    tcbInfo->ExtPtr=p_tcb->ExtPtr;
 //    tcbInfo->StkLimitPtr=p_tcb->StkLimitPtr;
@@ -228,9 +228,9 @@ void OSTaskCreateRecursive(OS_TCB        *p_tcb,
 ////    tcbInfo->TickRemain=p_tcb->TickRemain;
 ////    tcbInfo->TimeQuanta=p_tcb->TimeQuanta;
 ////    tcbInfo->TimeQuantaCtr=p_tcb->TimeQuantaCtr;
-    
-    
-    
+
+
+
                                                               /* --------------- ADD TASK TO READY LIST --------------- */
     OS_CRITICAL_ENTER();
     //OS_PrioInsert(p_tcb->Prio);
@@ -254,7 +254,7 @@ void OSTaskCreateRecursive(OS_TCB        *p_tcb,
 
     //OSSched(); //old scheduler
     RMSched(); //new scheduler
-    
+
 }
 
 void OSTaskReCreateRecursive(OS_TCB        *p_tcb,
@@ -271,19 +271,19 @@ void OSTaskReCreateRecursive(OS_TCB        *p_tcb,
                     OS_OPT         opt,
                     OS_ERR        *p_err)
 {
-  
+
   //Maybe we may let this function call the OSTaskCreate function
   //Before doing that we will however need to ensure that we put the task in the datastructure
   //keeping track of recursion
   //How do we know when to put the task back in the recursion structure?
   //Should it always be there such that we only update the time at which it is ready: that sounds like a good idea!!
-  
-  
+
+
       CPU_STK_SIZE   i;
       CPU_INT32U period = (CPU_INT32U) p_ext; //added
       OS_OPT blah = opt;
-      
-      
+
+
       OS_ERR  err;
 //      TaskInfo* taskInfo = (TaskInfo*) OSMemGet(&CommMem2, &err);
 //      taskInfo->p_tcb = p_tcb;
@@ -298,7 +298,7 @@ void OSTaskReCreateRecursive(OS_TCB        *p_tcb,
 //      taskInfo->time_quanta = time_quanta;
 //      taskInfo->p_ext = p_ext;
 //      taskInfo->opt = opt;
-    
+
 
 
 #if OS_CFG_TASK_REG_TBL_SIZE > 0u
@@ -455,7 +455,7 @@ void OSTaskReCreateRecursive(OS_TCB        *p_tcb,
 //    tcbInfo->p_ext = p_ext;
 //    tcbInfo->opt = opt;
 //    */
-//    
+//
 //    tcbInfo->StkPtr=p_tcb->StkPtr;
 //    tcbInfo->ExtPtr=p_tcb->ExtPtr;
 //    tcbInfo->StkLimitPtr=p_tcb->StkLimitPtr;
@@ -483,9 +483,9 @@ void OSTaskReCreateRecursive(OS_TCB        *p_tcb,
 ////    tcbInfo->TickRemain=p_tcb->TickRemain;
 ////    tcbInfo->TimeQuanta=p_tcb->TimeQuanta;
 ////    tcbInfo->TimeQuantaCtr=p_tcb->TimeQuantaCtr;
-    
-    
-    
+
+
+
                                                               /* --------------- ADD TASK TO READY LIST --------------- */
     OS_CRITICAL_ENTER();
     //OS_PrioInsert(p_tcb->Prio);
@@ -626,7 +626,7 @@ void  OSTaskDelRecursive (OS_TCB  *p_tcb,
 
 void tickHandlerRecursion(){
   //OSTickCtr; //the current OSTick I think.
-  
+
   struct rbtNode *minNode = RBFindMin();
   int minTime = minNode->key;
   int x = OSTickCtr;
@@ -635,17 +635,17 @@ void tickHandlerRecursion(){
     //reinsert each task into the redblack tree at its new time
     //and free the redblacknode, the linked list and all the nodes of the linked list
     struct rbtNode *rem = delete(minTime); //remove rbtNode from tree (does not free memory
-    
-    
-    
-    
-    
-    
+
+
+
+
+
+
     traverse(minNode->tasks, releaseTask); //f should be the function that does something for each node in the list of tasks.
     dispose(minNode->tasks); //remove all elements of the list
     //TODO: remove the list itself
     //TODO: remove the rbtNode
-    
+
     OS_ERR err;
     if(rem != NULL){
       OSMemPut(&CommMem2,rem,&err);
@@ -680,7 +680,7 @@ void releaseTask(node* taskNode){
   OS_TCB *p_tcb = (OS_TCB*) taskNode->data;
   TaskInfo* taskInfo = taskNode->taskInfo;
   p_tcb->TaskState = 0; //ready
-  
+
   //replacing below call
   //p_tcb->StkBasePtr=taskInfo->p_stk_base;
   //p_tcb->StkPtr = p_tcb->StkBasePtr+48;
@@ -690,89 +690,19 @@ void releaseTask(node* taskNode){
                          p_tcb->StkLimitPtr,
                          p_tcb->StkSize,
                          p_tcb->Opt);
-    /*
-  OSTaskReCreateRecursive(
-      (OS_TCB     *) taskInfo->p_tcb,
-      (CPU_CHAR   *) taskInfo->p_name,
-      (OS_TASK_PTR ) taskInfo->p_task,
-      (void       *) taskInfo->p_arg,
-      (OS_PRIO     ) taskInfo->prio,
-      (CPU_STK    *) taskInfo->p_stk_base,
-      (CPU_STK_SIZE) taskInfo->stk_limit,
-      (CPU_STK_SIZE) taskInfo->stk_size,
-      (OS_MSG_QTY  ) taskInfo->q_size,
-      (OS_TICK     ) taskInfo->time_quanta,
-      (void       *) (CPU_INT32U) taskInfo->p_ext,
-      (OS_OPT      ) taskInfo->opt,
-      (OS_ERR     *) taskInfo->p_err
-      );
-      */                  
-        //                (OS_TCB     *)&AppTaskThreeTCB, (CPU_CHAR   *)"App Task three", (OS_TASK_PTR ) AppTaskTwo, (void       *) 0, (OS_PRIO     ) APP_TASK_THREE_PRIO, (CPU_STK    *)&AppTaskThreeStk[0], (CPU_STK_SIZE) APP_TASK_THREE_STK_SIZE / 10u, (CPU_STK_SIZE) APP_TASK_THREE_STK_SIZE, (OS_MSG_QTY  ) 0u, (OS_TICK     ) 0u, (void       *) (CPU_INT32U) period, (OS_OPT      )(OS_OPT_TASK_STK_CHK | OS_OPT_TASK_STK_CLR), (OS_ERR     *)&err);
-    
-  
-//  //TCBInfo* tcbInfo = (TCBInfo*) OSMemGet();
-//  p_tcb->NamePtr = tcbInfo->p_name;
-//  //p_tcb->?? = tcbInfo->p_task;
-//  //p_tcb->?? = tcbInfo->p_arg;
-//  p_tcb->Prio = tcbInfo->prio;
-//  p_tcb->StkBasePtr = tcbInfo->p_stk_base;
-//  p_tcb->StkLimitPtr = tcbInfo->stk_limit;
-//  p_tcb->StkSize = tcbInfo->stk_size;
-//  //p_tcb->?? = tcbInfo->q_size;
-//  //p_tcb->?? = tcbInfo->time_quanta;
-//  //p_tcb->?? = tcbInfo->p_ext; //period
-//  //p_tcb->?? = tcbInfo->opt;
-  
-  
-//  p_tcb->StkPtr=tcbInfo->StkPtr;
-//  p_tcb->ExtPtr=tcbInfo->ExtPtr;
-//  p_tcb->StkLimitPtr=tcbInfo->StkLimitPtr;
-//  p_tcb->NextPtr=tcbInfo->NextPtr;
-//  p_tcb->PrevPtr=tcbInfo->PrevPtr;
-//  p_tcb->TickNextPtr=tcbInfo->TickNextPtr;
-//  p_tcb->TickPrevPtr=tcbInfo->TickPrevPtr;
-//  p_tcb->TickSpokePtr=tcbInfo->TickSpokePtr;
-//  p_tcb->NamePtr=tcbInfo->NamePtr;
-//  p_tcb->StkBasePtr=tcbInfo->StkBasePtr;
-//  p_tcb->TaskEntryAddr=tcbInfo->TaskEntryAddr;
-//  p_tcb->TaskEntryArg=tcbInfo->TaskEntryArg;
-//  p_tcb->PendDataTblPtr=tcbInfo->PendDataTblPtr;
-//  p_tcb->PendOn=tcbInfo->PendOn;
-//  p_tcb->PendStatus=tcbInfo->PendStatus;
-//  p_tcb->TaskState=tcbInfo->TaskState;
-//  p_tcb->Prio=tcbInfo->Prio;
-//  p_tcb->StkSize=tcbInfo->StkSize;
-////  p_tcb->Opt=tcbInfo->Opt;
-////  p_tcb->PendDataTblEntries=tcbInfo->PendDataTblEntries;
-////  p_tcb->TS=tcbInfo->TS;
-////  p_tcb->SemCtr=tcbInfo->SemCtr;
-////  p_tcb->TickCtrPrev=tcbInfo->TickCtrPrev;
-////  p_tcb->TickCtrMatch=tcbInfo->TickCtrMatch;
-////  p_tcb->TickRemain=tcbInfo->TickRemain;
-////  p_tcb->TimeQuanta=tcbInfo->TimeQuanta;
-////  p_tcb->TimeQuantaCtr=tcbInfo->TimeQuantaCtr;
-  
-  
+
   OS_PrioInsert(p_tcb->Prio);
   OS_RdyListInsertTail(p_tcb); //make task ready to run
-  
-  
-  //skiplistInsert(readyQueue, taskNode->period, p_tcb, taskNode->period); //insert into our readyqueue
-  
+
+  skiplistInsert(readyQueue, taskNode->period, p_tcb, taskNode->period); //insert into our readyqueue
+
   CPU_INT32U newRelease = OSTickCtr+taskNode->period;
   insert(newRelease, p_tcb, taskNode->period, taskInfo); //reinsert into RB-tree
-  
-  //OSSched(); //OSSemPend does not always schedule. This was orignally called from taskCreate, but as we do not put anything into the ready queue until now, we call it now instead
-  //RMSched(); //maybe we should let OSSched call this one if the OSSched decides that the idle task should run
 }
 
 void RMSched(){
-  
-  
-  
-  CPU_SR_ALLOC();
 
-
+    CPU_SR_ALLOC();
 
     if (OSIntNestingCtr > (OS_NESTING_CTR)0) {              /* ISRs still nested?                                     */
         return;                                             /* Yes ... only schedule when no nested ISRs              */
@@ -783,16 +713,17 @@ void RMSched(){
     }
 
     CPU_INT_DIS();
-    
+
     OSPrioHighRdy   = OS_PrioGetHighest();                  /* Find the highest priority ready from build in ready Queue */
     OSTCBHighRdyPtr = OSRdyList[OSPrioHighRdy].HeadPtr;
     if (OSTCBHighRdyPtr == OSTCBCurPtr) {                   /* Current task is still highest priority task?           */
         CPU_INT_EN();                                       /* Yes ... no need to context switch                      */
         return;
     }
+
     if(OSTCBHighRdyPtr == &OSIdleTaskTCB){ //is the highest priority task the idle task
       Skiplist minNode = getMinKeyNode2(readyQueue); //get highets priority task from our ready queue
-      if(minNode == NULL){
+      if(minNode == NULL) {
         //no more tasks in readyqueue;
         //schedule idle task
         OSTCBHighRdyPtr = &OSIdleTaskTCB;
@@ -815,5 +746,5 @@ void RMSched(){
 
     OS_TASK_SW();                                           /* Perform a task level context switch                    */
     CPU_INT_EN();
-  
+
 }

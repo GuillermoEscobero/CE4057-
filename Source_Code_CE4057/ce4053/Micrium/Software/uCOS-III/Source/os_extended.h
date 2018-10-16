@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <os.h>
 //#include "fatal.h"
- 
+
 //TCB information
 
 
@@ -21,7 +21,7 @@ typedef struct TaskInfo {
   void          *p_ext;
   OS_OPT         opt;
   OS_ERR        *p_err;
-} TaskInfo; 
+} TaskInfo;
 
 #ifndef _MEM_H
 #define _MEM_H
@@ -33,7 +33,7 @@ extern OS_MEM  CommMem2; //memory heap
 
 #endif  /* _MEM_H */
 
-//typedef struct TCBInfo {          
+//typedef struct TCBInfo {
 //  CPU_STK             *StkPtr;                            /* Pointer to current top of stack                        */
 //  void                *ExtPtr;                            /* Pointer to user definable data for TCB extension       */
 //  CPU_STK             *StkLimitPtr;                       /* Pointer used to set stack 'watermark' limit            */
@@ -61,7 +61,7 @@ extern OS_MEM  CommMem2; //memory heap
 //  //OS_TICK              TickRemain;                        /* Number of ticks remaining for a match (updated at ...  */                                                          /* ... run-time by OS_StatTask()                          */
 //  //OS_TICK              TimeQuanta;
 //  //OS_TICK              TimeQuantaCtr;
-//} TCBInfo; 
+//} TCBInfo;
 
 /*RBTree*/
 #ifndef _RedBlack_H
@@ -156,9 +156,6 @@ struct rbtNode* delete(int var);
 #ifndef _SKIPLIST_H
 #define _SKIPLIST_H
 
-
-
-
 struct skiplist {
     int key;                    /*period*/
     int height;                /* number of next pointers */
@@ -167,7 +164,7 @@ struct skiplist {
 };
 typedef struct skiplist * Skiplist;
 
-extern Skiplist readyQueue;
+Skiplist readyQueue;
 
 /* create an empty skiplist */
 void skiplistCreate(void);
