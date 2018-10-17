@@ -199,8 +199,8 @@ OS_OBJ_QTY  OSPendMulti (OS_PEND_DATA  *p_pend_data_tbl,
 
     OS_CRITICAL_EXIT_NO_SCHED();
 
-    //OSSched();                                              /* Find next highest priority task ready                  */
-    RMSched();
+    OSSched();                                              /* Find next highest priority task ready                  */
+    //RMSched();
 
     CPU_CRITICAL_ENTER();
     switch (OSTCBCurPtr->PendStatus) {

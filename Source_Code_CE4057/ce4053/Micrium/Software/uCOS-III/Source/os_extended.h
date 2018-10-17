@@ -26,8 +26,8 @@ typedef struct TaskInfo {
 #ifndef _MEM_H
 #define _MEM_H
 
-#define N_BLKS 28 //Probably way to few blocks for containing both RB-tree and linkedList nodes.
-#define BLK_SIZE 12 //Maybe to small for RB tree or linked list nodes
+#define N_BLKS 48 //Probably way to few blocks for containing both RB-tree and linkedList nodes.
+#define BLK_SIZE 16 //Maybe to small for RB tree or linked list nodes
 extern OS_MEM  CommMem2; //memory heap
 
 
@@ -113,8 +113,8 @@ node* insert_after(node *head, OS_TCB* data, CPU_INT32U period, TaskInfo* taskIn
 node* insert_before(node *head, OS_TCB* data, CPU_INT32U period, TaskInfo* taskInfo, node* nxt);
 void traverse(node* head,callback f);
 node* remove_front(node** head);
-node* remove_back(node* head);
-node* remove_any(node* head,node* nd);
+node* remove_back(node** head);
+node* remove_any(node** head,OS_TCB* p_tcb);
 void display(node* n);
 node* search(node* head,OS_TCB* data);
 void dispose(node *head);
@@ -181,7 +181,7 @@ Skiplist skiplistSearch(Skiplist s, int key);
 void skiplistInsert(Skiplist s, int key, OS_TCB *p_tcb, CPU_INT32U period);
 
 /* delete a key from s */
-void skiplistDelete(Skiplist s, int key);
+void skiplistDelete(Skiplist s, int key, OS_TCB* p_tcb);
 
 struct skiplist* getMinKeyNode2(struct skiplist* list);
 
@@ -209,4 +209,4 @@ void tickHandlerRecursion();
 void releaseTask(node* taskNode);
 //Skiplist minNode = getMinKeyNode();
 
-void RMSched();
+OS_TCB* RMSched();

@@ -146,8 +146,8 @@ void  OSTaskChangePrio (OS_TCB   *p_tcb,
 
     OS_CRITICAL_EXIT_NO_SCHED();
 
-    //OSSched();                                              /* Run highest priority task ready                        */
-    RMSched();
+    OSSched();                                              /* Run highest priority task ready                        */
+    //RMSched();
 
     *p_err = OS_ERR_NONE;
 }
@@ -406,8 +406,8 @@ void  OSTaskCreate (OS_TCB        *p_tcb,
 
     OS_CRITICAL_EXIT_NO_SCHED();
 
-    //OSSched();
-    RMSched();
+    OSSched();
+    //RMSched();
 }
 
 /*$PAGE*/
@@ -530,8 +530,8 @@ void  OSTaskDel (OS_TCB  *p_tcb,
     p_tcb->TaskState = (OS_STATE)OS_TASK_STATE_DEL;         /* Indicate that the task was deleted                     */
 
     OS_CRITICAL_EXIT_NO_SCHED();
-    //OSSched();                                              /* Find new highest priority task                         */
-    RMSched();
+    OSSched();                                              /* Find new highest priority task                         */
+    //RMSched();
 
     *p_err = OS_ERR_NONE;
 }
@@ -724,8 +724,8 @@ void  *OSTaskQPend (OS_TICK        timeout,
             (OS_TICK       )timeout);
     OS_CRITICAL_EXIT_NO_SCHED();
 
-    //OSSched();                                              /* Find the next highest priority task ready to run       */
-    RMSched();
+    OSSched();                                              /* Find the next highest priority task ready to run       */
+    //RMSched();
 
     CPU_CRITICAL_ENTER();
     switch (OSTCBCurPtr->PendStatus) {
@@ -843,8 +843,8 @@ CPU_BOOLEAN  OSTaskQPendAbort (OS_TCB  *p_tcb,
                  ts);
     OS_CRITICAL_EXIT_NO_SCHED();
     if ((opt & OS_OPT_POST_NO_SCHED) == (OS_OPT)0) {
-        //OSSched();                                          /* Run the scheduler                                      */
-      RMSched();
+        OSSched();                                          /* Run the scheduler                                      */
+      //RMSched();
     }
     *p_err = OS_ERR_NONE;
     return (DEF_TRUE);
@@ -1154,8 +1154,8 @@ void  OSTaskResume (OS_TCB  *p_tcb,
              return;
     }
 
-    //OSSched();
-    RMSched();
+    OSSched();
+    //RMSched();
 }
 #endif
 
@@ -1258,8 +1258,8 @@ OS_SEM_CTR  OSTaskSemPend (OS_TICK   timeout,
             (OS_TICK       )timeout);
     OS_CRITICAL_EXIT_NO_SCHED();
 
-    //OSSched();                                              /* Find next highest priority task ready to run           */
-    RMSched();  //Should it be called from here?
+    OSSched();                                              /* Find next highest priority task ready to run           */
+    //RMSched();  //Should it be called from here?
 
     CPU_CRITICAL_ENTER();
     switch (OSTCBCurPtr->PendStatus) {                      /* See if we timed-out or aborted                         */
@@ -1374,8 +1374,8 @@ CPU_BOOLEAN  OSTaskSemPendAbort (OS_TCB  *p_tcb,
                  ts);
     OS_CRITICAL_EXIT_NO_SCHED();
     if ((opt & OS_OPT_POST_NO_SCHED) == (OS_OPT)0) {
-        //OSSched();                                          /* Run the scheduler                                      */
-      RMSched();
+        OSSched();                                          /* Run the scheduler                                      */
+      //RMSched();
     }
     *p_err = OS_ERR_NONE;
     return (DEF_TRUE);
@@ -1723,8 +1723,8 @@ void   OSTaskSuspend (OS_TCB  *p_tcb,
              return;
     }
 
-    //OSSched();
-    RMSched();
+    OSSched();
+    //RMSched();
 }
 #endif
 
@@ -2103,8 +2103,8 @@ void  OS_TaskQPost (OS_TCB      *p_tcb,
                          ts);
                  OS_CRITICAL_EXIT_NO_SCHED();
                  if ((opt & OS_OPT_POST_NO_SCHED) == (OS_OPT)0u) {
-                     //OSSched();                             /* Run the scheduler                                      */
-                   RMSched();
+                     OSSched();                             /* Run the scheduler                                      */
+                   //RMSched();
                  }
              } else {
                  OS_MsgQPut(&p_tcb->MsgQ,                   /* No,  Task is pending on something else ...             */
@@ -2258,8 +2258,8 @@ OS_SEM_CTR  OS_TaskSemPost (OS_TCB  *p_tcb,
                  ctr = p_tcb->SemCtr;
                  OS_CRITICAL_EXIT_NO_SCHED();
                  if ((opt & OS_OPT_POST_NO_SCHED) == (OS_OPT)0) {
-                     //OSSched();                                 /* Run the scheduler                                  */
-                   RMSched();
+                     OSSched();                                 /* Run the scheduler                                  */
+                   //RMSched();
                  }
              } else {
                  p_tcb->SemCtr++;                           /* No,  Task signaled is NOT pending on semaphore ...     */

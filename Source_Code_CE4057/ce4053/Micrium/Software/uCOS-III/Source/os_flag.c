@@ -239,8 +239,8 @@ OS_OBJ_QTY  OSFlagDel (OS_FLAG_GRP  *p_grp,
              OSFlagQty--;
              OS_FlagClr(p_grp);
              OS_CRITICAL_EXIT_NO_SCHED();
-             //OSSched();                                     /* Find highest priority task ready to run                */
-             RMSched();
+             OSSched();                                     /* Find highest priority task ready to run                */
+             //RMSched();
              *p_err = OS_ERR_NONE;
              break;
 
@@ -519,8 +519,8 @@ OS_FLAGS  OSFlagPend (OS_FLAG_GRP *p_grp,
              return ((OS_FLAGS)0);
     }
 
-    //OSSched();                                              /* Find next HPT ready to run                             */
-    RMSched();
+    OSSched();                                              /* Find next HPT ready to run                             */
+    //RMSched();
     CPU_CRITICAL_ENTER();
     switch (OSTCBCurPtr->PendStatus) {
         case OS_STATUS_PEND_OK:                             /* We got the vent flags                                  */
@@ -694,8 +694,8 @@ OS_OBJ_QTY  OSFlagPendAbort (OS_FLAG_GRP  *p_grp,
     OS_CRITICAL_EXIT_NO_SCHED();
 
     if ((opt & OS_OPT_POST_NO_SCHED) == (OS_OPT)0u) {
-        //OSSched();                                          /* Run the scheduler                                      */
-        RMSched();
+        OSSched();                                          /* Run the scheduler                                      */
+        //RMSched();
     }
 
    *p_err = OS_ERR_NONE;
@@ -1180,8 +1180,8 @@ OS_FLAGS  OS_FlagPost (OS_FLAG_GRP  *p_grp,
     OS_CRITICAL_EXIT_NO_SCHED();
 
     if ((opt & OS_OPT_POST_NO_SCHED) == (OS_OPT)0) {
-        //OSSched();
-        RMSched();
+        OSSched();
+        //RMSched();
     }
 
     CPU_CRITICAL_ENTER();

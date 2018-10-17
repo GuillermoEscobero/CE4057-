@@ -252,8 +252,8 @@ void OSTaskCreateRecursive(OS_TCB        *p_tcb,
 
     OS_CRITICAL_EXIT_NO_SCHED();
 
-    //OSSched(); //old scheduler
-    RMSched(); //new scheduler
+    OSSched(); //old scheduler
+    //RMSched(); //new scheduler
 
 }
 
@@ -507,8 +507,8 @@ void OSTaskReCreateRecursive(OS_TCB        *p_tcb,
 
     OS_CRITICAL_EXIT_NO_SCHED();
 
-    //OSSched(); //old scheduler //this one probably does not make sense, as have not put into the readyqueue yet.
-    RMSched(); //new scheduler
+    OSSched(); //old scheduler //this one probably does not make sense, as have not put into the readyqueue yet.
+    //RMSched(); //new scheduler
 }
 
 
@@ -556,7 +556,9 @@ void  OSTaskDelRecursive (OS_TCB  *p_tcb,
     OS_CRITICAL_ENTER();
     switch (p_tcb->TaskState) {
         case OS_TASK_STATE_RDY:
-             OS_RdyListRemove(p_tcb);
+             //OS_RdyListRemove(p_tcb);
+              //TODO: remove from skiplist
+              skiplistDelete(readyQueue, p_tcb->???, p_tcb); //How to find period/key????
              break;
 
         case OS_TASK_STATE_SUSPENDED:
@@ -613,8 +615,8 @@ void  OSTaskDelRecursive (OS_TCB  *p_tcb,
     //p_tcb->TaskState = (OS_STATE)OS_TASK_STATE_PEND;  //not sure which to choose.
 
     OS_CRITICAL_EXIT_NO_SCHED();
-    //OSSched();                                              /* Find new highest priority task                         */
-    RMSched(); //new scheduler
+    OSSched();                                              /* Find new highest priority task                         */
+    //RMSched(); //new scheduler
 
     *p_err = OS_ERR_NONE;
 }
@@ -700,7 +702,25 @@ void releaseTask(node* taskNode){
   insert(newRelease, p_tcb, taskNode->period, taskInfo); //reinsert into RB-tree
 }
 
-void RMSched(){
+
+OS_TCB* RMSched(){
+  Skiplist minNode = getMinKeyNode2(readyQueue); //get highets priority task from our ready queue
+  if(minNode == NULL) {
+    //no more tasks in readyqueue;
+    //schedule idle task
+    //OSTCBHighRdyPtr = &OSIdleTaskTCB;
+    return &OSIdleTaskTCB;
+  }
+  else{
+    //CPU_INT32U taskPrio = minNode->key; //get priority
+    //node* highestPrioNode = remove_front(&minNode->tasks)
+    OSTCBHighRdyPtr = minNode->tasks->data; //!!!!Problems here Hard-fault!!!! //get the TCB of the first task/element of the list of the minNode
+    return OSTCBHighRdyPtr;
+  }
+}
+
+
+void RMSchedOLD(){
 
     CPU_SR_ALLOC();
 

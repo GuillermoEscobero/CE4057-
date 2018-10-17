@@ -5,7 +5,7 @@
 
 #include "os_extended.h"
 
-#define MAX_HEIGHT (32)
+#define MAX_HEIGHT (9) //(32)
 
 Skiplist readyQueue = NULL;
 
@@ -191,9 +191,13 @@ skiplistInsert(Skiplist s, int key, OS_TCB *p_tcb, CPU_INT32U period)
     }
 }
 
-/* delete a key from s */
+/* delete a key from s 
+    nd should be the linked list node
+    we want to remove inside the 
+    skiplist node with the given key
+*/
 void
-skiplistDelete(Skiplist s, int key)
+skiplistDelete(Skiplist s, int key, OS_TCB* p_tcb)
 {
     int level;
     Skiplist target;
@@ -213,6 +217,34 @@ skiplistDelete(Skiplist s, int key)
     if(target == 0 || target->key != key) {
         return;
     }
+     
+    node* rem = remove_any(&(target->tasks),p_tcb); //remove the TCB from the list in the node
+    if(rem == NULL){
+      return; //the node was not found in the list
+    }
+    OS_ERR err;
+    OSMemPut(&CommMem2, (void *)rem, &err);
+
+    switch(err){
+      case OS_ERR_NONE:
+        break;
+      case OS_ERR_MEM_FULL:
+        exit(0);
+        break;
+      case OS_ERR_MEM_INVALID_P_BLK:
+        exit(0);
+        break;
+      case OS_ERR_MEM_INVALID_P_MEM:
+        exit(0);
+        break;
+      case OS_ERR_OBJ_TYPE:
+        exit(0);
+        break;
+    }
+    
+    if(target->tasks != NULL){ //return if list of node is not empty
+      return;
+    }
 
     /* now we found target, splice it out */
     for(level = s->height - 1; level >= 0; level--) {
@@ -224,7 +256,7 @@ skiplistDelete(Skiplist s, int key)
             s->next[level] = target->next[level];
         }
     }
-    OS_ERR err;
+
     memset((void *) target, 0, (size_t) BLK_SIZE*sizeof(CPU_INT32U));
     OSMemPut(&CommMem2, (void *)target, &err);
     switch(err){
@@ -248,5 +280,5 @@ skiplistDelete(Skiplist s, int key)
 }
 
 struct skiplist* getMinKeyNode2(struct skiplist* list){
-  return list->next[0]->next[0]; //get the first element of the first level (level 0)
+  return list->next[0];//->next[0]; //get the first element of the first level (level 0)
 }

@@ -189,13 +189,15 @@ node* remove_front(node** head)
  
 /*
     remove node from the back of the list
+    returns the removed back and updates 
+    head if necessary
 */
-node* remove_back(node* head)
+node* remove_back(node** head)
 {
-    if(head == NULL)
+    if(*head == NULL)
         return NULL;
  
-    node *cursor = head;
+    node *cursor = *head;
     node *back = NULL;
     while(cursor->next != NULL)
     {
@@ -207,48 +209,56 @@ node* remove_back(node* head)
         back->next = NULL;
  
     /* if this is the last node in the list*/
-    if(cursor == head)
-        head = NULL;
+    if(cursor == *head)
+        *head = NULL;
  
-    free(cursor);
+    //free(cursor);
  
-    return head;
+    return cursor;
 }
  
-///*
-//    remove a node from the list
-//*/
-//node* remove_any(node* head,node* nd)
-//{
-//    if(nd == NULL)
-//        return NULL;
-//    /* if the node is the first node */
-//    if(nd == head)
-//        return remove_front(head);
-// 
-//    /* if the node is the last node */
-//    if(nd->next == NULL)
-//        return remove_back(head);
-// 
-//    /* if the node is in the middle */
-//    node* cursor = head;
-//    while(cursor != NULL)
-//    {
-//        if(cursor->next == nd)
-//            break;
-//        cursor = cursor->next;
-//    }
-// 
-//    if(cursor != NULL)
-//    {
-//        node* tmp = cursor->next;
-//        cursor->next = tmp->next;
-//        tmp->next = NULL;
-//        free(tmp);
-//    }
-//    return head;
-// 
-//}
+/*
+    remove a node from the list
+    returns the removed node and updates
+    head if necessary
+*/
+node* remove_any(node** head,OS_TCB* p_tcb)
+{
+    if(p_tcb == NULL)
+        return NULL;
+    /* if the node is the first node */
+    if(p_tcb == (*head)->data)
+        return remove_front(head);
+ 
+    /* if the node is the last node */
+    node* cursor2 = *head;
+    while(cursor2->next != NULL){
+      cursor2 = cursor2->next;
+    }
+    if(p_tcb == cursor2->data)
+        return remove_back(head);
+ 
+    /* if the node is in the middle */
+    node* cursor = *head;
+    while(cursor != NULL)
+    {
+        if(cursor->next->data == p_tcb) //does the next node contain the tcb?
+            break;
+        cursor = cursor->next;
+    }
+ 
+    if(cursor != NULL)
+    {
+        node* tmp = cursor->next;
+        cursor->next = tmp->next;
+        tmp->next = NULL;
+        //free(tmp);
+        return tmp;
+    }
+    //return head;
+    return NULL; //the node was not found
+ 
+}
 /*
     display a node
 */

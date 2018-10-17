@@ -375,6 +375,12 @@ void  OSSched (void)
     CPU_INT_DIS();
     OSPrioHighRdy   = OS_PrioGetHighest();                  /* Find the highest priority ready                        */
     OSTCBHighRdyPtr = OSRdyList[OSPrioHighRdy].HeadPtr;
+    
+    //added the three lines below
+    if(OSTCBHighRdyPtr == &OSIdleTaskTCB){
+      OSTCBHighRdyPtr = RMSched();
+    }
+    
     if (OSTCBHighRdyPtr == OSTCBCurPtr) {                   /* Current task is still highest priority task?           */
         CPU_INT_EN();                                       /* Yes ... no need to context switch                      */
         return;
@@ -515,8 +521,8 @@ void  OSSchedUnlock (OS_ERR  *p_err)
 #endif
 
     CPU_CRITICAL_EXIT();                                    /* Scheduler should be re-enabled                         */
-    //OSSched();                                              /* Run the scheduler                                      */
-    RMSched();
+    OSSched();                                              /* Run the scheduler                                      */
+    //RMSched();
    *p_err = OS_ERR_NONE;
 }
 
@@ -644,8 +650,8 @@ void  OSSchedRoundRobinYield (OS_ERR  *p_err)
 
     CPU_CRITICAL_EXIT();
 
-    //OSSched();                                              /* Run new task                                           */
-    RMSched();
+    OSSched();                                              /* Run new task                                           */
+    //RMSched();
     *p_err = OS_ERR_NONE;
 }
 #endif

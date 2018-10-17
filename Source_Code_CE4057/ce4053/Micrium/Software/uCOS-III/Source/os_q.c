@@ -242,8 +242,8 @@ OS_OBJ_QTY  OSQDel (OS_Q    *p_q,
              OSQQty--;
              OS_QClr(p_q);
              OS_CRITICAL_EXIT_NO_SCHED();
-             //OSSched();                                     /* Find highest priority task ready to run                */
-             RMSched();
+             OSSched();                                     /* Find highest priority task ready to run                */
+             //RMSched();
              *p_err = OS_ERR_NONE;
              break;
 
@@ -459,8 +459,8 @@ void  *OSQPend (OS_Q         *p_q,
             timeout);
     OS_CRITICAL_EXIT_NO_SCHED();
 
-    //OSSched();                                              /* Find the next highest priority task ready to run       */
-    RMSched();
+    OSSched();                                              /* Find the next highest priority task ready to run       */
+    //RMSched();
 
     CPU_CRITICAL_ENTER();
     switch (OSTCBCurPtr->PendStatus) {
@@ -617,8 +617,8 @@ OS_OBJ_QTY  OSQPendAbort (OS_Q    *p_q,
     OS_CRITICAL_EXIT_NO_SCHED();
 
     if ((opt & OS_OPT_POST_NO_SCHED) == (OS_OPT)0u) {
-        //OSSched();                                          /* Run the scheduler                                      */
-      RMSched();
+        OSSched();                                          /* Run the scheduler                                      */
+      //RMSched();
     }
 
    *p_err = OS_ERR_NONE;
@@ -949,8 +949,8 @@ void  OS_QPost (OS_Q        *p_q,
     }
     OS_CRITICAL_EXIT_NO_SCHED();
     if ((opt & OS_OPT_POST_NO_SCHED) == (OS_OPT)0) {
-        //OSSched();                                          /* Run the scheduler                                      */
-      RMSched();
+        OSSched();                                          /* Run the scheduler                                      */
+      //RMSched();
     }
     *p_err = OS_ERR_NONE;
 }
