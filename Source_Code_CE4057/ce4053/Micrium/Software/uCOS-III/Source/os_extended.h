@@ -161,10 +161,11 @@ struct skiplist {
     int height;                /* number of next pointers */
     node* tasks;            /*list of tasks with this period*/
     struct skiplist *next[1];  /* first of many */
+    //We don't know the size of this one
 };
 typedef struct skiplist * Skiplist;
 
-Skiplist readyQueue;
+extern Skiplist readyQueue;
 
 /* create an empty skiplist */
 void skiplistCreate(void);

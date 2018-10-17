@@ -156,6 +156,8 @@ int  main (void)
   int z = sizeof(TaskInfo);
   int v = sizeof(node); //16 bytes
   int w = sizeof(struct rbtNode); //24 bytes
+  int g = sizeof(struct skiplist);
+  g=g+1;
     
     BSP_IntDisAll();                                            /* Disable all interrupts.                              */
     OSInit(&err);                                               /* Init uC/OS-III.                                      */
@@ -190,11 +192,11 @@ int  main (void)
     
     
     
-    //skiplistCreate(); //intializing skip list
+    skiplistCreate(); //intializing skip list
     
     
     
-    /*  
+    
     void* mem = OSMemGet(&CommMem2, &err);
     int u = sizeof(mem); //This has only size 4 bytes (size of void pointer). Not blok size.
     switch(err){
@@ -210,7 +212,7 @@ int  main (void)
         exit(0);
         break;
     }
-*/
+
     /*
     if(mem==NULL){
       exit(0);

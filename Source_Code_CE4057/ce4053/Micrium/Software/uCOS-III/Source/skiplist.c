@@ -7,7 +7,7 @@
 
 #define MAX_HEIGHT (32)
 
-readyQueue = NULL;
+Skiplist readyQueue = NULL;
 
 /* choose a height according to a geometric distribution */
 static int
@@ -92,6 +92,10 @@ skiplistCreate(void) //remember to call this function at some point in time!! In
 
     for(i = 0; i < MAX_HEIGHT; i++) {
         readyQueue->next[i] = 0;
+        //Memory problem occurs here as we
+        //we may change addresses in the next
+        //memory block here
+        //I think MAX_HEIGHT == 32
     }
 
     //return s;
