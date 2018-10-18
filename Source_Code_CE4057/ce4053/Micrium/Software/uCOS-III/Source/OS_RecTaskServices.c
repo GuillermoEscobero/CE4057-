@@ -558,7 +558,7 @@ void  OSTaskDelRecursive (OS_TCB  *p_tcb,
         case OS_TASK_STATE_RDY:
              //OS_RdyListRemove(p_tcb);
               //TODO: remove from skiplist
-              skiplistDelete(readyQueue, p_tcb->???, p_tcb); //How to find period/key????
+              skiplistDelete(readyQueue, (int) p_tcb->ExtPtr, p_tcb); //How to find period/key????
              break;
 
         case OS_TASK_STATE_SUSPENDED:
@@ -693,8 +693,8 @@ void releaseTask(node* taskNode){
                          p_tcb->StkSize,
                          p_tcb->Opt);
 
-  OS_PrioInsert(p_tcb->Prio);
-  OS_RdyListInsertTail(p_tcb); //make task ready to run
+  //OS_PrioInsert(p_tcb->Prio);
+  //OS_RdyListInsertTail(p_tcb); //make task ready to run
 
   skiplistInsert(readyQueue, taskNode->period, p_tcb, taskNode->period); //insert into our readyqueue
 
