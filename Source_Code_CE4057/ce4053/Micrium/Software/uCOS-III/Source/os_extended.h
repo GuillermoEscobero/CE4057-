@@ -116,7 +116,7 @@ void skiplistInsert(Skiplist s, int key, OS_TCB *p_tcb, CPU_INT32U period);
 /* delete a key from s */
 void skiplistDelete(Skiplist s, int key, OS_TCB* p_tcb);
 
-struct skiplist* getMinKeyNode2(struct skiplist* list);
+struct skiplist* getMinKeyNode(struct skiplist* list);
 
 #endif /* _SKIPLIST_H */
 

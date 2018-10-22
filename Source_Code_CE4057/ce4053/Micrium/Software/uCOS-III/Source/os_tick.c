@@ -14,11 +14,11 @@
 *
 * LICENSING TERMS:
 * ---------------
-*           uC/OS-III is provided in source form for FREE short-term evaluation, for educational use or 
+*           uC/OS-III is provided in source form for FREE short-term evaluation, for educational use or
 *           for peaceful research.  If you plan or intend to use uC/OS-III in a commercial application/
-*           product then, you need to contact Micrium to properly license uC/OS-III for its use in your 
-*           application/product.   We provide ALL the source code for your convenience and to help you 
-*           experience uC/OS-III.  The fact that the source is provided does NOT mean that you can use 
+*           product then, you need to contact Micrium to properly license uC/OS-III for its use in your
+*           application/product.   We provide ALL the source code for your convenience and to help you
+*           experience uC/OS-III.  The fact that the source is provided does NOT mean that you can use
 *           it commercially without paying a licensing fee.
 *
 *           Knowledge of the source code may NOT be used to develop a similar product.
@@ -67,7 +67,6 @@ void  OS_TickTask (void *p_arg)
     p_arg = p_arg;                                          /* Prevent compiler warning                               */
 
     while (DEF_ON) {
-      //OSSched is called inside the following function (not always)
         (void)OSTaskSemPend((OS_TICK  )0,
                             (OS_OPT   )OS_OPT_PEND_BLOCKING,
                             (CPU_TS  *)&ts,
@@ -416,10 +415,8 @@ void  OS_TickListUpdate (void)
 
 
     OS_CRITICAL_ENTER();
-    int blah = OSTickCtr;
-    
-    
-    
+
+
     ts_start = OS_TS_GET();
     OSTickCtr++;                                                       /* Keep track of the number of ticks           */
     spoke    = (OS_TICK_SPOKE_IX)(OSTickCtr % OSCfg_TickWheelSize);
@@ -504,15 +501,15 @@ void  OS_TickListUpdate (void)
             done  = DEF_TRUE;
         }
     }
-    
-    tickHandlerRecursion(); //added
-    
+
+    tickHandlerRecursion(); // Added
+
     ts_end = OS_TS_GET() - ts_start;                                   /* Measure execution time of tick task         */
     if (ts_end > OSTickTaskTimeMax) {
         OSTickTaskTimeMax = ts_end;
     }
-    
-    
-    
+
+
+
     OS_CRITICAL_EXIT();
 }

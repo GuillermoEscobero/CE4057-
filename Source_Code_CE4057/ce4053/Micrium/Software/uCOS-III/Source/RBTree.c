@@ -1,18 +1,6 @@
-//#include <stdio.h>
-
 #include <stdlib.h>
-
-//#include<mpi.h>
-
 #include "os_extended.h"
 #include <os.h>
-
-/*struct rbtNode {          
-  int key; //this should be the releaseTime
-  node *tasks; //list of tasks
-  char color;
-  struct rbtNode *left, *right,*parent;
-};*/         
 
 struct rbtNode* root = NULL;
 
@@ -24,7 +12,7 @@ void leftRotate(struct rbtNode *x){
     y->left->parent = x;
   }
   y->parent = x->parent;
-  if( x->parent == NULL){          
+  if( x->parent == NULL){
     root = y;
   }
   else if( (x->parent->left!=NULL) && (x->key == x->parent->left->key)){
@@ -50,7 +38,7 @@ void rightRotate(struct rbtNode *y){
   }
   else
     y->parent->right = x;
-  
+
   x->right = y; y->parent = x;
   return;
 }
@@ -106,15 +94,13 @@ void insert(int val, OS_TCB *task, CPU_INT32U period, TaskInfo *taskInfo){
   struct rbtNode *z = searchRB(val);
   if(z!=NULL)
   {
-    //printf("\nEntered element already exists in the tree\n");
-    //I think this is the case where a node with the given time already exists
-    //We have to add the new task to the list of the node with the given time.
-    append(z->tasks, task, period, taskInfo); //cast pointer to int - remember to cast back
+    // This is the case where a node with the given time already exists
+    // We have to add the new task to the list of the node with the given time.
+    append(z->tasks, task, period, taskInfo); // Cast pointer to int - remember to cast back
     return;
   }
   struct rbtNode *x, *y;
-  //struct rbtNode *z = (struct rbtNode*)malloc(sizeof(struct rbtNode));
-  //z = (struct rbtNode*)malloc(sizeof(struct rbtNode)); //apparently malloc does not work
+
   OS_ERR  err;
   z =(struct rbtNode*) OSMemGet(&CommMem2, &err);
     switch(err){
@@ -131,16 +117,16 @@ void insert(int val, OS_TCB *task, CPU_INT32U period, TaskInfo *taskInfo){
         break;
     }
   if(z==NULL){
-    //printf("Error allocating z");
+    // printf("Error allocating z");
     exit(0);
   }
   z->key = val;
-  z->tasks = create(task, period, taskInfo, NULL); //cast pointer to int - remember to cast back
+  z->tasks = create(task, period, taskInfo, NULL); // Cast pointer to int - remember to cast back
   z->left = NULL;
   z->right = NULL;
   z->color = 'r';
   x=root;
-  
+
   if ( root == NULL )
   {
     root = z;
@@ -154,12 +140,12 @@ void insert(int val, OS_TCB *task, CPU_INT32U period, TaskInfo *taskInfo){
     }
     else x = x->right;
   }
-  z->parent = y; //set parent
+  z->parent = y; // set parent
   if ( y == NULL)
   {
     root = z;
   }
-  else if( z->key < y->key ){ //set z-as the left or right child of y (parent)
+  else if( z->key < y->key ){ // set z-as the left or right child of y (parent)
     y->left = z;
   }
   else
@@ -176,7 +162,7 @@ if (temp != NULL)
 
 {          inorderTree(temp->left);
 
-//printf(" %d--%c ",temp->key,temp->color);
+// printf(" %d--%c ",temp->key,temp->color);
 
 inorderTree(temp->right);
 
@@ -194,7 +180,7 @@ if (temp != NULL)
 
 postorderTree(temp->right);
 
-//printf(" %d--%c ",temp->key,temp->color);
+// printf(" %d--%c ",temp->key,temp->color);
 
 }return;
 
@@ -203,14 +189,14 @@ postorderTree(temp->right);
 void traversal(struct rbtNode* root)
 
 {          if (root != NULL)
-  
-{          //printf("root is %d-- %c",root->key,root->color);
 
-//printf("\nInorder tree traversal\n");
+{          // printf("root is %d-- %c",root->key,root->color);
+
+// printf("\nInorder tree traversal\n");
 
 inorderTree(root);
 
-printf("\npostorder tree traversal\n");
+// printf("\npostorder tree traversal\n");
 
 postorderTree(root);
 
@@ -230,12 +216,12 @@ struct rbtNode* searchRB(int val){
       temp = temp->left;
     }
     else{
-      //printf("Search Element Found!!\n");
-      return temp; //return node instead of just 1
+      // printf("Search Element Found!!\n");
+      return temp; // return node instead of just 1
     }
   }
-  //printf("Given Data Not Found in RB Tree!!\n");
-  return NULL; //return NULL
+  // printf("Given Data Not Found in RB Tree!!\n");
+  return NULL;
 }
 
 struct rbtNode* RBFindMin(){
@@ -280,7 +266,7 @@ void color_delete(struct rbtNode *x){
         leftRotate(x->parent);
         w = x->parent->right;
       }
-      
+
       if ((w!=NULL) && (w->right!=NULL) && (w->left!=NULL) && (w->left->color == 'b') && (w->right->color == 'b')){
         w->color = 'r';
         x = x->parent;
@@ -291,7 +277,7 @@ void color_delete(struct rbtNode *x){
         rightRotate(w);
         w = x->parent->right;
       }
-      
+
       if(w!=NULL){
         w->color = x->parent->color;
         x->parent->color = 'b';
@@ -322,7 +308,7 @@ void color_delete(struct rbtNode *x){
         w->color = x->parent->color;
         x->parent->color = 'b';
       }
-      
+
       if(w->left!=NULL)
         w->left->color = 'b';
       if(x->parent !=NULL)
@@ -338,7 +324,7 @@ struct rbtNode* delete(int var){
   z=root;
   if((z->left ==NULL ) &&(z->right==NULL) && (z->key==var)){
     root=NULL;
-    //printf("\nRBTREE is empty\n");
+    // printf("\nRBTREE is empty\n");
     return z;
   }
 
@@ -347,18 +333,18 @@ struct rbtNode* delete(int var){
       z=z->left;
     else
       z=z->right;
-    
+
     if(z== NULL)
      return NULL;
   }
-  
+
   if((z->left==NULL)||(z->right==NULL)){
     y = z;
   }
   else{
     y = successor(z);
   }
-  
+
   if (y->left!=NULL){
     x = y->left;
   }
@@ -366,14 +352,14 @@ struct rbtNode* delete(int var){
     if(y->right !=NULL)
       x = y->right;
   }
-  //setting the child of y's parent to y.
-  if((x!=NULL)) //removed && y->parente != NULL
+  // setting the child of y's parent to y.
+  if((x!=NULL)) // removed && y->parente != NULL
     x->parent = y->parent;
 
   if ((y !=NULL) && (x!=NULL) && (y->parent==NULL)){
-      //x->parent = NULL;
-      root=x; //root updated here when node->key = 0 exists
-    //this one is skipped when node->key = 35000000
+      // x->parent = NULL;
+      root=x; // root updated here when node->key = 0 exists
+    // this one is skipped when node->key = 35000000
   }
   else if (y == y->parent->left){
     y->parent->left = x;
@@ -381,7 +367,7 @@ struct rbtNode* delete(int var){
   else{
     y->parent->right = x;
   }
-  
+
   if (y != z){
     z->key = y->key;
   }

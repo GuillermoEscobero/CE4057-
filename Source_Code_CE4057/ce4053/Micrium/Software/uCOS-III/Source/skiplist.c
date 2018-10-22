@@ -279,6 +279,6 @@ skiplistDelete(Skiplist s, int key, OS_TCB* p_tcb)
     // free(target);
 }
 
-struct skiplist* getMinKeyNode2(struct skiplist* list){
+struct skiplist* getMinKeyNode(struct skiplist* list){
   return list->next[0];//->next[0]; //get the first element of the first level (level 0)
 }
