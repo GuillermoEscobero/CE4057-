@@ -14,11 +14,11 @@
 *
 * LICENSING TERMS:
 * ---------------
-*           uC/OS-III is provided in source form for FREE short-term evaluation, for educational use or 
+*           uC/OS-III is provided in source form for FREE short-term evaluation, for educational use or
 *           for peaceful research.  If you plan or intend to use uC/OS-III in a commercial application/
-*           product then, you need to contact Micrium to properly license uC/OS-III for its use in your 
-*           application/product.   We provide ALL the source code for your convenience and to help you 
-*           experience uC/OS-III.  The fact that the source is provided does NOT mean that you can use 
+*           product then, you need to contact Micrium to properly license uC/OS-III for its use in your
+*           application/product.   We provide ALL the source code for your convenience and to help you
+*           experience uC/OS-III.  The fact that the source is provided does NOT mean that you can use
 *           it commercially without paying a licensing fee.
 *
 *           Knowledge of the source code may NOT be used to develop a similar product.
@@ -65,9 +65,7 @@ void  OSInit (OS_ERR  *p_err)
         return;
     }
 #endif
-    
-    //Initialize(); //initializes the RedBlackTree (added) //might no longer be needed for the new RB-tree
-    
+
     OSInitHook();                                           /* Call port specific initialization code                 */
 
     OSIntNestingCtr                 = (OS_NESTING_CTR)0;    /* Clear the interrupt nesting counter                    */
@@ -363,7 +361,6 @@ void  OSSched (void)
     CPU_SR_ALLOC();
 
 
-
     if (OSIntNestingCtr > (OS_NESTING_CTR)0) {              /* ISRs still nested?                                     */
         return;                                             /* Yes ... only schedule when no nested ISRs              */
     }
@@ -375,12 +372,12 @@ void  OSSched (void)
     CPU_INT_DIS();
     OSPrioHighRdy   = OS_PrioGetHighest();                  /* Find the highest priority ready                        */
     OSTCBHighRdyPtr = OSRdyList[OSPrioHighRdy].HeadPtr;
-    
-    //added the three lines below
+
+    // Added the three lines below
     if(OSTCBHighRdyPtr == &OSIdleTaskTCB){
-      OSTCBHighRdyPtr = RMSched();
+      OSTCBHighRdyPtr = RMSched(); // Custom scheduler
     }
-    
+
     if (OSTCBHighRdyPtr == OSTCBCurPtr) {                   /* Current task is still highest priority task?           */
         CPU_INT_EN();                                       /* Yes ... no need to context switch                      */
         return;
@@ -522,7 +519,6 @@ void  OSSchedUnlock (OS_ERR  *p_err)
 
     CPU_CRITICAL_EXIT();                                    /* Scheduler should be re-enabled                         */
     OSSched();                                              /* Run the scheduler                                      */
-    //RMSched();
    *p_err = OS_ERR_NONE;
 }
 
@@ -651,7 +647,6 @@ void  OSSchedRoundRobinYield (OS_ERR  *p_err)
     CPU_CRITICAL_EXIT();
 
     OSSched();                                              /* Run new task                                           */
-    //RMSched();
     *p_err = OS_ERR_NONE;
 }
 #endif
