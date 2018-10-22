@@ -1,11 +1,7 @@
-//#include <bits/stdc++.h>
-
 #include <stdlib.h>
 #include <os.h>
-//#include "fatal.h"
 
 //TCB information
-
 
 typedef struct TaskInfo {
   OS_TCB        *p_tcb;
@@ -26,71 +22,12 @@ typedef struct TaskInfo {
 #ifndef _MEM_H
 #define _MEM_H
 
-#define N_BLKS 48 //Probably way to few blocks for containing both RB-tree and linkedList nodes.
-#define BLK_SIZE 16 //Maybe to small for RB tree or linked list nodes
-extern OS_MEM  CommMem2; //memory heap
+#define N_BLKS 48
+#define BLK_SIZE 16
 
+extern OS_MEM CommMem2; // memory heap
 
 #endif  /* _MEM_H */
-
-//typedef struct TCBInfo {
-//  CPU_STK             *StkPtr;                            /* Pointer to current top of stack                        */
-//  void                *ExtPtr;                            /* Pointer to user definable data for TCB extension       */
-//  CPU_STK             *StkLimitPtr;                       /* Pointer used to set stack 'watermark' limit            */
-//  OS_TCB              *NextPtr;                           /* Pointer to next     TCB in the TCB list                */
-//  OS_TCB              *PrevPtr;                           /* Pointer to previous TCB in the TCB list                */
-//  OS_TCB              *TickNextPtr;
-//  OS_TCB              *TickPrevPtr;
-//  OS_TICK_SPOKE       *TickSpokePtr;                      /* Pointer to tick spoke if task is in the tick list      */
-//  CPU_CHAR            *NamePtr;                           /* Pointer to task name                                   */
-//  CPU_STK             *StkBasePtr;                        /* Pointer to base address of stack                       */
-//  OS_TASK_PTR          TaskEntryAddr;                     /* Pointer to task entry point address                    */
-//  void                *TaskEntryArg;                      /* Argument passed to task when it was created            */
-//  OS_PEND_DATA        *PendDataTblPtr;                    /* Pointer to list containing objects pended on           */
-//  OS_STATE             PendOn;                            /* Indicates what task is pending on                      */
-//  OS_STATUS            PendStatus;                        /* Pend status                                            */
-//  OS_STATE             TaskState;                         /* See OS_TASK_STATE_xxx                                  */
-//  OS_PRIO              Prio;                              /* Task priority (0 == highest)                           */
-//  CPU_STK_SIZE         StkSize;                           /* Size of task stack (in number of stack elements)       */
-//  //OS_OPT               Opt;                               /* Task options as passed by OSTaskCreate()               */
-//  //OS_OBJ_QTY           PendDataTblEntries;                /* Size of array of objects to pend on                    */
-//  //CPU_TS               TS;                                /* Timestamp                                              */
-//  //OS_SEM_CTR           SemCtr;                            /* Task specific semaphore counter                        */                                                          /* DELAY / TIMEOUT                                        */
-//  //OS_TICK              TickCtrPrev;                       /* Previous time when task was            ready           */
-//  //OS_TICK              TickCtrMatch;                      /* Absolute time when task is going to be ready           */
-//  //OS_TICK              TickRemain;                        /* Number of ticks remaining for a match (updated at ...  */                                                          /* ... run-time by OS_StatTask()                          */
-//  //OS_TICK              TimeQuanta;
-//  //OS_TICK              TimeQuantaCtr;
-//} TCBInfo;
-
-/*RBTree*/
-#ifndef _RedBlack_H
-#define _RedBlack_H
-
-typedef int ElementType;
-#define NegInfinity (-10000)
-
-
-struct RedBlackNode;
-typedef struct RedBlackNode *Position;
-typedef struct RedBlackNode *RedBlackTree;
-
-RedBlackTree MakeEmpty(RedBlackTree T);
-Position Find(ElementType X, RedBlackTree T);
-Position FindMin(RedBlackTree T);
-Position FindMax(RedBlackTree T);
-void Initialize(void); //return type changed to void from RedBlackTree
-RedBlackTree Insert(ElementType Item, OS_TCB *task, CPU_INT32U period, TaskInfo* taskInfo, RedBlackTree T);
-RedBlackTree Remove(ElementType X, RedBlackTree T);
-ElementType Retrieve(Position P);
-void PrintTree(RedBlackTree T);
-RedBlackTree retrieveTree(void); //added
-
-#endif  /* _RedBlack_H */
-
-
-
-
 
 
 #ifndef _LinkedList_H
@@ -125,19 +62,15 @@ node* reverse(node* head);
 #endif  /* _LinkedList_H */
 
 
+#ifndef _RBTree_H
+#define _RBTree_H
 
-
-#ifndef _RedBlack2_H
-#define _RedBlack2_H
-
-//struct rbtNode;
 struct rbtNode {
   int key; //this should be the releaseTime
   node *tasks; //list of tasks
   char color;
   struct rbtNode *left, *right,*parent;
 };
-//struct rbtNode* root = NULL; //should maybe not be here
 
 void leftRotate(struct rbtNode *x);
 void rightRotate(struct rbtNode *y);
@@ -151,18 +84,18 @@ struct rbtNode* successor(struct rbtNode *x);
 void color_delete(struct rbtNode *x);
 struct rbtNode* delete(int var);
 
-#endif  /* _RedBlack2_H */
+#endif  /* _RBTree_H */
 
 #ifndef _SKIPLIST_H
 #define _SKIPLIST_H
 
 struct skiplist {
-    int key;                    /*period*/
+    int key;                   /* period */
     int height;                /* number of next pointers */
-    node* tasks;            /*list of tasks with this period*/
+    node* tasks;               /* list of tasks with this period */
     struct skiplist *next[1];  /* first of many */
-    //We don't know the size of this one
 };
+
 typedef struct skiplist * Skiplist;
 
 extern Skiplist readyQueue;
@@ -187,7 +120,8 @@ struct skiplist* getMinKeyNode2(struct skiplist* list);
 
 #endif /* _SKIPLIST_H */
 
-/*OS_RecTaskServices*/
+/************* OS_RecTaskServices *************/
+
 void OSTaskCreateRecursive(OS_TCB        *p_tcb,
                     CPU_CHAR      *p_name,
                     OS_TASK_PTR    p_task,
@@ -202,11 +136,9 @@ void OSTaskCreateRecursive(OS_TCB        *p_tcb,
                     OS_OPT         opt,
                     OS_ERR        *p_err);
 
-void  OSTaskDelRecursive (OS_TCB  *p_tcb,
+void OSTaskDelRecursive (OS_TCB  *p_tcb,
                           OS_ERR  *p_err);
 
 void tickHandlerRecursion();
 void releaseTask(node* taskNode);
-//Skiplist minNode = getMinKeyNode();
-
 OS_TCB* RMSched();
