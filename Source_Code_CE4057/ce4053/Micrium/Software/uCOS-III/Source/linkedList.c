@@ -1,22 +1,18 @@
-//#include <stdio.h>
 #include <stdlib.h>
 #include <os.h>
 #include "os_extended.h"
- 
 
- 
+
 typedef void (*callback)(node* data);
- 
+
 /*
     create a new node
     initialize the data and next field
- 
+
     return the newly created node
 */
 node* create(OS_TCB* data, CPU_INT32U period, TaskInfo* taskInfo, node* next)
 {
-    //node* new_node = (node*)malloc(sizeof(node));
-    //malloc does not work
     OS_ERR  err;
     node* new_node = (node*)OSMemGet(&CommMem2, &err);
     switch(err){
@@ -32,21 +28,15 @@ node* create(OS_TCB* data, CPU_INT32U period, TaskInfo* taskInfo, node* next)
         exit(0);
         break;
     }
-    /*
-    if(new_node == NULL)
-    {
-        //printf("Error creating a new node.\n");
-        exit(0);
-    }
-*/
+
     new_node->data = data; //these four lines does not work as intended. Go through values in debugger!!!!
     new_node->period = period;
     new_node->next = next;
     new_node->taskInfo = taskInfo;
- 
+
     return new_node;
 }
- 
+
 /*
     add a new node at the beginning of the list
 */
@@ -56,7 +46,7 @@ node* prepend(node* head,OS_TCB* data, CPU_INT32U period, TaskInfo* taskInfo)
     head = new_node;
     return head;
 }
- 
+
 /*
     add a new node at the end of the list
 */
@@ -68,14 +58,14 @@ node* append(node* head, OS_TCB* data, CPU_INT32U period, TaskInfo* taskInfo)
     node *cursor = head;
     while(cursor->next != NULL)
         cursor = cursor->next;
- 
+
     /* create a new node */
     node* new_node =  create(data, period, taskInfo, NULL);
     cursor->next = new_node;
- 
+
     return head;
 }
- 
+
 /*
     insert a new node after the prev node
 */
@@ -87,7 +77,7 @@ node* insert_after(node *head, OS_TCB* data, CPU_INT32U period, TaskInfo* taskIn
     node *cursor = head;
     while(cursor != prev)
         cursor = cursor->next;
- 
+
     if(cursor != NULL)
     {
         node* new_node = create(data, period, taskInfo, cursor->next);
@@ -99,7 +89,7 @@ node* insert_after(node *head, OS_TCB* data, CPU_INT32U period, TaskInfo* taskIn
         return NULL;
     }
 }
- 
+
 /*
     insert a new node before the nxt node
 */
@@ -107,13 +97,13 @@ node* insert_before(node *head, OS_TCB* data, CPU_INT32U period, TaskInfo* taskI
 {
     if(nxt == NULL || head == NULL)
         return NULL;
- 
+
     if(head == nxt)
     {
         head = prepend(head,data, period, taskInfo);
         return head;
     }
- 
+
     /* find the prev node, starting from the first node*/
     node *cursor = head;
     while(cursor != NULL)
@@ -122,7 +112,7 @@ node* insert_before(node *head, OS_TCB* data, CPU_INT32U period, TaskInfo* taskI
             break;
         cursor = cursor->next;
     }
- 
+
     if(cursor != NULL)
     {
         node* new_node = create(data, period, taskInfo, cursor->next);
@@ -134,7 +124,7 @@ node* insert_before(node *head, OS_TCB* data, CPU_INT32U period, TaskInfo* taskI
         return NULL;
     }
 }
- 
+
 /*
     traverse the linked list
 */
@@ -161,42 +151,22 @@ node* remove_front(node** head)
     /* is this the last node in the list */
     if(front == *head)
         head = NULL;
-    /*
-    OS_ERR err;
-    OSMemPut(&CommMem2, (void *)front, &err);
 
-    switch(err){
-      case OS_ERR_NONE:
-        break;
-      case OS_ERR_MEM_FULL:
-        exit(0);
-        break;
-      case OS_ERR_MEM_INVALID_P_BLK:
-        exit(0);
-        break;
-      case OS_ERR_MEM_INVALID_P_MEM:
-        exit(0);
-        break;
-      case OS_ERR_OBJ_TYPE:
-        exit(0);
-        break;
-    }
-    */
-    
-    //free(front);
+    // Warning: Memory is NOT freed
+
     return front;
 }
- 
+
 /*
     remove node from the back of the list
-    returns the removed back and updates 
+    returns the removed back and updates
     head if necessary
 */
 node* remove_back(node** head)
 {
     if(*head == NULL)
         return NULL;
- 
+
     node *cursor = *head;
     node *back = NULL;
     while(cursor->next != NULL)
@@ -204,19 +174,19 @@ node* remove_back(node** head)
         back = cursor;
         cursor = cursor->next;
     }
- 
+
     if(back != NULL)
         back->next = NULL;
- 
+
     /* if this is the last node in the list*/
     if(cursor == *head)
         *head = NULL;
- 
-    //free(cursor);
- 
+
+    // Warning: Memory is NOT freed
+
     return cursor;
 }
- 
+
 /*
     remove a node from the list
     returns the removed node and updates
@@ -229,7 +199,7 @@ node* remove_any(node** head,OS_TCB* p_tcb)
     /* if the node is the first node */
     if(p_tcb == (*head)->data)
         return remove_front(head);
- 
+
     /* if the node is the last node */
     node* cursor2 = *head;
     while(cursor2->next != NULL){
@@ -237,7 +207,7 @@ node* remove_any(node** head,OS_TCB* p_tcb)
     }
     if(p_tcb == cursor2->data)
         return remove_back(head);
- 
+
     /* if the node is in the middle */
     node* cursor = *head;
     while(cursor != NULL)
@@ -246,18 +216,18 @@ node* remove_any(node** head,OS_TCB* p_tcb)
             break;
         cursor = cursor->next;
     }
- 
+
     if(cursor != NULL)
     {
         node* tmp = cursor->next;
         cursor->next = tmp->next;
         tmp->next = NULL;
-        //free(tmp);
+        // Warning: Memory is NOT freed
         return tmp;
     }
     //return head;
     return NULL; //the node was not found
- 
+
 }
 /*
     display a node
@@ -268,16 +238,16 @@ void display(node* n)
         //printf("%d ", n->data);
   }
 }
- 
+
 /*
     Search for a specific node with input data
- 
+
     return the first matched node that stores the input data,
     otherwise return NULL
 */
 node* search(node* head,OS_TCB* data)
 {
- 
+
     node *cursor = head;
     while(cursor!=NULL)
     {
@@ -287,20 +257,20 @@ node* search(node* head,OS_TCB* data)
     }
     return NULL;
 }
- 
+
 /*
     remove all element of the list
 */
 void dispose(node *head)
 {
-  OS_ERR  err; //memory error handling
+    OS_ERR err;
     node *cursor, *tmp;
- 
+
     if(head != NULL)
     {
         cursor = head->next;
         head->next = NULL;
-        OSMemPut(&CommMem2,head,&err); //commMem2 is the memory partition
+        OSMemPut(&CommMem2,head,&err);
             switch(err){
               case OS_ERR_NONE:
                 break;
@@ -320,8 +290,8 @@ void dispose(node *head)
         while(cursor != NULL)
         {
             tmp = cursor->next;
-            //free(cursor); //we should use OSMemPut here instead
-            OSMemPut(&CommMem2,cursor,&err); //commMem2 is the memory partition
+
+            OSMemPut(&CommMem2,cursor,&err);
             switch(err){
               case OS_ERR_NONE:
                 break;
@@ -342,6 +312,7 @@ void dispose(node *head)
         }
     }
 }
+
 /*
     return the number of elements in the list
 */
@@ -356,16 +327,17 @@ int count(node *head)
     }
     return c;
 }
+
 /*
     sort the linked list using insertion sort
 */
 node* insertion_sort(node* head)
 {
     node *x, *y, *e;
- 
+
     x = head;
     head = NULL;
- 
+
     while(x != NULL)
     {
         e = x;
@@ -396,7 +368,7 @@ node* insertion_sort(node* head)
     }
     return head;
 }
- 
+
 /*
     reverse the linked list
 */
