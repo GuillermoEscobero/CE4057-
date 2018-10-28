@@ -1664,6 +1664,9 @@
                 <name>$PROJ_DIR$\..\..\..\..\..\uCOS-III\Source\OS_RecTaskServices.c</name>
             </file>
             <file>
+                <name>$PROJ_DIR$\..\..\..\..\..\uCOS-III\Source\OS_ResShareServices.c</name>
+            </file>
+            <file>
                 <name>$PROJ_DIR$\..\..\..\..\..\uCOS-III\Source\os_sem.c</name>
             </file>
             <file>
@@ -1686,9 +1689,6 @@
             </file>
             <file>
                 <name>$PROJ_DIR$\..\..\..\..\..\uCOS-III\Source\RBTree.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\..\..\..\..\uCOS-III\Source\RBTree2.c</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\..\..\..\..\uCOS-III\Source\skiplist.c</name>
