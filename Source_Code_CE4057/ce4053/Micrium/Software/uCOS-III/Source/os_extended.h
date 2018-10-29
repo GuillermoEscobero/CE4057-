@@ -142,3 +142,57 @@ void OSTaskDelRecursive (OS_TCB  *p_tcb,
 void tickHandlerRecursion();
 void releaseTask(node* taskNode);
 OS_TCB* RMSched();
+
+
+#ifndef _AVLTREE_H
+#define _AVLTREE_H
+
+// An AVL tree node
+struct Node
+{
+	int key;
+	struct Node *left;
+	struct Node *right;
+	int height;
+};
+
+// A utility function to get maximum of two integers
+int max(int a, int b);
+
+// A utility function to get height of the tree
+int height(struct Node *N);
+
+/* Helper function that allocates a new node with the given key and
+	NULL left and right pointers. */
+struct Node* newNode(int key);
+
+// A utility function to right rotate subtree rooted with y
+// See the diagram given above.
+struct Node *rightRotate(struct Node *y);
+
+// A utility function to left rotate subtree rooted with x
+// See the diagram given above.
+struct Node *leftRotate(struct Node *x);
+
+// Get Balance factor of node N
+int getBalance(struct Node *N);
+
+struct Node* insert(struct Node* node, int key);
+
+/* Given a non-empty binary search tree, return the
+node with minimum key value found in that tree.
+Note that the entire tree does not need to be
+searched. */
+struct Node * minValueNode(struct Node* node);
+
+// Recursive function to delete a node with given key
+// from subtree with given root. It returns root of
+// the modified subtree.
+struct Node* deleteNode(struct Node* root, int key);
+
+// A utility function to print preorder traversal of
+// the tree.
+// The function also prints height of every node
+void preOrder(struct Node *root);
+
+#endif /* _AVLTREE_H */
