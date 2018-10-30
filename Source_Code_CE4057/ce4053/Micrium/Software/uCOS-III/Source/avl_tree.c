@@ -1,20 +1,23 @@
 #include<stdio.h>
 #include<stdlib.h>
 
+avlnode avlTree = NULL;
+
 // An AVL tree node
-struct Node
+typedef struct Node
 {
+  //We will probably need some data here
 	int key;
 	struct Node *left;
 	struct Node *right;
 	int height;
-};
+} avlnode;
 
 // A utility function to get maximum of two integers
 int max(int a, int b);
 
 // A utility function to get height of the tree
-int height(struct Node *N)
+int height(avlnode *N)
 {
 	if (N == NULL)
 		return 0;
@@ -29,10 +32,27 @@ int max(int a, int b)
 
 /* Helper function that allocates a new node with the given key and
 	NULL left and right pointers. */
-struct Node* newNode(int key)
+avlnode* newNode(int key)
 {
-	struct Node* node = (struct Node*)
-						malloc(sizeof(struct Node));
+	//avlnode* node = (avlnode*) malloc(sizeof(avlnode));
+        
+        OS_ERR  err;
+        node =(avlnode*) OSMemGet(&CommMem2, &err);
+        switch(err){
+          case OS_ERR_NONE:
+            break;
+          case OS_ERR_MEM_INVALID_P_MEM:
+            exit(0);
+            break;
+          case OS_ERR_MEM_NO_FREE_BLKS:
+            exit(0);
+            break;
+          case OS_ERR_OBJ_TYPE:
+            exit(0);
+            break;
+        }
+        
+        
 	node->key = key;
 	node->left = NULL;
 	node->right = NULL;
@@ -42,10 +62,10 @@ struct Node* newNode(int key)
 
 // A utility function to right rotate subtree rooted with y
 // See the diagram given above.
-struct Node *rightRotate(struct Node *y)
+avlnode *rightRotate(avlnode *y)
 {
-	struct Node *x = y->left;
-	struct Node *T2 = x->right;
+	avlnode *x = y->left;
+	avlnode *T2 = x->right;
 
 	// Perform rotation
 	x->right = y;
@@ -61,10 +81,10 @@ struct Node *rightRotate(struct Node *y)
 
 // A utility function to left rotate subtree rooted with x
 // See the diagram given above.
-struct Node *leftRotate(struct Node *x)
+avlnode *leftRotate(avlnode *x)
 {
-	struct Node *y = x->right;
-	struct Node *T2 = y->left;
+	avlnode *y = x->right;
+	avlnode *T2 = y->left;
 
 	// Perform rotation
 	y->left = x;
@@ -79,14 +99,14 @@ struct Node *leftRotate(struct Node *x)
 }
 
 // Get Balance factor of node N
-int getBalance(struct Node *N)
+int getBalance(avlnode *N)
 {
 	if (N == NULL)
 		return 0;
 	return height(N->left) - height(N->right);
 }
 
-struct Node* insert(struct Node* node, int key)
+avlnode* insert(avlnode* node, int key)
 {
 	/* 1. Perform the normal BST rotation */
 	if (node == NULL)
@@ -140,9 +160,9 @@ struct Node* insert(struct Node* node, int key)
 node with minimum key value found in that tree.
 Note that the entire tree does not need to be
 searched. */
-struct Node * minValueNode(struct Node* node)
+avlnode * minValueNode(avlnode* node)
 {
-	struct Node* current = node;
+	avlnode* current = node;
 
 	/* loop down to find the leftmost leaf */
 	while (current->left != NULL)
@@ -154,7 +174,7 @@ struct Node * minValueNode(struct Node* node)
 // Recursive function to delete a node with given key
 // from subtree with given root. It returns root of
 // the modified subtree.
-struct Node* deleteNode(struct Node* root, int key)
+avlnode* deleteNode(avlnode* root, int key)
 {
 	// STEP 1: PERFORM STANDARD BST DELETE
 
@@ -178,7 +198,7 @@ struct Node* deleteNode(struct Node* root, int key)
 		// node with only one child or no child
 		if( (root->left == NULL) || (root->right == NULL) )
 		{
-			struct Node *temp = root->left ? root->left :
+			avlnode *temp = root->left ? root->left :
 											root->right;
 
 			// No child case
@@ -190,13 +210,32 @@ struct Node* deleteNode(struct Node* root, int key)
 			else // One child case
 			*root = *temp; // Copy the contents of
 							// the non-empty child
-			free(temp); // TODO: OSMemGet, we have to decide if we should use different memory partitions
+			//free(temp); // TODO: OSMemGet, we have to decide if we should use different memory partitions
+                        //Should we delete or return the node??
+                        OS_ERR err;
+                        OSMemPut(&CommMem2,temp,&err); //should we check if temp is NULL?
+                        switch(err){
+                        case OS_ERR_NONE:
+                          break;
+                        case OS_ERR_MEM_FULL:
+                          exit(0);
+                          break;
+                        case OS_ERR_MEM_INVALID_P_BLK:
+                          exit(0);
+                          break;
+                        case OS_ERR_MEM_INVALID_P_MEM:
+                          exit(0);
+                          break;
+                        case OS_ERR_OBJ_TYPE:
+                          exit(0);
+                          break;
+                        }
 		}
 		else
 		{
 			// node with two children: Get the inorder
 			// successor (smallest in the right subtree)
-			struct Node* temp = minValueNode(root->right);
+			avlnode* temp = minValueNode(root->right);
 
 			// Copy the inorder successor's data to this node
 			root->key = temp->key;
@@ -248,7 +287,7 @@ struct Node* deleteNode(struct Node* root, int key)
 // A utility function to print preorder traversal of
 // the tree.
 // The function also prints height of every node
-void preOrder(struct Node *root)
+void preOrder(avlnode *root)
 {
 	if(root != NULL)
 	{
@@ -261,7 +300,7 @@ void preOrder(struct Node *root)
 // /* Driver program to test above function */
 // int main()
 // {
-// struct Node *root = NULL;
+// avlnode *root = NULL;
 //
 // /* Constructing tree given in the above figure */
 // 	root = insert(root, 9);

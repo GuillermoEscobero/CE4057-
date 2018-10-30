@@ -147,52 +147,69 @@ OS_TCB* RMSched();
 #ifndef _AVLTREE_H
 #define _AVLTREE_H
 
+extern avlnode* avlTree; //Global avlTree
+
 // An AVL tree node
-struct Node
+typedef struct Node
 {
 	int key;
 	struct Node *left;
 	struct Node *right;
 	int height;
-};
+} avlnode;
 
 // A utility function to get maximum of two integers
 int max(int a, int b);
 
 // A utility function to get height of the tree
-int height(struct Node *N);
+int height(avlnode *N);
 
 /* Helper function that allocates a new node with the given key and
 	NULL left and right pointers. */
-struct Node* newNode(int key);
+avlnode* newNode(int key);
 
 // A utility function to right rotate subtree rooted with y
 // See the diagram given above.
-struct Node *rightRotate(struct Node *y);
+avlnode *rightRotate(avlnode *y);
 
 // A utility function to left rotate subtree rooted with x
 // See the diagram given above.
-struct Node *leftRotate(struct Node *x);
+avlnode*leftRotate(avlnode *x);
 
 // Get Balance factor of node N
-int getBalance(struct Node *N);
+int getBalance(avlnode *N);
 
-struct Node* insert(struct Node* node, int key);
+avlnode* insert(avlnode* node, int key);
 
 /* Given a non-empty binary search tree, return the
 node with minimum key value found in that tree.
 Note that the entire tree does not need to be
 searched. */
-struct Node * minValueNode(struct Node* node);
+avlnode * minValueNode(avlnode* node);
 
 // Recursive function to delete a node with given key
 // from subtree with given root. It returns root of
 // the modified subtree.
-struct Node* deleteNode(struct Node* root, int key);
+avlnode* deleteNode(avlnode* root, int key);
 
 // A utility function to print preorder traversal of
 // the tree.
 // The function also prints height of every node
-void preOrder(struct Node *root);
+void preOrder(avl node *root);
 
 #endif /* _AVLTREE_H */
+
+
+/*
+ * Author:  zentut.com
+ * Purpose: linked stack header file
+ */
+#ifndef LINKEDSTACK_H_INCLUDED
+#define LINKEDSTACK_H_INCLUDED
+ 
+int empty(struct node *s);
+stacknode* push(stacknode *s,int data);
+stacknode* pop(stacknode *s,int *data);
+void init(stacknode* s);
+void display(stacknode* head);
+#endif // LINKEDSTACK_H_INCLUDED

@@ -19,7 +19,9 @@ void OSTaskCreateRecursive(OS_TCB        *p_tcb,
 
       CPU_STK_SIZE   i;
       CPU_INT32U period = (CPU_INT32U) p_ext; // Added
-
+      
+      
+      //Are we using this??
       OS_ERR err;
       TaskInfo* taskInfo = (TaskInfo*) OSMemGet(&CommMem2, &err);
       taskInfo->p_tcb = p_tcb;

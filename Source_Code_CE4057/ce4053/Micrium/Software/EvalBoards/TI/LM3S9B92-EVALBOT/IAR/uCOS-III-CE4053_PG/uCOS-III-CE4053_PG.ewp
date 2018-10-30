@@ -1735,6 +1735,9 @@
         <group>
             <name>Source</name>
             <file>
+                <name>$PROJ_DIR$\..\..\..\..\..\uCOS-III\Source\avl_tree.c</name>
+            </file>
+            <file>
                 <name>$PROJ_DIR$\..\..\..\..\..\uCOS-III\Source\linkedList.c</name>
             </file>
             <file>
