@@ -5,12 +5,7 @@
  */
  
 #include <stdio.h>
- 
-typedef struct stackNode
-{
-    int data;
-    struct stackNode* next;
-} stacknode;
+
  
 /*
     init the stack

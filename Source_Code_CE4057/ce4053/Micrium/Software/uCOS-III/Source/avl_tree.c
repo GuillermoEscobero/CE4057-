@@ -1,17 +1,20 @@
 #include<stdio.h>
 #include<stdlib.h>
-
-avlnode avlTree = NULL;
+#include <os.h>
+#include "os_extended.h"
 
 // An AVL tree node
-typedef struct Node
-{
-  //We will probably need some data here
-	int key;
-	struct Node *left;
-	struct Node *right;
-	int height;
-} avlnode;
+//already defined in os_extended.h
+//typedef struct Node
+//{
+//  //We will probably need some data here
+//	int key;
+//	struct Node *left;
+//	struct Node *right;
+//	int height;
+//} avlnode;
+
+avlnode* avlTree = NULL;
 
 // A utility function to get maximum of two integers
 int max(int a, int b);
@@ -37,7 +40,7 @@ avlnode* newNode(int key)
 	//avlnode* node = (avlnode*) malloc(sizeof(avlnode));
         
         OS_ERR  err;
-        node =(avlnode*) OSMemGet(&CommMem2, &err);
+        avlnode* node =(avlnode*) OSMemGet(&CommMem2, &err);
         switch(err){
           case OS_ERR_NONE:
             break;
@@ -62,7 +65,7 @@ avlnode* newNode(int key)
 
 // A utility function to right rotate subtree rooted with y
 // See the diagram given above.
-avlnode *rightRotate(avlnode *y)
+avlnode *avlRightRotate(avlnode *y)
 {
 	avlnode *x = y->left;
 	avlnode *T2 = x->right;
@@ -81,7 +84,7 @@ avlnode *rightRotate(avlnode *y)
 
 // A utility function to left rotate subtree rooted with x
 // See the diagram given above.
-avlnode *leftRotate(avlnode *x)
+avlnode *avlLeftRotate(avlnode *x)
 {
 	avlnode *y = x->right;
 	avlnode *T2 = y->left;
@@ -106,16 +109,16 @@ int getBalance(avlnode *N)
 	return height(N->left) - height(N->right);
 }
 
-avlnode* insert(avlnode* node, int key)
+avlnode* avlInsert(avlnode* node, int key)
 {
 	/* 1. Perform the normal BST rotation */
 	if (node == NULL)
 		return(newNode(key));
 
 	if (key < node->key)
-		node->left = insert(node->left, key);
+		node->left = avlInsert(node->left, key);
 	else if (key > node->key)
-		node->right = insert(node->right, key);
+		node->right = avlInsert(node->right, key);
 	else // Equal keys not allowed
 		return node;
 
@@ -132,24 +135,24 @@ avlnode* insert(avlnode* node, int key)
 
 	// Left Left Case
 	if (balance > 1 && key < node->left->key)
-		return rightRotate(node);
+		return avlRightRotate(node);
 
 	// Right Right Case
 	if (balance < -1 && key > node->right->key)
-		return leftRotate(node);
+		return avlLeftRotate(node);
 
 	// Left Right Case
 	if (balance > 1 && key > node->left->key)
 	{
-		node->left = leftRotate(node->left);
-		return rightRotate(node);
+		node->left = avlLeftRotate(node->left);
+		return avlRightRotate(node);
 	}
 
 	// Right Left Case
 	if (balance < -1 && key < node->right->key)
 	{
-		node->right = rightRotate(node->right);
-		return leftRotate(node);
+		node->right = avlRightRotate(node->right);
+		return avlLeftRotate(node);
 	}
 
 	/* return the (unchanged) node pointer */
@@ -174,7 +177,7 @@ avlnode * minValueNode(avlnode* node)
 // Recursive function to delete a node with given key
 // from subtree with given root. It returns root of
 // the modified subtree.
-avlnode* deleteNode(avlnode* root, int key)
+avlnode* avlDeleteNode(avlnode* root, int key)
 {
 	// STEP 1: PERFORM STANDARD BST DELETE
 
@@ -184,12 +187,12 @@ avlnode* deleteNode(avlnode* root, int key)
 	// If the key to be deleted is smaller than the
 	// root's key, then it lies in left subtree
 	if ( key < root->key )
-		root->left = deleteNode(root->left, key);
+		root->left = avlDeleteNode(root->left, key);
 
 	// If the key to be deleted is greater than the
 	// root's key, then it lies in right subtree
 	else if( key > root->key )
-		root->right = deleteNode(root->right, key);
+		root->right = avlDeleteNode(root->right, key);
 
 	// if key is same as root's key, then This is
 	// the node to be deleted
@@ -241,7 +244,7 @@ avlnode* deleteNode(avlnode* root, int key)
 			root->key = temp->key;
 
 			// Delete the inorder successor
-			root->right = deleteNode(root->right, temp->key);
+			root->right = avlDeleteNode(root->right, temp->key);
 		}
 	}
 
@@ -261,24 +264,24 @@ avlnode* deleteNode(avlnode* root, int key)
 
 	// Left Left Case
 	if (balance > 1 && getBalance(root->left) >= 0)
-		return rightRotate(root);
+		return avlRightRotate(root);
 
 	// Left Right Case
 	if (balance > 1 && getBalance(root->left) < 0)
 	{
-		root->left = leftRotate(root->left);
-		return rightRotate(root);
+		root->left = avlLeftRotate(root->left);
+		return avlRightRotate(root);
 	}
 
 	// Right Right Case
 	if (balance < -1 && getBalance(root->right) <= 0)
-		return leftRotate(root);
+		return avlLeftRotate(root);
 
 	// Right Left Case
 	if (balance < -1 && getBalance(root->right) > 0)
 	{
-		root->right = rightRotate(root->right);
-		return leftRotate(root);
+		root->right = avlRightRotate(root->right);
+		return avlLeftRotate(root);
 	}
 
 	return root;
@@ -303,15 +306,15 @@ void preOrder(avlnode *root)
 // avlnode *root = NULL;
 //
 // /* Constructing tree given in the above figure */
-// 	root = insert(root, 9);
-// 	root = insert(root, 5);
-// 	root = insert(root, 10);
-// 	root = insert(root, 0);
-// 	root = insert(root, 6);
-// 	root = insert(root, 11);
-// 	root = insert(root, -1);
-// 	root = insert(root, 1);
-// 	root = insert(root, 2);
+// 	root = avlInsert(root, 9);
+// 	root = avlInsert(root, 5);
+// 	root = avlInsert(root, 10);
+// 	root = avlInsert(root, 0);
+// 	root = avlInsert(root, 6);
+// 	root = avlInsert(root, 11);
+// 	root = avlInsert(root, -1);
+// 	root = avlInsert(root, 1);
+// 	root = avlInsert(root, 2);
 //
 // 	/* The constructed AVL Tree would be
 // 			9

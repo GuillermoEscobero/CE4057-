@@ -147,7 +147,7 @@ OS_TCB* RMSched();
 #ifndef _AVLTREE_H
 #define _AVLTREE_H
 
-extern avlnode* avlTree; //Global avlTree
+
 
 // An AVL tree node
 typedef struct Node
@@ -157,6 +157,8 @@ typedef struct Node
 	struct Node *right;
 	int height;
 } avlnode;
+
+extern avlnode* avlTree; //Global avlTree
 
 // A utility function to get maximum of two integers
 int max(int a, int b);
@@ -170,16 +172,16 @@ avlnode* newNode(int key);
 
 // A utility function to right rotate subtree rooted with y
 // See the diagram given above.
-avlnode *rightRotate(avlnode *y);
+avlnode *avlRightRotate(avlnode *y);
 
 // A utility function to left rotate subtree rooted with x
 // See the diagram given above.
-avlnode*leftRotate(avlnode *x);
+avlnode*avlLeftRotate(avlnode *x);
 
 // Get Balance factor of node N
 int getBalance(avlnode *N);
 
-avlnode* insert(avlnode* node, int key);
+avlnode* avlInsert(avlnode* node, int key);
 
 /* Given a non-empty binary search tree, return the
 node with minimum key value found in that tree.
@@ -190,12 +192,12 @@ avlnode * minValueNode(avlnode* node);
 // Recursive function to delete a node with given key
 // from subtree with given root. It returns root of
 // the modified subtree.
-avlnode* deleteNode(avlnode* root, int key);
+avlnode* avlDeleteNode(avlnode* root, int key);
 
 // A utility function to print preorder traversal of
 // the tree.
 // The function also prints height of every node
-void preOrder(avl node *root);
+void preOrder(avlnode *root);
 
 #endif /* _AVLTREE_H */
 
@@ -206,10 +208,15 @@ void preOrder(avl node *root);
  */
 #ifndef LINKEDSTACK_H_INCLUDED
 #define LINKEDSTACK_H_INCLUDED
+
+typedef struct stackNode{
+    int data;
+    struct stackNode* next;
+} stacknode;
  
 int empty(struct node *s);
 stacknode* push(stacknode *s,int data);
 stacknode* pop(stacknode *s,int *data);
 void init(stacknode* s);
-void display(stacknode* head);
+//void display(stacknode* head);
 #endif // LINKEDSTACK_H_INCLUDED

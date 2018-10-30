@@ -18,7 +18,7 @@ void osMuRelease(OS_MUTEX* mutex, OS_ERR* err){
   //This function should un-block a function waiting for this resource
 }
 
-OS_Mutex osMuCreate(OS_MUTEX* mutex, char* name, OS_ERR* err){
+OS_MUTEX osMuCreate(OS_MUTEX* mutex, char* name, OS_ERR* err){
   //TODO: instantiate and return a new and initialized mutex
   //I think we may use the data structure OS_Mutex build into micrium
 }
