@@ -14,7 +14,7 @@
 //	int height;
 //} avlnode;
 
-avlnode* avlTree = NULL;
+avlnode* waitQueue = NULL;
 
 // A utility function to get maximum of two integers
 int max(int a, int b);
@@ -109,18 +109,21 @@ int getBalance(avlnode *N)
 	return height(N->left) - height(N->right);
 }
 
-avlnode* avlInsert(avlnode* node, int key)
+//Returns the root of the new tree
+avlnode* avlInsert(avlnode* node, int key, OS_TCB* p_tcb)
 {
 	/* 1. Perform the normal BST rotation */
 	if (node == NULL)
 		return(newNode(key));
 
 	if (key < node->key)
-		node->left = avlInsert(node->left, key);
+		node->left = avlInsert(node->left, key, p_tcb);
 	else if (key > node->key)
-		node->right = avlInsert(node->right, key);
-	else // Equal keys not allowed
+		node->right = avlInsert(node->right, key, p_tcb);
+	else{ // Equal keys: append new tcb to list of tasks
+                append(node->tasks, p_tcb, (CPU_INT32U) p_tcb->ExtPtr, NULL); //taskInfo not used. //Beaware of the cast here; is it correct?
 		return node;
+        }
 
 	/* 2. Update height of this ancestor node */
 	node->height = 1 + max(height(node->left),
@@ -177,44 +180,84 @@ avlnode * minValueNode(avlnode* node)
 // Recursive function to delete a node with given key
 // from subtree with given root. It returns root of
 // the modified subtree.
-avlnode* avlDeleteNode(avlnode* root, int key)
+
+//Changes made: it takes a pointer to the root pointer
+//it changes the root and returns the TCB of the task that can be released
+//p_tcb is used to specify a certain tcb, that should be removed.
+//the key should be the same as p_tcb->prio.
+//if p_tcb==NULL, then any tcb may removed and returned from the node with the given key.
+OS_TCB* avlDeleteNode(avlnode** root, int key, OS_TCB *p_tcb)
 {
+  OS_TCB* p_tcb_ret; //the task to return
+  //Be carefull as we have two different TCBs in this function
 	// STEP 1: PERFORM STANDARD BST DELETE
 
-	if (root == NULL)
-		return root;
+	if (*root == NULL)
+		return NULL;
 
 	// If the key to be deleted is smaller than the
 	// root's key, then it lies in left subtree
-	if ( key < root->key )
-		root->left = avlDeleteNode(root->left, key);
+	if ( key < (*root)->key ){
+          //as the function shoul modify the root itself, it should be necessary to return it
+		//(*root)->left = avlDeleteNode(&((*root)->left), key, p_tcb);
+                p_tcb_ret = avlDeleteNode(&((*root)->left), key, p_tcb);
+        }
 
 	// If the key to be deleted is greater than the
 	// root's key, then it lies in right subtree
-	else if( key > root->key )
-		root->right = avlDeleteNode(root->right, key);
+	else if( key > (*root)->key ){
+          //as the function shoul modify the root itself, it should be necessary to return it
+		//(*root)->right = avlDeleteNode(&((*root)->right), key, p_tcb);
+                p_tcb_ret = avlDeleteNode(&((*root)->right), key, p_tcb);
+        }
 
 	// if key is same as root's key, then This is
 	// the node to be deleted
 	else
 	{
+          if(p_tcb == NULL){
+            //first remove a tcb from the list of the node
+            node* tasknode = remove_front(&((*root)->tasks));
+            p_tcb_ret = tasknode->data;
+            //TODO: free the memory of the node
+            //if list is not empty, then return without further changes
+            if((*root)->tasks != NULL){
+              return p_tcb_ret;
+            }
+          }
+          else{ //we want to remove a given tcb
+            node* tasknode = remove_any(&((*root)->tasks), p_tcb);
+            if(tasknode == NULL){
+              return NULL;
+            }
+            else{
+              OS_TCB* tcb_ret = tasknode->data;
+              //TODO: free the memory of the node
+              //if list is not empty, then return without further changes
+              if((*root)->tasks != NULL){
+                return p_tcb_ret;
+              }
+            }
+          }
+          //list is empty and we have to remove the node
 		// node with only one child or no child
-		if( (root->left == NULL) || (root->right == NULL) )
+		if( ((*root)->left == NULL) || ((*root)->right == NULL) )
 		{
-			avlnode *temp = root->left ? root->left :
-											root->right;
+			avlnode *temp = (*root)->left ? (*root)->left :
+											(*root)->right;
 
 			// No child case
 			if (temp == NULL)
 			{
-				temp = root;
-				root = NULL;
+				temp = (*root);
+				(*root) = NULL;
 			}
 			else // One child case
-			*root = *temp; // Copy the contents of
+			**root = *temp; // Copy the contents of
 							// the non-empty child
 			//free(temp); // TODO: OSMemGet, we have to decide if we should use different memory partitions
                         //Should we delete or return the node??
+                        //is it the correct data that we free??
                         OS_ERR err;
                         OSMemPut(&CommMem2,temp,&err); //should we check if temp is NULL?
                         switch(err){
@@ -238,53 +281,68 @@ avlnode* avlDeleteNode(avlnode* root, int key)
 		{
 			// node with two children: Get the inorder
 			// successor (smallest in the right subtree)
-			avlnode* temp = minValueNode(root->right);
+			avlnode* temp = minValueNode((*root)->right);
 
 			// Copy the inorder successor's data to this node
-			root->key = temp->key;
+			(*root)->key = temp->key;
 
 			// Delete the inorder successor
-			root->right = avlDeleteNode(root->right, temp->key);
+			//(*root)->right = avlDeleteNode(&((*root)->right), temp->key);
+                        //The root should be updated by the call below
+                        p_tcb_ret = avlDeleteNode(&((*root)->right), temp->key, p_tcb);
 		}
 	}
 
 	// If the tree had only one node then return
-	if (root == NULL)
-	return root;
+	if (*root == NULL){
+          //return root;
+          return p_tcb_ret;
+        }
 
 	// STEP 2: UPDATE HEIGHT OF THE CURRENT NODE
-	root->height = 1 + max(height(root->left),
-						height(root->right));
+	(*root)->height = 1 + max(height((*root)->left),
+						height((*root)->right));
 
 	// STEP 3: GET THE BALANCE FACTOR OF THIS NODE (to
 	// check whether this node became unbalanced)
-	int balance = getBalance(root);
+	int balance = getBalance((*root));
 
 	// If this node becomes unbalanced, then there are 4 cases
 
 	// Left Left Case
-	if (balance > 1 && getBalance(root->left) >= 0)
-		return avlRightRotate(root);
+	if (balance > 1 && getBalance((*root)->left) >= 0){
+		//return avlRightRotate(*root);
+          *root = avlRightRotate(*root);
+          return p_tcb;
+        }
 
 	// Left Right Case
-	if (balance > 1 && getBalance(root->left) < 0)
+	if (balance > 1 && getBalance((*root)->left) < 0)
 	{
-		root->left = avlLeftRotate(root->left);
-		return avlRightRotate(root);
+		(*root)->left = avlLeftRotate((*root)->left);
+		//return avlRightRotate(*root);
+                (*root) = avlRightRotate(*root);
+                return p_tcb;
 	}
 
 	// Right Right Case
-	if (balance < -1 && getBalance(root->right) <= 0)
-		return avlLeftRotate(root);
+	if (balance < -1 && getBalance((*root)->right) <= 0){
+		//return avlLeftRotate(*root);
+                *root = avlLeftRotate(*root);
+                return p_tcb;
+        }
 
 	// Right Left Case
-	if (balance < -1 && getBalance(root->right) > 0)
+	if (balance < -1 && getBalance((*root)->right) > 0)
 	{
-		root->right = avlRightRotate(root->right);
-		return avlLeftRotate(root);
+		(*root)->right = avlRightRotate((*root)->right);
+		//return avlLeftRotate(*root);
+                *root = avlLeftRotate(*root);
+                return p_tcb;
 	}
 
-	return root;
+	//return root;
+        return p_tcb;
 }
 
 // A utility function to print preorder traversal of

@@ -150,7 +150,7 @@ node* remove_front(node** head)
     front->next = NULL;
     /* is this the last node in the list */
     if(front == *head)
-        head = NULL;
+        head = NULL; //TODO: I think we should at a * to head
 
     // Warning: Memory is NOT freed
 

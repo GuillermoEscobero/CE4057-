@@ -152,13 +152,14 @@ OS_TCB* RMSched();
 // An AVL tree node
 typedef struct Node
 {
-	int key;
+	int key; //priority
+        node* tasks; //tasks waiting for a mutex at this priority
 	struct Node *left;
 	struct Node *right;
 	int height;
 } avlnode;
 
-extern avlnode* avlTree; //Global avlTree
+extern avlnode* waitQueue; //Global avlTree
 
 // A utility function to get maximum of two integers
 int max(int a, int b);
@@ -181,7 +182,7 @@ avlnode*avlLeftRotate(avlnode *x);
 // Get Balance factor of node N
 int getBalance(avlnode *N);
 
-avlnode* avlInsert(avlnode* node, int key);
+avlnode* avlInsert(avlnode* node, int key, OS_TCB* p_tcb);
 
 /* Given a non-empty binary search tree, return the
 node with minimum key value found in that tree.
@@ -192,7 +193,7 @@ avlnode * minValueNode(avlnode* node);
 // Recursive function to delete a node with given key
 // from subtree with given root. It returns root of
 // the modified subtree.
-avlnode* avlDeleteNode(avlnode* root, int key);
+OS_TCB* avlDeleteNode(avlnode** root, int key, OS_TCB* p_tcb);
 
 // A utility function to print preorder traversal of
 // the tree.
@@ -213,10 +214,39 @@ typedef struct stackNode{
     int data;
     struct stackNode* next;
 } stacknode;
+
+extern stacknode* ceilingStack;
  
 int empty(struct node *s);
 stacknode* push(stacknode *s,int data);
 stacknode* pop(stacknode *s,int *data);
 void init(stacknode* s);
+CPU_INT32U peek(stacknode* head);
 //void display(stacknode* head);
 #endif // LINKEDSTACK_H_INCLUDED
+
+
+#ifndef EXT_MUTEX_H
+#define EXT_MUTEX_H
+
+struct  ext_mutex {
+    OS_OBJ_TYPE          Type;                              /* Mutual Exclusion Semaphore                             */
+    CPU_CHAR            *NamePtr;                           /* Should be set to OS_OBJ_TYPE_MUTEX                     */
+    OS_PEND_LIST         PendList;                          /* Pointer to Mutex Name (NUL terminated ASCII)           */
+#if OS_CFG_DBG_EN > 0u
+    OS_MUTEX            *DbgPrevPtr;
+    OS_MUTEX            *DbgNextPtr;
+    CPU_CHAR            *DbgNamePtr;
+#endif
+    OS_TCB              *OwnerTCBPtr;                       /* List of tasks waiting on event flag group              */
+    OS_PRIO              OwnerOriginalPrio;
+    OS_NESTING_CTR       OwnerNestingCtr;                   /* Mutex is available when the counter is 0               */
+    CPU_TS               TS;
+    
+    int                  resourceCeiling; //added
+};
+
+typedef  struct  ext_mutex            EXT_MUTEX;
+
+
+#endif // EXT_MUTEX_H

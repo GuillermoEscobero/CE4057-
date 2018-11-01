@@ -6,6 +6,7 @@
  
 #include <stdio.h>
 
+stacknode* ceilingStack = NULL;
  
 /*
     init the stack
@@ -84,6 +85,13 @@ stacknode* pop(stacknode *head,int *element)
     }
     return head;
 }
+
+//returns the value at the top of the stack
+CPU_INT32U peek(stacknode* head){
+  return head->data;
+}
+
+
 /*
     returns 1 if the stack is empty, otherwise returns 0
 */
