@@ -83,22 +83,7 @@ void  osMuRequest (EXT_MUTEX   *p_mutex,
 //        return;
 //    }
     
-    int systemCeiling = peek(ceilingStack);
-    if(OSTCBCurPtr->Prio > systemCeiling || TCB already have a mutex){ //Can we take the mutex (slide 15 PCP). TODO: second if clause
-        /* Yes, caller may proceed                                */
-        p_mutex->OwnerTCBPtr       =  OSTCBCurPtr; //Save the owning task
-        p_mutex->OwnerOriginalPrio =  OSTCBCurPtr->Prio; //save the owners original priority
-        p_mutex->OwnerNestingCtr   = (OS_NESTING_CTR)1; //the number of times the owner was granted this mutex
-        ceilingStack = push(ceilingStack , OSTCBCurPtr->Prio); //Push the priority of this task onto the system ceiling stack
-        //TODO: The push above should use the mutex ceiling and not the priority of the task
-        if (p_ts != (CPU_TS *)0) {
-           *p_ts                   = p_mutex->TS;
-        }
-        CPU_CRITICAL_EXIT();
-        *p_err                     =  OS_ERR_NONE;
-        return;
-    }
-
+    
     if (OSTCBCurPtr == p_mutex->OwnerTCBPtr) {              /* See if current task is already the owner of the mutex  */
         p_mutex->OwnerNestingCtr++;
         if (p_ts != (CPU_TS *)0) {
@@ -106,6 +91,28 @@ void  osMuRequest (EXT_MUTEX   *p_mutex,
         }
         CPU_CRITICAL_EXIT();
         *p_err = OS_ERR_MUTEX_OWNER;                        /* Indicate that current task already owns the mutex      */
+        return;
+    }
+    
+    int systemCeiling = peek(ceilingStack);
+    node* TCBListNode = (search(resUseTask, OSTCBCurPtr));
+    if(OSTCBCurPtr->Prio > systemCeiling || TCBListNode!=NULL){ //Can we take the mutex (slide 15 PCP).
+        /* Yes, caller may proceed                                */
+        if(TCBListNode==NULL){ //tell that the tcb owns a mutex.
+          resUseTask = prepend(resUseTask,OSTCBCurPtr, 1, NULL); //the period is used to tell the number of mutexes the task has. No task info needed.
+        }
+        else{
+          TCBListNode->period++;
+        }
+        p_mutex->OwnerTCBPtr       =  OSTCBCurPtr; //Save the owning task
+        p_mutex->OwnerOriginalPrio =  OSTCBCurPtr->Prio; //save the owners original priority
+        p_mutex->OwnerNestingCtr   = (OS_NESTING_CTR)1; //the number of times the owner was granted this mutex
+        ceilingStack = push(ceilingStack , p_mutex->resourceCeiling); //Push the resource ceiling onto the system ceiling stack
+        if (p_ts != (CPU_TS *)0) {
+           *p_ts                   = p_mutex->TS;
+        }
+        CPU_CRITICAL_EXIT();
+        *p_err                     =  OS_ERR_NONE;
         return;
     }
 
@@ -121,6 +128,7 @@ void  osMuRequest (EXT_MUTEX   *p_mutex,
         }
     }
 
+    //We did not succeed in getting the mutex
     OS_CRITICAL_ENTER_CPU_CRITICAL_EXIT();                  /* Lock the scheduler/re-enable interrupts                */
     p_tcb = p_mutex->OwnerTCBPtr;                           /* Point to the TCB of the Mutex owner                    */
     if (p_tcb->Prio > OSTCBCurPtr->Prio) {                  /* See if mutex owner has a lower priority than current   */
@@ -149,13 +157,14 @@ void  osMuRequest (EXT_MUTEX   *p_mutex,
 //                                       OSTCBCurPtr->Prio);      //????????????????????????????????????????????????????????????????????
                  //Maybe we should remove the owner from the waitList, update the priority and then reinsert to the waitList
                 //The following tries to cover the function call above
-                 OS_TCB* p_tcb2 = avlDeleteNode(&waitQueue, p_tcb->Prio, p_tcb);
+                 EXT_MUTEX* mutex2; //the mutex p_tcb2 is waiting for
+                 OS_TCB* p_tcb2 = avlDeleteNode(&waitQueue, p_tcb->Prio, p_tcb, mutex2); //last argument is for a second return value
                  if(p_tcb != p_tcb2){
                    //If the found tcb is not the same as as the given one, then we have a big problem
                    exit(0);
                  }
                  p_tcb->Prio = OSTCBCurPtr->Prio;
-                 waitQueue = avlInsert(waitQueue, p_tcb->Prio, p_tcb);
+                 waitQueue = avlInsert(waitQueue, p_tcb->Prio, p_tcb, mutex2);
                  break;
 
             default:
@@ -170,7 +179,7 @@ void  osMuRequest (EXT_MUTEX   *p_mutex,
 //             OS_TASK_PEND_ON_MUTEX,
 //             timeout);
     //The calls below should cover the one above
-    avlInsert(waitQueue, OSTCBCurPtr->Prio, OSTCBCurPtr);
+    avlInsert(waitQueue, OSTCBCurPtr->Prio, OSTCBCurPtr, p_mutex);
     skiplistDelete(readyQueue, OSTCBCurPtr->Prio, OSTCBCurPtr);
     OSTCBCurPtr->TaskState = OS_TASK_STATE_PEND;
     //Insert the task into the wait list
@@ -287,19 +296,23 @@ void osMuRelease(EXT_MUTEX  *p_mutex,
     int newCeiling = peek(ceilingStack);
     p_mutex->OwnerTCBPtr     = (OS_TCB       *)0; //no owner
     if (OSTCBCurPtr->Prio != p_mutex->OwnerOriginalPrio) {
-      //TODO: remove the OSTCBCurPtr from the readyQueue
+      //remove the OSTCBCurPtr from the readyQueue
+      skiplistDelete(readyQueue, (int) OSTCBCurPtr->ExtPtr, OSTCBCurPtr); //Beaware of cast
       OSTCBCurPtr->Prio = p_mutex->OwnerOriginalPrio;     /* Lower owner's priority back to its original one        */
-      //TODO: insert the OSTCBCurPtr to the readyQueue
-      OSPrioCur         = OSTCBCurPtr->Prio;
+      //insert the OSTCBCurPtr to the readyQueue
+      skiplistInsert(readyQueue, (int) OSTCBCurPtr->ExtPtr, OSTCBCurPtr, (CPU_INT32U) OSTCBCurPtr->ExtPtr); //readyQueue, period, tcb, period
+      
+      OSPrioCur         = OSTCBCurPtr->Prio;//What is this used for?????
     }
     avlnode* minNode = minValueNode(waitQueue);
     while(minNode->key<newCeiling){ //check if we can remove any task from the waitqueue
-      OS_TCB* p_tcb = avlDeleteNode(&waitQueue, minNode->key, NULL); //We dont care which task we get with this priority
-      EXT_MUTEX* mutex2 = NULL; //p_tcb->?? //TODO: save the mutex of the task in the TCB so we can retrieve it here
+      EXT_MUTEX* mutex2;
+      OS_TCB* p_tcb = avlDeleteNode(&waitQueue, minNode->key, NULL, &mutex2); //We dont care which task we get with this priority
+      //EXT_MUTEX* mutex2 = NULL; //p_tcb->?? //TODO: save the mutex of the task in the TCB so we can retrieve it here
       
-        p_mutex->OwnerTCBPtr       =  p_tcb; //Save the owning task
-        p_mutex->OwnerOriginalPrio =  p_tcb->Prio; //save the owners original priority
-        p_mutex->OwnerNestingCtr   = (OS_NESTING_CTR)1; //the number of times the owner was granted this mutex
+        mutex2->OwnerTCBPtr       =  p_tcb; //Save the owning task
+        mutex2->OwnerOriginalPrio =  p_tcb->Prio; //save the owners original priority
+        mutex2->OwnerNestingCtr   = (OS_NESTING_CTR)1; //the number of times the owner was granted this mutex
         ceilingStack = push(ceilingStack , OSTCBCurPtr->Prio); //Push the priority of this task onto the system ceiling stack
         //TODO: The push above is wrong
         

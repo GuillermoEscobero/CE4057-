@@ -62,6 +62,30 @@ node* reverse(node* head);
 #endif  /* _LinkedList_H */
 
 
+
+
+#ifndef _LinkedListQ_H
+#define _LinkedListQ_H
+
+//typedef struct node node;
+typedef struct listNodeQ
+{
+    OS_TCB* data;
+    EXT_MUTEX* waitMu; //The mutex the TCB is waiting for
+    struct node* next;
+} listNodeQ;
+typedef void (*callback)(node* data);
+
+listNodeQ* create(OS_TCB* data, EXT_MUTEX* mutex, listNodeQ* next);
+listNodeQ* prepend(listNodeQ* head,OS_TCB* data, EXT_MUTEX* mutex);
+listNodeQ* append(listNodeQ* head, OS_TCB* data, EXT_MUTEX* mutex);
+listNodeQ* remove_any(listNodeQ** head,OS_TCB* p_tcb);
+listNodeQ* search(listNodeQ* head,OS_TCB* data);
+void dispose(listNodeQ *head);
+#endif  /* _LinkedListQ_H */
+
+
+
 #ifndef _RBTree_H
 #define _RBTree_H
 
@@ -153,7 +177,7 @@ OS_TCB* RMSched();
 typedef struct Node
 {
 	int key; //priority
-        node* tasks; //tasks waiting for a mutex at this priority
+        listNodeQ* tasks; //tasks waiting for a mutex at this priority
 	struct Node *left;
 	struct Node *right;
 	int height;
@@ -250,3 +274,11 @@ typedef  struct  ext_mutex            EXT_MUTEX;
 
 
 #endif // EXT_MUTEX_H
+
+
+#ifndef TASK_HOLDING_MU_H
+#define TASK_HOLDING_MU_H
+
+extern *node ResUseTask;
+
+#endif // TASK_HOLDING_MU_H

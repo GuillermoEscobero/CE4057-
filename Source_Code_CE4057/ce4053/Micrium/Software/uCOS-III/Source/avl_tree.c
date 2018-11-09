@@ -35,7 +35,7 @@ int max(int a, int b)
 
 /* Helper function that allocates a new node with the given key and
 	NULL left and right pointers. */
-avlnode* newNode(int key)
+avlnode* newNode(int key, OS_TCB* tcb, EXT_MUTEX* mutex)
 {
 	//avlnode* node = (avlnode*) malloc(sizeof(avlnode));
         
@@ -55,10 +55,26 @@ avlnode* newNode(int key)
             break;
         }
         
+        OS_ERR  err;
+        listNodeQ* node =(listNodeQ*) OSMemGet(&CommMem2, &err);
+        switch(err){
+          case OS_ERR_NONE:
+            break;
+          case OS_ERR_MEM_INVALID_P_MEM:
+            exit(0);
+            break;
+          case OS_ERR_MEM_NO_FREE_BLKS:
+            exit(0);
+            break;
+          case OS_ERR_OBJ_TYPE:
+            exit(0);
+            break;
+        }
         
 	node->key = key;
 	node->left = NULL;
 	node->right = NULL;
+        node->tasks = prependQ(node->tasks,tcb, mutex)
 	node->height = 1; // new node is initially added at leaf
 	return(node);
 }
@@ -110,7 +126,7 @@ int getBalance(avlnode *N)
 }
 
 //Returns the root of the new tree
-avlnode* avlInsert(avlnode* node, int key, OS_TCB* p_tcb)
+avlnode* avlInsert(avlnode* node, int key, OS_TCB* p_tcb, EXT_MUTEX mutex) //last argument is the mutex, the task is waiting for
 {
 	/* 1. Perform the normal BST rotation */
 	if (node == NULL)
@@ -121,7 +137,7 @@ avlnode* avlInsert(avlnode* node, int key, OS_TCB* p_tcb)
 	else if (key > node->key)
 		node->right = avlInsert(node->right, key, p_tcb);
 	else{ // Equal keys: append new tcb to list of tasks
-                append(node->tasks, p_tcb, (CPU_INT32U) p_tcb->ExtPtr, NULL); //taskInfo not used. //Beaware of the cast here; is it correct?
+                appendQ(node->tasks, p_tcb, mutex); //Beaware of the cast here; is it correct?
 		return node;
         }
 
@@ -186,7 +202,7 @@ avlnode * minValueNode(avlnode* node)
 //p_tcb is used to specify a certain tcb, that should be removed.
 //the key should be the same as p_tcb->prio.
 //if p_tcb==NULL, then any tcb may removed and returned from the node with the given key.
-OS_TCB* avlDeleteNode(avlnode** root, int key, OS_TCB *p_tcb)
+OS_TCB* avlDeleteNode(avlnode** root, int key, OS_TCB *p_tcb, EXT_MUTEX** mutex) //The last argument is an extra return value to get the mutex
 {
   OS_TCB* p_tcb_ret; //the task to return
   //Be carefull as we have two different TCBs in this function
@@ -200,7 +216,7 @@ OS_TCB* avlDeleteNode(avlnode** root, int key, OS_TCB *p_tcb)
 	if ( key < (*root)->key ){
           //as the function shoul modify the root itself, it should be necessary to return it
 		//(*root)->left = avlDeleteNode(&((*root)->left), key, p_tcb);
-                p_tcb_ret = avlDeleteNode(&((*root)->left), key, p_tcb);
+                p_tcb_ret = avlDeleteNode(&((*root)->left), key, p_tcb, mutex);
         }
 
 	// If the key to be deleted is greater than the
@@ -208,7 +224,7 @@ OS_TCB* avlDeleteNode(avlnode** root, int key, OS_TCB *p_tcb)
 	else if( key > (*root)->key ){
           //as the function shoul modify the root itself, it should be necessary to return it
 		//(*root)->right = avlDeleteNode(&((*root)->right), key, p_tcb);
-                p_tcb_ret = avlDeleteNode(&((*root)->right), key, p_tcb);
+                p_tcb_ret = avlDeleteNode(&((*root)->right), key, p_tcb, mutex);
         }
 
 	// if key is same as root's key, then This is
@@ -217,8 +233,9 @@ OS_TCB* avlDeleteNode(avlnode** root, int key, OS_TCB *p_tcb)
 	{
           if(p_tcb == NULL){
             //first remove a tcb from the list of the node
-            node* tasknode = remove_front(&((*root)->tasks));
+            listNodeQ* tasknode = remove_frontQ(&((*root)->tasks));
             p_tcb_ret = tasknode->data;
+            *mutex = tasknode->waitMu;
             //TODO: free the memory of the node
             //if list is not empty, then return without further changes
             if((*root)->tasks != NULL){
@@ -226,12 +243,14 @@ OS_TCB* avlDeleteNode(avlnode** root, int key, OS_TCB *p_tcb)
             }
           }
           else{ //we want to remove a given tcb
-            node* tasknode = remove_any(&((*root)->tasks), p_tcb);
+            listNodeQ* tasknode = remove_any(&((*root)->tasks), p_tcb);
             if(tasknode == NULL){
               return NULL;
             }
             else{
-              OS_TCB* tcb_ret = tasknode->data;
+              //OS_TCB* tcb_ret = tasknode->data; //I think htis line is wrong
+              p_tcb_ret = tasknode->data;
+              *mutex = tasknode->waitMu;
               //TODO: free the memory of the node
               //if list is not empty, then return without further changes
               if((*root)->tasks != NULL){
@@ -341,7 +360,7 @@ OS_TCB* avlDeleteNode(avlnode** root, int key, OS_TCB *p_tcb)
                 return p_tcb;
 	}
 
-	//return root;
+	//return root; ?? its a TCB
         return p_tcb;
 }
 
