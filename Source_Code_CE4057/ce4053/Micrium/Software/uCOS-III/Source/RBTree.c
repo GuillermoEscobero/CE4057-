@@ -229,6 +229,9 @@ struct rbtNode* RBFindMin(){
 }
 
 struct rbtNode* min(struct rbtNode *x){
+  if(x==NULL){
+    return x;
+  }
   while (x->left){
     x = x->left;
   }

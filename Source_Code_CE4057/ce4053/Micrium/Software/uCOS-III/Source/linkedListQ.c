@@ -41,7 +41,7 @@ listNodeQ* createQ(OS_TCB* data, EXT_MUTEX* mutex, listNodeQ* next)
 */
 listNodeQ* prependQ(listNodeQ* head,OS_TCB* data, EXT_MUTEX* mutex)
 {
-    listNodeQ* new_node = create(data, mutex, head);
+    listNodeQ* new_node = createQ(data, mutex, head);
     head = new_node;
     return head;
 }
@@ -59,7 +59,7 @@ listNodeQ* appendQ(listNodeQ* head, OS_TCB* data, EXT_MUTEX* mutex)
         cursor = cursor->next;
 
     /* create a new node */
-    listNodeQ* new_node =  create(data, mutex, NULL);
+    listNodeQ* new_node =  createQ(data, mutex, NULL);
     cursor->next = new_node;
 
     return head;
@@ -73,7 +73,7 @@ listNodeQ* remove_frontQ(listNodeQ** head)
 {
     if(head == NULL)
         return NULL;
-    node *front = *head;
+    listNodeQ *front = *head;
     (*head) = (*head)->next;
     front->next = NULL;
     /* is this the last node in the list */
@@ -96,7 +96,7 @@ listNodeQ* remove_backQ(listNodeQ** head)
         return NULL;
 
     listNodeQ *cursor = *head;
-    node *back = NULL;
+    listNodeQ *back = NULL;
     while(cursor->next != NULL)
     {
         back = cursor;
@@ -126,7 +126,7 @@ listNodeQ* remove_anyQ(listNodeQ** head,OS_TCB* p_tcb)
         return NULL;
     /* if the node is the first node */
     if(p_tcb == (*head)->data)
-        return remove_front(head);
+        return remove_frontQ(head);
 
     /* if the node is the last node */
     listNodeQ* cursor2 = *head;
@@ -134,10 +134,10 @@ listNodeQ* remove_anyQ(listNodeQ** head,OS_TCB* p_tcb)
       cursor2 = cursor2->next;
     }
     if(p_tcb == cursor2->data)
-        return remove_back(head);
+        return remove_backQ(head);
 
     /* if the node is in the middle */
-    node* cursor = *head;
+    listNodeQ* cursor = *head;
     while(cursor != NULL)
     {
         if(cursor->next->data == p_tcb) //does the next node contain the tcb?

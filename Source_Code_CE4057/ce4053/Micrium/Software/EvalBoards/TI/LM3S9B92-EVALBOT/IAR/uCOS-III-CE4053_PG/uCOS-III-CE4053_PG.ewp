@@ -1081,7 +1081,7 @@
             </file>
         </group>
         <file>
-            <name>$PROJ_DIR$\app.c</name>
+            <name>$PROJ_DIR$\app2.c</name>
         </file>
         <file>
             <name>$PROJ_DIR$\app_vect.c</name>
@@ -1739,6 +1739,9 @@
             </file>
             <file>
                 <name>$PROJ_DIR$\..\..\..\..\..\uCOS-III\Source\linkedList.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\..\..\..\..\uCOS-III\Source\linkedListQ.c</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\..\..\..\..\uCOS-III\Source\os_cfg_app.c</name>

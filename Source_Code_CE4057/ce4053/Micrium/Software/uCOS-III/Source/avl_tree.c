@@ -55,26 +55,10 @@ avlnode* newNode(int key, OS_TCB* tcb, EXT_MUTEX* mutex)
             break;
         }
         
-        OS_ERR  err;
-        listNodeQ* node =(listNodeQ*) OSMemGet(&CommMem2, &err);
-        switch(err){
-          case OS_ERR_NONE:
-            break;
-          case OS_ERR_MEM_INVALID_P_MEM:
-            exit(0);
-            break;
-          case OS_ERR_MEM_NO_FREE_BLKS:
-            exit(0);
-            break;
-          case OS_ERR_OBJ_TYPE:
-            exit(0);
-            break;
-        }
-        
 	node->key = key;
 	node->left = NULL;
 	node->right = NULL;
-        node->tasks = prependQ(node->tasks,tcb, mutex)
+        node->tasks = prependQ(node->tasks,tcb, mutex);
 	node->height = 1; // new node is initially added at leaf
 	return(node);
 }
@@ -126,16 +110,16 @@ int getBalance(avlnode *N)
 }
 
 //Returns the root of the new tree
-avlnode* avlInsert(avlnode* node, int key, OS_TCB* p_tcb, EXT_MUTEX mutex) //last argument is the mutex, the task is waiting for
+avlnode* avlInsert(avlnode* node, int key, OS_TCB* p_tcb, EXT_MUTEX* mutex) //last argument is the mutex, the task is waiting for
 {
 	/* 1. Perform the normal BST rotation */
 	if (node == NULL)
-		return(newNode(key));
+		return(newNode(key, p_tcb, mutex));
 
 	if (key < node->key)
-		node->left = avlInsert(node->left, key, p_tcb);
+		node->left = avlInsert(node->left, key, p_tcb, mutex);
 	else if (key > node->key)
-		node->right = avlInsert(node->right, key, p_tcb);
+		node->right = avlInsert(node->right, key, p_tcb, mutex);
 	else{ // Equal keys: append new tcb to list of tasks
                 appendQ(node->tasks, p_tcb, mutex); //Beaware of the cast here; is it correct?
 		return node;
@@ -243,7 +227,7 @@ OS_TCB* avlDeleteNode(avlnode** root, int key, OS_TCB *p_tcb, EXT_MUTEX** mutex)
             }
           }
           else{ //we want to remove a given tcb
-            listNodeQ* tasknode = remove_any(&((*root)->tasks), p_tcb);
+            listNodeQ* tasknode = remove_anyQ(&((*root)->tasks), p_tcb);
             if(tasknode == NULL){
               return NULL;
             }
@@ -308,7 +292,7 @@ OS_TCB* avlDeleteNode(avlnode** root, int key, OS_TCB *p_tcb, EXT_MUTEX** mutex)
 			// Delete the inorder successor
 			//(*root)->right = avlDeleteNode(&((*root)->right), temp->key);
                         //The root should be updated by the call below
-                        p_tcb_ret = avlDeleteNode(&((*root)->right), temp->key, p_tcb);
+                        p_tcb_ret = avlDeleteNode(&((*root)->right), temp->key, p_tcb, mutex);
 		}
 	}
 

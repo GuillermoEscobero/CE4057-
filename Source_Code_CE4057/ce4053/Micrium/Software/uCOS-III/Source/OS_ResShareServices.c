@@ -158,7 +158,7 @@ void  osMuRequest (EXT_MUTEX   *p_mutex,
                  //Maybe we should remove the owner from the waitList, update the priority and then reinsert to the waitList
                 //The following tries to cover the function call above
                  EXT_MUTEX* mutex2; //the mutex p_tcb2 is waiting for
-                 OS_TCB* p_tcb2 = avlDeleteNode(&waitQueue, p_tcb->Prio, p_tcb, mutex2); //last argument is for a second return value
+                 OS_TCB* p_tcb2 = avlDeleteNode(&waitQueue, p_tcb->Prio, p_tcb, &mutex2); //last argument is for a second return value
                  if(p_tcb != p_tcb2){
                    //If the found tcb is not the same as as the given one, then we have a big problem
                    exit(0);

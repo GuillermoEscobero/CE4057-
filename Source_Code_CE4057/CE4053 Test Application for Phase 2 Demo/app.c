@@ -37,6 +37,9 @@
 
 #include "ext/SD_Card.h"
 
+#include "os_extended.h"
+#include "os_cfg_app.h"
+
 /*
 *********************************************************************************************************
 *                                             LOCAL DEFINES
@@ -76,8 +79,14 @@ static  CPU_STK      AppTaskTwoStk[APP_TASK_TWO_STK_SIZE];
 static  OS_TCB       AppTaskThreeTCB;
 static  CPU_STK      AppTaskThreeStk[APP_TASK_THREE_STK_SIZE];
 
+static CPU_INT32U periodOne = 5*OS_CFG_TICK_RATE_HZ;
+static CPU_INT32U periodTwo = 10*OS_CFG_TICK_RATE_HZ;
+static CPU_INT32U periodThree = 17*OS_CFG_TICK_RATE_HZ;
+
 OS_Q            DummyQ;
 OS_MUTEX        MutexOne, MutexTwo, MutexThree;
+
+CPU_INT32U      measure=0;
 
 CPU_INT32U      iCnt = 0;
 CPU_INT08U      Left_tgt;
@@ -125,12 +134,44 @@ unsigned long iTick1, iTick2, iTick3,iTick4;
 *********************************************************************************************************
 */
 
+node* resUseTask = NULL;
+OS_MEM  CommMem2;
+CPU_INT32U  *p_addr[N_BLKS][BLK_SIZE];          // 16 buffers of 32 words of 32 bits
+
 int  main (void)
 {
     OS_ERR  err;
 
     BSP_IntDisAll();                                            /* Disable all interrupts.                              */
     OSInit(&err);                                               /* Init uC/OS-III.                                      */
+    
+    CPU_CHAR *p_name = "Memory Partition"; //name for memory partition
+    OSMemCreate (&CommMem2, p_name, &p_addr[0][0], N_BLKS, BLK_SIZE*sizeof(CPU_INT32U), &err);
+    
+    switch(err){
+      case OS_ERR_NONE:
+        break;
+      case OS_ERR_ILLEGAL_CREATE_RUN_TIME:
+        exit(0);
+        break;
+      case OS_ERR_MEM_CREATE_ISR:
+        exit(0);
+        break;
+      case OS_ERR_MEM_INVALID_BLKS:
+        exit(0);
+        break;
+      case OS_ERR_MEM_INVALID_P_ADDR:
+        exit(0);
+        break;
+      case OS_ERR_MEM_INVALID_SIZE:
+        exit(0);
+        break;
+    }
+    
+    
+    
+    skiplistCreate(); //intializing skip list
+    //ResUseTask = NULL; //The list of tasks that uses a resource/mutex at the moment
 
     OSTaskCreate((OS_TCB     *)&AppTaskStartTCB,           /* Create the start task                                */
                  (CPU_CHAR   *)"App Task Start",

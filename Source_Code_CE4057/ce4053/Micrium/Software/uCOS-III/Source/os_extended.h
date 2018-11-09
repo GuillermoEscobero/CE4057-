@@ -22,7 +22,7 @@ typedef struct TaskInfo {
 #ifndef _MEM_H
 #define _MEM_H
 
-#define N_BLKS 48
+#define N_BLKS 128
 #define BLK_SIZE 16
 
 extern OS_MEM CommMem2; // memory heap
@@ -62,7 +62,30 @@ node* reverse(node* head);
 #endif  /* _LinkedList_H */
 
 
+#ifndef EXT_MUTEX_H
+#define EXT_MUTEX_H
 
+struct  ext_mutex {
+    OS_OBJ_TYPE          Type;                              /* Mutual Exclusion Semaphore                             */
+    CPU_CHAR            *NamePtr;                           /* Should be set to OS_OBJ_TYPE_MUTEX                     */
+    OS_PEND_LIST         PendList;                          /* Pointer to Mutex Name (NUL terminated ASCII)           */
+#if OS_CFG_DBG_EN > 0u
+    OS_MUTEX            *DbgPrevPtr;
+    OS_MUTEX            *DbgNextPtr;
+    CPU_CHAR            *DbgNamePtr;
+#endif
+    OS_TCB              *OwnerTCBPtr;                       /* List of tasks waiting on event flag group              */
+    OS_PRIO              OwnerOriginalPrio;
+    OS_NESTING_CTR       OwnerNestingCtr;                   /* Mutex is available when the counter is 0               */
+    CPU_TS               TS;
+    
+    int                  resourceCeiling; //added
+};
+
+typedef  struct  ext_mutex            EXT_MUTEX;
+
+
+#endif // EXT_MUTEX_H
 
 #ifndef _LinkedListQ_H
 #define _LinkedListQ_H
@@ -72,16 +95,17 @@ typedef struct listNodeQ
 {
     OS_TCB* data;
     EXT_MUTEX* waitMu; //The mutex the TCB is waiting for
-    struct node* next;
+    struct listNodeQ* next;
 } listNodeQ;
 typedef void (*callback)(node* data);
 
-listNodeQ* create(OS_TCB* data, EXT_MUTEX* mutex, listNodeQ* next);
-listNodeQ* prepend(listNodeQ* head,OS_TCB* data, EXT_MUTEX* mutex);
-listNodeQ* append(listNodeQ* head, OS_TCB* data, EXT_MUTEX* mutex);
-listNodeQ* remove_any(listNodeQ** head,OS_TCB* p_tcb);
-listNodeQ* search(listNodeQ* head,OS_TCB* data);
-void dispose(listNodeQ *head);
+listNodeQ* createQ(OS_TCB* data, EXT_MUTEX* mutex, listNodeQ* next);
+listNodeQ* prependQ(listNodeQ* head,OS_TCB* data, EXT_MUTEX* mutex);
+listNodeQ* appendQ(listNodeQ* head, OS_TCB* data, EXT_MUTEX* mutex);
+listNodeQ* remove_anyQ(listNodeQ** head,OS_TCB* p_tcb);
+listNodeQ* searchQ(listNodeQ* head,OS_TCB* data);
+listNodeQ* remove_frontQ(listNodeQ** head);
+void disposeQ(listNodeQ *head);
 #endif  /* _LinkedListQ_H */
 
 
@@ -193,7 +217,7 @@ int height(avlnode *N);
 
 /* Helper function that allocates a new node with the given key and
 	NULL left and right pointers. */
-avlnode* newNode(int key);
+avlnode* newNode(int key, OS_TCB* tcb, EXT_MUTEX* mutex);
 
 // A utility function to right rotate subtree rooted with y
 // See the diagram given above.
@@ -206,7 +230,7 @@ avlnode*avlLeftRotate(avlnode *x);
 // Get Balance factor of node N
 int getBalance(avlnode *N);
 
-avlnode* avlInsert(avlnode* node, int key, OS_TCB* p_tcb);
+avlnode* avlInsert(avlnode* node, int key, OS_TCB* p_tcb, EXT_MUTEX* mutex);
 
 /* Given a non-empty binary search tree, return the
 node with minimum key value found in that tree.
@@ -217,7 +241,8 @@ avlnode * minValueNode(avlnode* node);
 // Recursive function to delete a node with given key
 // from subtree with given root. It returns root of
 // the modified subtree.
-OS_TCB* avlDeleteNode(avlnode** root, int key, OS_TCB* p_tcb);
+// Last argument is for retrieving the mutex.
+OS_TCB* avlDeleteNode(avlnode** root, int key, OS_TCB* p_tcb, EXT_MUTEX** mutex);
 
 // A utility function to print preorder traversal of
 // the tree.
@@ -250,35 +275,12 @@ CPU_INT32U peek(stacknode* head);
 #endif // LINKEDSTACK_H_INCLUDED
 
 
-#ifndef EXT_MUTEX_H
-#define EXT_MUTEX_H
 
-struct  ext_mutex {
-    OS_OBJ_TYPE          Type;                              /* Mutual Exclusion Semaphore                             */
-    CPU_CHAR            *NamePtr;                           /* Should be set to OS_OBJ_TYPE_MUTEX                     */
-    OS_PEND_LIST         PendList;                          /* Pointer to Mutex Name (NUL terminated ASCII)           */
-#if OS_CFG_DBG_EN > 0u
-    OS_MUTEX            *DbgPrevPtr;
-    OS_MUTEX            *DbgNextPtr;
-    CPU_CHAR            *DbgNamePtr;
-#endif
-    OS_TCB              *OwnerTCBPtr;                       /* List of tasks waiting on event flag group              */
-    OS_PRIO              OwnerOriginalPrio;
-    OS_NESTING_CTR       OwnerNestingCtr;                   /* Mutex is available when the counter is 0               */
-    CPU_TS               TS;
-    
-    int                  resourceCeiling; //added
-};
-
-typedef  struct  ext_mutex            EXT_MUTEX;
-
-
-#endif // EXT_MUTEX_H
 
 
 #ifndef TASK_HOLDING_MU_H
 #define TASK_HOLDING_MU_H
 
-extern *node ResUseTask;
+extern node* resUseTask;
 
 #endif // TASK_HOLDING_MU_H
