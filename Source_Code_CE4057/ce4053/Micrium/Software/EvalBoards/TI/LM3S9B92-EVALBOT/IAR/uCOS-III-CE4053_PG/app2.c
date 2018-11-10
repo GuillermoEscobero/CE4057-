@@ -300,7 +300,7 @@ static  void  AppTaskOne (void  *p_arg)
 	OSMutexPost((OS_MUTEX *)&MutexOne, (OS_OPT )OS_OPT_POST_NONE, (OS_ERR *)&err);
         
     //printf("\nT1");
-    OSTaskDel((OS_TCB *)0, &err);
+    OSTaskDelRecursive((OS_TCB *)0, &err);
 }
 
 static  void  AppTaskTwo (void  *p_arg)
@@ -315,7 +315,7 @@ static  void  AppTaskTwo (void  *p_arg)
 	}
 	BSP_LED_Off(1u);
     //printf("\nT2");
-    OSTaskDel((OS_TCB *)0, &err);
+    OSTaskDelRecursive((OS_TCB *)0, &err);
 }
 
 static  void  AppTaskThree (void  *p_arg)
@@ -342,7 +342,7 @@ static  void  AppTaskThree (void  *p_arg)
     OSMutexPost((OS_MUTEX *)&MutexOne, (OS_OPT )OS_OPT_POST_NONE, (OS_ERR *)&err);
 	OSMutexPost((OS_MUTEX *)&MutexTwo, (OS_OPT )OS_OPT_POST_NONE, (OS_ERR *)&err);
     
-	OSTaskDel((OS_TCB *)0, &err);
+	OSTaskDelRecursive((OS_TCB *)0, &err);
 }
 
 
