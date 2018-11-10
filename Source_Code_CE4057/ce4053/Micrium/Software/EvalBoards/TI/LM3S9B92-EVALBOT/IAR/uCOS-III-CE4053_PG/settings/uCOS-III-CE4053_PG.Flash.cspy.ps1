@@ -23,9 +23,9 @@
 
 if ($debugfile -eq "")
 {
-& "C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.1\common\bin\cspybat" -f "C:\Users\ahj\Desktop\CE4057\Source_Code_CE4057\ce4053\Micrium\Software\EvalBoards\TI\LM3S9B92-EVALBOT\IAR\uCOS-III-CE4053_PG\settings\uCOS-III-CE4053_PG.Flash.general.xcl" --backend -f "C:\Users\ahj\Desktop\CE4057\Source_Code_CE4057\ce4053\Micrium\Software\EvalBoards\TI\LM3S9B92-EVALBOT\IAR\uCOS-III-CE4053_PG\settings\uCOS-III-CE4053_PG.Flash.driver.xcl" 
+& "C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.1\common\bin\cspybat" -f "C:\Users\GUILLECZ4057\Desktop\CE4057-\Source_Code_CE4057\ce4053\Micrium\Software\EvalBoards\TI\LM3S9B92-EVALBOT\IAR\uCOS-III-CE4053_PG\settings\uCOS-III-CE4053_PG.Flash.general.xcl" --backend -f "C:\Users\GUILLECZ4057\Desktop\CE4057-\Source_Code_CE4057\ce4053\Micrium\Software\EvalBoards\TI\LM3S9B92-EVALBOT\IAR\uCOS-III-CE4053_PG\settings\uCOS-III-CE4053_PG.Flash.driver.xcl" 
 }
 else
 {
-& "C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.1\common\bin\cspybat" -f "C:\Users\ahj\Desktop\CE4057\Source_Code_CE4057\ce4053\Micrium\Software\EvalBoards\TI\LM3S9B92-EVALBOT\IAR\uCOS-III-CE4053_PG\settings\uCOS-III-CE4053_PG.Flash.general.xcl" --debug_file=$debugfile --backend -f "C:\Users\ahj\Desktop\CE4057\Source_Code_CE4057\ce4053\Micrium\Software\EvalBoards\TI\LM3S9B92-EVALBOT\IAR\uCOS-III-CE4053_PG\settings\uCOS-III-CE4053_PG.Flash.driver.xcl" 
+& "C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.1\common\bin\cspybat" -f "C:\Users\GUILLECZ4057\Desktop\CE4057-\Source_Code_CE4057\ce4053\Micrium\Software\EvalBoards\TI\LM3S9B92-EVALBOT\IAR\uCOS-III-CE4053_PG\settings\uCOS-III-CE4053_PG.Flash.general.xcl" --debug_file=$debugfile --backend -f "C:\Users\GUILLECZ4057\Desktop\CE4057-\Source_Code_CE4057\ce4053\Micrium\Software\EvalBoards\TI\LM3S9B92-EVALBOT\IAR\uCOS-III-CE4053_PG\settings\uCOS-III-CE4053_PG.Flash.driver.xcl" 
 }

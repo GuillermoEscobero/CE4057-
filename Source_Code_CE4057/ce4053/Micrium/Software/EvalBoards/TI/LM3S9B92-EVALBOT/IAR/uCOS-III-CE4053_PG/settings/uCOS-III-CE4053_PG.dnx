@@ -48,6 +48,21 @@
         <Fmt0>OS_TCB-PendStatus	3	0</Fmt0>
         <Fmt1>OS_TCB-Prio	3	0</Fmt1>
     </struct_types>
+    <TermIOLog>
+        <LoggingEnabled>_ 0</LoggingEnabled>
+        <LogFile>_ ""</LogFile>
+    </TermIOLog>
+    <LogFile>
+        <LoggingEnabled>_ 0</LoggingEnabled>
+        <LogFile>_ ""</LogFile>
+        <Category>_ 0</Category>
+    </LogFile>
+    <CallStackLog>
+        <Enabled>0</Enabled>
+    </CallStackLog>
+    <CallStackStripe>
+        <ShowTiming>1</ShowTiming>
+    </CallStackStripe>
     <DisassembleMode>
         <mode>0</mode>
     </DisassembleMode>
@@ -65,25 +80,11 @@
         <Bp10>_ "STD_CODE" "{C:\Users\ahj\Desktop\CE4057\Source_Code_CE4057\ce4053\Micrium\Software\uCOS-III\Source\os_task.c}.529.5" 1 0 0 0 "" 0 ""</Bp10>
         <Bp11>_ "STD_CODE" "{$PROJ_DIR$\app2.c}.345.2" 1 0 0 0 "" 0 ""</Bp11>
         <Bp12>_ "STD_CODE" "{C:\Users\ahj\Desktop\CE4057\Source_Code_CE4057\ce4053\Micrium\Software\uCOS-III\Source\os_task.c}.2150.5" 1 0 0 0 "" 0 ""</Bp12>
-        <Count>13</Count>
+        <Bp13>_ "STD_CODE" "{C:\Users\GUILLECZ4057\Desktop\CE4057-\Source_Code_CE4057\ce4053\Micrium\Software\uCOS-III\Source\stack.c}.93.1" 1 0 0 0 "" 0 ""</Bp13>
+        <Count>14</Count>
     </Breakpoints>
-    <TermIOLog>
-        <LoggingEnabled>_ 0</LoggingEnabled>
-        <LogFile>_ ""</LogFile>
-    </TermIOLog>
-    <LogFile>
-        <LoggingEnabled>_ 0</LoggingEnabled>
-        <LogFile>_ ""</LogFile>
-        <Category>_ 0</Category>
-    </LogFile>
     <Aliases>
         <Count>0</Count>
         <SuppressDialog>0</SuppressDialog>
     </Aliases>
-    <CallStackLog>
-        <Enabled>0</Enabled>
-    </CallStackLog>
-    <CallStackStripe>
-        <ShowTiming>1</ShowTiming>
-    </CallStackStripe>
 </settings>

@@ -1192,7 +1192,7 @@
                     <item>root</item>
                     <item>OSTickCtr</item>
                     <item>readyQueue</item>
-                    <item></item>
+                    <item />
                 </expressions>
                 <col-names>
                     <item>Expression</item>

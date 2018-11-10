@@ -27,15 +27,9 @@ void init(stacknode* head)
     push an element into stack
 */
 stacknode* push(stacknode* head,int data)
-{
-//    stacknode* tmp = (stacknode*)malloc(sizeof(stacknode));
-//    if(tmp == NULL)
-//    {
-//        exit(0);
-//    }
-  
+{ 
       OS_ERR  err;
-      node =(avlnode*) OSMemGet(&CommMem2, &err);
+      stacknode* tmp =(stacknode*) OSMemGet(&CommMem2, &err);
       switch(err){
         case OS_ERR_NONE:
           break;

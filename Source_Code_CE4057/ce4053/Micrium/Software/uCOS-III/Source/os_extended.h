@@ -281,7 +281,7 @@ typedef struct stackNode{
 
 extern stacknode* ceilingStack;
  
-int empty(struct node *s);
+int empty(stacknode* head);
 stacknode* push(stacknode *s,int data);
 stacknode* pop(stacknode *s,int *data);
 void init(stacknode* s);
