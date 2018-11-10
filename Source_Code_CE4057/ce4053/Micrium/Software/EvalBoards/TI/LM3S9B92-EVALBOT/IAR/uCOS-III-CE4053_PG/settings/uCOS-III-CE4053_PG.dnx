@@ -59,12 +59,18 @@
         <Bp4>_ "STD_CODE" "{C:\Users\ahj\Desktop\CE4057\Source_Code_CE4057\ce4053\Micrium\Software\uCOS-III\Source\OS_RecTaskServices.c}.349.11" 1 0 0 0 "" 0 ""</Bp4>
         <Bp5>_ "STD_CODE" "{C:\Users\ahj\Desktop\CE4057\Source_Code_CE4057\ce4053\Micrium\Software\uCOS-III\Source\os_tick.c}.70.9" 0 0 0 0 "OSTickCtr &gt; 1190" 0 ""</Bp5>
         <Bp6>_ "STD_CODE" "{C:\Users\ahj\Desktop\CE4057\Source_Code_CE4057\ce4053\Micrium\Software\uCOS-III\Source\os_task.c}.1261.5" 0 0 0 0 "OSTickCtr&gt;1190" 0 ""</Bp6>
-        <Bp7>_ "STD_CODE" "{C:\Users\ahj\Desktop\CE4057\Source_Code_CE4057\ce4053\Micrium\Software\uCOS-III\Source\os_core.c}.378.25" 1 0 0 0 "OSTickCtr &gt;1190" 0 ""</Bp7>
+        <Bp7>_ "STD_CODE" "{C:\Users\ahj\Desktop\CE4057\Source_Code_CE4057\ce4053\Micrium\Software\uCOS-III\Source\os_core.c}.378.25" 0 0 0 0 "OSTickCtr &gt;1190" 0 ""</Bp7>
         <Bp8>_ "STD_CODE" "{C:\Users\ahj\Desktop\CE4057\Source_Code_CE4057\ce4053\Micrium\Software\uCOS-III\Source\OS_RecTaskServices.c}.377.5" 0 0 0 0 "" 0 ""</Bp8>
         <Bp9>_ "STD_CODE" "{C:\Users\ahj\Desktop\CE4057\Source_Code_CE4057\ce4053\Micrium\Software\uCOS-III\Source\OS_RecTaskServices.c}.301.5" 0 0 0 0 "" 0 ""</Bp9>
         <Bp10>_ "STD_CODE" "{C:\Users\ahj\Desktop\CE4057\Source_Code_CE4057\ce4053\Micrium\Software\uCOS-III\Source\os_task.c}.529.5" 1 0 0 0 "" 0 ""</Bp10>
-        <Count>11</Count>
+        <Bp11>_ "STD_CODE" "{$PROJ_DIR$\app2.c}.345.2" 1 0 0 0 "" 0 ""</Bp11>
+        <Bp12>_ "STD_CODE" "{C:\Users\ahj\Desktop\CE4057\Source_Code_CE4057\ce4053\Micrium\Software\uCOS-III\Source\os_task.c}.2150.5" 1 0 0 0 "" 0 ""</Bp12>
+        <Count>13</Count>
     </Breakpoints>
+    <TermIOLog>
+        <LoggingEnabled>_ 0</LoggingEnabled>
+        <LogFile>_ ""</LogFile>
+    </TermIOLog>
     <LogFile>
         <LoggingEnabled>_ 0</LoggingEnabled>
         <LogFile>_ ""</LogFile>
@@ -80,8 +86,4 @@
     <CallStackStripe>
         <ShowTiming>1</ShowTiming>
     </CallStackStripe>
-    <TermIOLog>
-        <LoggingEnabled>_ 0</LoggingEnabled>
-        <LogFile>_ ""</LogFile>
-    </TermIOLog>
 </settings>

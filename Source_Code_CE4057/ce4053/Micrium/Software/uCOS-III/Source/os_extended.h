@@ -85,6 +85,21 @@ struct  ext_mutex {
 typedef  struct  ext_mutex            EXT_MUTEX;
 
 
+void  osMuRequest (EXT_MUTEX   *p_mutex,
+                   OS_TICK     timeout,
+                   OS_OPT      opt,
+                   CPU_TS     *p_ts,
+                   OS_ERR     *p_err);
+
+void osMuRelease(EXT_MUTEX  *p_mutex,
+                   OS_OPT     opt,
+                   OS_ERR    *p_err);
+
+void osMuCreate(EXT_MUTEX    *p_mutex,
+                     CPU_CHAR    *p_name,
+                     CPU_INT32U resourceCeiling,
+                     OS_ERR      *p_err);
+
 #endif // EXT_MUTEX_H
 
 #ifndef _LinkedListQ_H

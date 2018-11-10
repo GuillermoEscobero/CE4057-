@@ -1815,6 +1815,9 @@
             <file>
                 <name>$PROJ_DIR$\..\..\..\..\..\uCOS-III\Source\skiplist.c</name>
             </file>
+            <file>
+                <name>$PROJ_DIR$\..\..\..\..\..\uCOS-III\Source\stack.c</name>
+            </file>
         </group>
     </group>
 </project>

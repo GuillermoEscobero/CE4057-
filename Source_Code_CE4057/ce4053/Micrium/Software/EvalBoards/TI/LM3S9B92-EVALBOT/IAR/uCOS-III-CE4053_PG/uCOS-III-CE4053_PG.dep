@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project>
     <fileVersion>4</fileVersion>
-    <fileChecksum>2637161187</fileChecksum>
+    <fileChecksum>1949551081</fileChecksum>
     <configuration>
         <name>Flash</name>
         <outputs>
@@ -406,6 +406,9 @@
             <file>$PROJ_DIR$\app.c</file>
             <file>$PROJ_DIR$\Flash\Obj\microsd.__cstat.et</file>
             <file>$PROJ_DIR$\Flash\Obj\os_stat.o</file>
+            <file>$PROJ_DIR$\Flash\Obj\stack.o</file>
+            <file>$PROJ_DIR$\Flash\Obj\stack.pbi</file>
+            <file>$PROJ_DIR$\..\..\..\..\..\uCOS-III\Source\stack.c</file>
         </outputs>
         <file>
             <name>[ROOT_NODE]</name>
@@ -520,7 +523,7 @@
                 </tool>
                 <tool>
                     <name>BICOMP</name>
-                    <file> 147 297 232 180 15 261 94 299 306 144 120 359 395 290 247 202 325 235 127 102 296 2 324 68 190 98 278 250 342 222 256 7 22 301 23 3 397 163 287 13 146 363 279 285 376 231 238 11 126 16 4 194 139 288 21 237 183 176 143 268 221 216 10 5 115 14 131 203 266 331 236 19 210 185</file>
+                    <file> 296 216 222 299 301 324 395 359 98 278 237 147 306 102 2 68 190 144 131 266 19 235 127 180 297 120 261 285 13 176 221 5 203 331 23 3 397 163 287 290 146 256 363 279 183 143 268 10 115 14 139 236 210 22 185 4 250 342 202 94 376 231 247 238 11 15 126 16 194 325 288 232 21 7</file>
                 </tool>
             </inputs>
         </file>
@@ -1583,7 +1586,7 @@
                 </tool>
                 <tool>
                     <name>BICOMP</name>
-                    <file> 395 278 285 13 324 359 325 261 363 299 297 127 163 147 68 190 120 266 331 279 290 250 287</file>
+                    <file> 287 278 359 266 120 331 279 324 147 68 190 395 285 299 290 250 163 363 325 261 297 13 127</file>
                 </tool>
             </inputs>
         </file>
@@ -1637,7 +1640,7 @@
                 </tool>
                 <tool>
                     <name>BICOMP</name>
-                    <file> 261 278 325 285 13 163 395 299 297 147 68 190 127 266 331 279 290 250 287 324 359 120 363</file>
+                    <file> 278 266 287 331 279 395 285 299 290 250 324 147 68 190 127 325 261 297 13 163 359 120 363</file>
                 </tool>
             </inputs>
         </file>
@@ -1691,7 +1694,7 @@
                 </tool>
                 <tool>
                     <name>BICOMP</name>
-                    <file> 120 299 147 395 290 324 359 68 190 363 278 325 261 250 163 127 266 285 331 279 287 180 297 13</file>
+                    <file> 120 278 147 395 299 324 359 68 190 363 325 261 285 13 163 127 266 331 279 297 180 290 250 287</file>
                 </tool>
             </inputs>
         </file>
@@ -1880,7 +1883,7 @@
                 </tool>
                 <tool>
                     <name>BICOMP</name>
-                    <file> 290 68 324 147 190 285 299 395 250 278 127 359 120 266 331 279 287 363 325 261 297 13 163</file>
+                    <file> 297 363 299 13 261 127 395 359 278 325 285 163 324 147 68 190 120 266 331 279 290 250 287</file>
                 </tool>
             </inputs>
         </file>
@@ -2051,7 +2054,7 @@
                 </tool>
                 <tool>
                     <name>BICOMP</name>
-                    <file> 13 285 299 163 395 278 325 261 147 68 190 127 266 331 297 359 120 324 279 290 250 287 363</file>
+                    <file> 279 299 395 278 325 287 147 68 190 127 266 285 331 290 250 324 359 120 261 297 13 163 363</file>
                 </tool>
             </inputs>
         </file>
@@ -2213,7 +2216,7 @@
                 </tool>
                 <tool>
                     <name>BICOMP</name>
-                    <file> 363 297 299 324 261 285 13 395 359 278 325 163 147 68 190 120 266 331 279 290 127 250 287</file>
+                    <file> 266 359 278 324 120 331 279 285 13 147 68 190 395 299 290 163 363 325 261 297 127 250 287</file>
                 </tool>
             </inputs>
         </file>
@@ -2267,7 +2270,7 @@
                 </tool>
                 <tool>
                     <name>BICOMP</name>
-                    <file> 190 147 68 278 285 13 324 395 163 325 261 127 359 120 299 297 363 266 331 279 290 250 287</file>
+                    <file> 395 285 299 163 290 147 68 190 250 278 324 359 120 266 331 279 287 127 363 325 261 297 13</file>
                 </tool>
             </inputs>
         </file>
@@ -2317,5 +2320,28 @@
                 </tool>
             </inputs>
         </file>
+        <file>
+            <name>$PROJ_DIR$\..\..\..\..\..\uCOS-III\Source\stack.c</name>
+            <outputs>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 402</file>
+                </tool>
+            </outputs>
+            <inputs>
+                <tool>
+                    <name>ICCARM</name>
+                    <file> 180 359 395 68 190 120 147 127 163 363 324 266 278 279 261 285 299 290 13 250 297 287 331 325</file>
+                </tool>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 279 359 147 331 266 285 13 395 324 299 290 278 127 68 190 120 163 363 325 261 297 180 250 287</file>
+                </tool>
+            </inputs>
+        </file>
+        <forcedrebuild>
+            <name>[MULTI_TOOL]</name>
+            <tool>ILINK</tool>
+        </forcedrebuild>
     </configuration>
 </project>

@@ -84,7 +84,8 @@ static CPU_INT32U periodTwo = 10*OS_CFG_TICK_RATE_HZ;
 static CPU_INT32U periodThree = 17*OS_CFG_TICK_RATE_HZ;
 
 OS_Q            DummyQ;
-OS_MUTEX        MutexOne, MutexTwo, MutexThree;
+//OS_MUTEX        MutexOne, MutexTwo, MutexThree;
+EXT_MUTEX        MutexOne, MutexTwo, MutexThree;
 
 CPU_INT32U      measure=0;
 
@@ -242,9 +243,17 @@ static  void  AppTaskStart (void  *p_arg)
     OSQCreate((OS_Q *)&DummyQ, (CPU_CHAR *)"Dummy Queue", (OS_MSG_QTY)5, (OS_ERR *)&err);
     
     /* Create Mutexes */
-    OSMutexCreate((OS_MUTEX *)&MutexOne, (CPU_CHAR *)2, (OS_ERR *)&err);
-    OSMutexCreate((OS_MUTEX *)&MutexTwo, (CPU_CHAR *)3, (OS_ERR *)&err);
-    OSMutexCreate((OS_MUTEX *)&MutexThree, (CPU_CHAR *)3, (OS_ERR *)&err);
+//    OSMutexCreate((OS_MUTEX *)&MutexOne, (CPU_CHAR *)2, (OS_ERR *)&err);
+//    OSMutexCreate((OS_MUTEX *)&MutexTwo, (CPU_CHAR *)3, (OS_ERR *)&err);
+//    OSMutexCreate((OS_MUTEX *)&MutexThree, (CPU_CHAR *)3, (OS_ERR *)&err);
+    
+    
+    osMuCreate((EXT_MUTEX *) &MutexOne, (CPU_CHAR *) 2, (CPU_INT32U) TASK3PERIOD, (OS_ERR *) &err);
+    osMuCreate((EXT_MUTEX *) &MutexTwo, (CPU_CHAR *) 3, (CPU_INT32U) TASK1PERIOD, (OS_ERR *) &err);
+    osMuCreate((EXT_MUTEX *) &MutexThree, (CPU_CHAR *) 3, (CPU_INT32U) 100000, (OS_ERR *) &err);
+    
+    
+    
 
     /* Call your recursive task API here */
  
@@ -253,9 +262,9 @@ static  void  AppTaskStart (void  *p_arg)
     int task2TickPeriod = TASK2PERIOD*OS_CFG_TICK_RATE_HZ;
     int task3TickPeriod = TASK3PERIOD*OS_CFG_TICK_RATE_HZ;
     
-    OSTaskCreateRecursive((OS_TCB     *)&AppTaskOneTCB, (CPU_CHAR   *)"App Task One", (OS_TASK_PTR ) AppTaskOne, (void       *) 0, (OS_PRIO     ) APP_TASK_ONE_PRIO, (CPU_STK    *)&AppTaskOneStk[0], (CPU_STK_SIZE) APP_TASK_STD_STK_SIZE / 10u, (CPU_STK_SIZE) APP_TASK_STD_STK_SIZE, (OS_MSG_QTY  ) 0u, (OS_TICK     ) 0u, (void       *) (CPU_INT32U) task1TickPeriod, (OS_OPT      )(OS_OPT_TASK_STK_CHK | OS_OPT_TASK_STK_CLR), (OS_ERR     *)&err);
-    OSTaskCreateRecursive((OS_TCB     *)&AppTaskTwoTCB, (CPU_CHAR   *)"App Task Two", (OS_TASK_PTR ) AppTaskTwo, (void       *) 0, (OS_PRIO     ) APP_TASK_TWO_PRIO, (CPU_STK    *)&AppTaskTwoStk[0], (CPU_STK_SIZE) APP_TASK_STD_STK_SIZE / 10u, (CPU_STK_SIZE) APP_TASK_STD_STK_SIZE, (OS_MSG_QTY  ) 0u, (OS_TICK     ) 0u, (void       *) (CPU_INT32U) task2TickPeriod, (OS_OPT      )(OS_OPT_TASK_STK_CHK | OS_OPT_TASK_STK_CLR), (OS_ERR     *)&err);
-    OSTaskCreateRecursive((OS_TCB     *)&AppTaskThreeTCB, (CPU_CHAR   *)"Three", (OS_TASK_PTR ) AppTaskThree, (void       *) 0, (OS_PRIO     ) APP_TASK_THREE_PRIO, (CPU_STK    *)&AppTaskThreeStk[0], (CPU_STK_SIZE) APP_TASK_STD_STK_SIZE / 10u, (CPU_STK_SIZE) APP_TASK_STD_STK_SIZE, (OS_MSG_QTY  ) 0u, (OS_TICK     ) 0u, (void       *) (CPU_INT32U) task3TickPeriod, (OS_OPT      )(OS_OPT_TASK_STK_CHK | OS_OPT_TASK_STK_CLR), (OS_ERR     *)&err);
+    OSTaskCreateRecursive((OS_TCB     *)&AppTaskOneTCB, (CPU_CHAR   *)"App Task One", (OS_TASK_PTR ) AppTaskOne, (void       *) 0, (OS_PRIO     ) TASK1PERIOD, (CPU_STK    *)&AppTaskOneStk[0], (CPU_STK_SIZE) APP_TASK_STD_STK_SIZE / 10u, (CPU_STK_SIZE) APP_TASK_STD_STK_SIZE, (OS_MSG_QTY  ) 0u, (OS_TICK     ) 0u, (void       *) (CPU_INT32U) task1TickPeriod, (OS_OPT      )(OS_OPT_TASK_STK_CHK | OS_OPT_TASK_STK_CLR), (OS_ERR     *)&err);
+    OSTaskCreateRecursive((OS_TCB     *)&AppTaskTwoTCB, (CPU_CHAR   *)"App Task Two", (OS_TASK_PTR ) AppTaskTwo, (void       *) 0, (OS_PRIO     ) TASK2PERIOD, (CPU_STK    *)&AppTaskTwoStk[0], (CPU_STK_SIZE) APP_TASK_STD_STK_SIZE / 10u, (CPU_STK_SIZE) APP_TASK_STD_STK_SIZE, (OS_MSG_QTY  ) 0u, (OS_TICK     ) 0u, (void       *) (CPU_INT32U) task2TickPeriod, (OS_OPT      )(OS_OPT_TASK_STK_CHK | OS_OPT_TASK_STK_CLR), (OS_ERR     *)&err);
+    OSTaskCreateRecursive((OS_TCB     *)&AppTaskThreeTCB, (CPU_CHAR   *)"App Task Three", (OS_TASK_PTR ) AppTaskThree, (void       *) 0, (OS_PRIO     ) TASK3PERIOD, (CPU_STK    *)&AppTaskThreeStk[0], (CPU_STK_SIZE) APP_TASK_STD_STK_SIZE / 10u, (CPU_STK_SIZE) APP_TASK_STD_STK_SIZE, (OS_MSG_QTY  ) 0u, (OS_TICK     ) 0u, (void       *) (CPU_INT32U) task3TickPeriod, (OS_OPT      )(OS_OPT_TASK_STK_CHK | OS_OPT_TASK_STK_CLR), (OS_ERR     *)&err);
     
     
     //   OSTaskCreate((OS_TCB     *)&AppTaskOneTCB, (CPU_CHAR   *)"App Task One", (OS_TASK_PTR ) AppTaskOne, (void       *) 0, (OS_PRIO     ) APP_TASK_ONE_PRIO, (CPU_STK    *)&AppTaskOneStk[0], (CPU_STK_SIZE) APP_TASK_ONE_STK_SIZE / 10u, (CPU_STK_SIZE) APP_TASK_ONE_STK_SIZE, (OS_MSG_QTY  ) 0u, (OS_TICK     ) 0u, (void       *)(CPU_INT32U) 1, (OS_OPT      )(OS_OPT_TASK_STK_CHK | OS_OPT_TASK_STK_CLR), (OS_ERR     *)&err);
@@ -278,12 +287,15 @@ static  void  AppTaskOne (void  *p_arg)
    
     OS_MSG_SIZE msg_size;
    
-    OSMutexPend((OS_MUTEX *)&MutexOne, (OS_TICK )0, (OS_OPT )OS_OPT_PEND_BLOCKING, (CPU_TS *)&ts, (OS_ERR *)&err);
+    //OSMutexPend((OS_MUTEX *)&MutexOne, (OS_TICK )0, (OS_OPT )OS_OPT_PEND_BLOCKING, (CPU_TS *)&ts, (OS_ERR *)&err);
+    osMuRequest ((EXT_MUTEX *) &MutexOne, (OS_TICK) 0, (OS_OPT) OS_OPT_PEND_BLOCKING, (CPU_TS *) &ts, (OS_ERR *) &err);
+
 	for(i=0; i <2*ONESECONDTICK; i++){
          j = ((i * 2) + j);
 	}
  
-	OSMutexPend((OS_MUTEX *)&MutexTwo, (OS_TICK )0, (OS_OPT )OS_OPT_PEND_BLOCKING, (CPU_TS *)&ts, (OS_ERR *)&err);
+	//OSMutexPend((OS_MUTEX *)&MutexTwo, (OS_TICK )0, (OS_OPT )OS_OPT_PEND_BLOCKING, (CPU_TS *)&ts, (OS_ERR *)&err);
+        osMuRequest ((EXT_MUTEX *) &MutexTwo, (OS_TICK) 0, (OS_OPT) OS_OPT_PEND_BLOCKING, (CPU_TS *) &ts, (OS_ERR *) &err);
 	for(i=0; i <ONESECONDTICK; i++){
          j = ((i * 2) + j);
 	}     
@@ -296,8 +308,10 @@ static  void  AppTaskOne (void  *p_arg)
     BSP_MotorStop(LEFT_SIDE);
     BSP_MotorStop(RIGHT_SIDE);
 
-    OSMutexPost((OS_MUTEX *)&MutexTwo, (OS_OPT )OS_OPT_POST_NONE, (OS_ERR *)&err);
-	OSMutexPost((OS_MUTEX *)&MutexOne, (OS_OPT )OS_OPT_POST_NONE, (OS_ERR *)&err);
+//    OSMutexPost((OS_MUTEX *)&MutexTwo, (OS_OPT )OS_OPT_POST_NONE, (OS_ERR *)&err);
+//    OSMutexPost((OS_MUTEX *)&MutexOne, (OS_OPT )OS_OPT_POST_NONE, (OS_ERR *)&err);
+    osMuRelease((EXT_MUTEX*) &MutexOne, (OS_OPT) OS_OPT_POST_NONE, (OS_ERR *) &err);
+    osMuRelease((EXT_MUTEX*) &MutexTwo, (OS_OPT) OS_OPT_POST_NONE, (OS_ERR *) &err);    
         
     //printf("\nT1");
     OSTaskDelRecursive((OS_TCB *)0, &err);
@@ -327,20 +341,24 @@ static  void  AppTaskThree (void  *p_arg)
     BSP_LED_On(2u);
 
     
-   OSMutexPend((OS_MUTEX *)&MutexTwo, (OS_TICK )0, (OS_OPT )OS_OPT_PEND_BLOCKING, (CPU_TS *)&ts, (OS_ERR *)&err);
+   //OSMutexPend((OS_MUTEX *)&MutexTwo, (OS_TICK )0, (OS_OPT )OS_OPT_PEND_BLOCKING, (CPU_TS *)&ts, (OS_ERR *)&err);
+   osMuRequest ((EXT_MUTEX *) &MutexTwo, (OS_TICK) 0, (OS_OPT) OS_OPT_PEND_BLOCKING, (CPU_TS *) &ts, (OS_ERR *) &err);
 	for(i=0; i <ONESECONDTICK; i++){
          j = ((i * 2) + j);
 	}
  
-	OSMutexPend((OS_MUTEX *)&MutexOne, (OS_TICK )0, (OS_OPT )OS_OPT_PEND_BLOCKING, (CPU_TS *)&ts, (OS_ERR *)&err);
+	//OSMutexPend((OS_MUTEX *)&MutexOne, (OS_TICK )0, (OS_OPT )OS_OPT_PEND_BLOCKING, (CPU_TS *)&ts, (OS_ERR *)&err);
+        osMuRequest ((EXT_MUTEX *) &MutexOne, (OS_TICK) 0, (OS_OPT) OS_OPT_PEND_BLOCKING, (CPU_TS *) &ts, (OS_ERR *) &err);
 	for(i=0; i <ONESECONDTICK; i++){
          j = ((i * 2) + j);
 	} 
     
     BSP_LED_Off(2u);
   
-    OSMutexPost((OS_MUTEX *)&MutexOne, (OS_OPT )OS_OPT_POST_NONE, (OS_ERR *)&err);
-	OSMutexPost((OS_MUTEX *)&MutexTwo, (OS_OPT )OS_OPT_POST_NONE, (OS_ERR *)&err);
+    //OSMutexPost((OS_MUTEX *)&MutexOne, (OS_OPT )OS_OPT_POST_NONE, (OS_ERR *)&err);
+    //OSMutexPost((OS_MUTEX *)&MutexTwo, (OS_OPT )OS_OPT_POST_NONE, (OS_ERR *)&err);
+    osMuRelease((EXT_MUTEX*) &MutexOne, (OS_OPT) OS_OPT_POST_NONE, (OS_ERR *) &err);
+    osMuRelease((EXT_MUTEX*) &MutexTwo, (OS_OPT) OS_OPT_POST_NONE, (OS_ERR *) &err);
     
 	OSTaskDelRecursive((OS_TCB *)0, &err);
 }

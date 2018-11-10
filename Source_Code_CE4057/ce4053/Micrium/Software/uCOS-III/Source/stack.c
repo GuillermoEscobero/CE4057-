@@ -5,6 +5,7 @@
  */
  
 #include <stdio.h>
+#include "os_extended.h"
 
 stacknode* ceilingStack = NULL;
  
