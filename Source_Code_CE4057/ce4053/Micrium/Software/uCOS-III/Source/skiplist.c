@@ -25,7 +25,7 @@ chooseHeight(void)
 static Skiplist
 skiplistCreateNode(CPU_INT32U key, int height, OS_TCB *p_tcb, CPU_INT32U period)
 {
-  key = period; //the priority is given directly from the period (shorter period->higher priority)
+  //key = period; //the priority is given directly from the period (shorter period->higher priority)
   Skiplist s = NULL;
   if(readyQueue != NULL){
     s = skiplistSearch(readyQueue, key);

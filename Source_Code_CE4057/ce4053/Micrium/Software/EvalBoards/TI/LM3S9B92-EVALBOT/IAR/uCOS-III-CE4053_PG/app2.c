@@ -301,10 +301,16 @@ static  void  AppTaskOne (void  *p_arg)
 	}     
 	
 	if(iMove > 0)
-    {
-      RoboTurn(FRONT, 14, 50);
-      iMove--;
-    }
+        {
+          RoboTurn(FRONT, 14, 50);
+          iMove--;
+        }
+        else
+        {
+          RoboTurn(BACK, 14, 50);
+          iMove++;
+        }
+        
     
     for(i=0; i <ONESECONDTICK; i++){
          j = ((i * 2) + j);

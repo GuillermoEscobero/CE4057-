@@ -135,12 +135,12 @@ void  osMuRequest (EXT_MUTEX   *p_mutex,
         switch (p_tcb->TaskState) {
             case OS_TASK_STATE_RDY:
                  //OS_RdyListRemove(p_tcb);                   /* Remove from ready list at current priority             */
-                 skiplistDelete(readyQueue, (int) p_tcb->ExtPtr, p_tcb); //Beaware of cast
+                 skiplistDelete(readyQueue, (int) p_tcb->Prio, p_tcb); //Beaware of cast
                  
                  p_tcb->Prio = OSTCBCurPtr->Prio;           /* Raise owner's priority                                 */
                  //OS_PrioInsert(p_tcb->Prio);
                  //OS_RdyListInsertHead(p_tcb);               /* Insert in ready list at new priority                   */
-                 skiplistInsert(readyQueue, (int) p_tcb->ExtPtr, p_tcb, (CPU_INT32U) p_tcb->ExtPtr); //readyQueue, period, tcb, period
+                 skiplistInsert(readyQueue, (int) p_tcb->Prio, p_tcb, (CPU_INT32U) p_tcb->ExtPtr); //readyQueue, period, tcb, period
                  break;
 
             case OS_TASK_STATE_DLY:
@@ -183,7 +183,7 @@ void  osMuRequest (EXT_MUTEX   *p_mutex,
     OSTCBCurPtr->PendOn = OS_TASK_PEND_ON_MUTEX;
     OSTCBCurPtr->PendStatus = OS_STATUS_PEND_OK;
     
-    avlInsert(waitQueue, OSTCBCurPtr->Prio, OSTCBCurPtr, p_mutex);
+    waitQueue = avlInsert(waitQueue, OSTCBCurPtr->Prio, OSTCBCurPtr, p_mutex);
     OSTCBCurPtr->TaskState = OS_TASK_STATE_PEND;
     skiplistDelete(readyQueue, OSTCBCurPtr->Prio, OSTCBCurPtr);
     
@@ -295,6 +295,39 @@ void osMuRelease(EXT_MUTEX  *p_mutex,
         return;
     }
     
+    //decrement or remove from resUseTask list
+    node* taskNode = search(resUseTask,OSTCBCurPtr);
+    if(taskNode == NULL){
+      exit(0); //A task not owning a mutex tried to release a mutex!!
+    }
+    if(taskNode->period>1){
+      taskNode->period--;
+    }
+    else{
+      node* removeNode = remove_any(&resUseTask, OSTCBCurPtr);
+      if(removeNode->data != OSTCBCurPtr){
+        exit(0); //We somehow managed to get the wrong node/tcb
+      }
+      OS_ERR err;
+      OSMemPut(&CommMem2,removeNode,&err); //should we check if temp is NULL?
+      switch(err){
+      case OS_ERR_NONE:
+        break;
+      case OS_ERR_MEM_FULL:
+        exit(0);
+        break;
+      case OS_ERR_MEM_INVALID_P_BLK:
+        exit(0);
+        break;
+      case OS_ERR_MEM_INVALID_P_MEM:
+        exit(0);
+        break;
+      case OS_ERR_OBJ_TYPE:
+        exit(0);
+        break;
+      }
+    }
+    
     //TODO: Can we change the system ceiling
     int oldCeiling;
     ceilingStack = pop(ceilingStack, &oldCeiling);
@@ -302,16 +335,17 @@ void osMuRelease(EXT_MUTEX  *p_mutex,
     p_mutex->OwnerTCBPtr     = (OS_TCB       *)0; //no owner
     if (OSTCBCurPtr->Prio != p_mutex->OwnerOriginalPrio) {
       //remove the OSTCBCurPtr from the readyQueue
-      skiplistDelete(readyQueue, (int) OSTCBCurPtr->ExtPtr, OSTCBCurPtr); //Beaware of cast
+      skiplistDelete(readyQueue, (int) OSTCBCurPtr->Prio, OSTCBCurPtr); //Beaware of cast
       OSTCBCurPtr->Prio = p_mutex->OwnerOriginalPrio;     /* Lower owner's priority back to its original one        */
       //insert the OSTCBCurPtr to the readyQueue
-      skiplistInsert(readyQueue, (int) OSTCBCurPtr->ExtPtr, OSTCBCurPtr, (CPU_INT32U) OSTCBCurPtr->ExtPtr); //readyQueue, period, tcb, period
+      skiplistInsert(readyQueue, (int) OSTCBCurPtr->Prio, OSTCBCurPtr, (CPU_INT32U) OSTCBCurPtr->ExtPtr); //readyQueue, period, tcb, period
       
       OSPrioCur         = OSTCBCurPtr->Prio;//What is this used for?????
     }
     avlnode* minNode = minValueNode(waitQueue);
     while((minNode !=NULL) && (minNode->key<newCeiling)){ //check if we can remove any task from the waitqueue
       EXT_MUTEX* mutex2;
+      //TODO: the avlDelete does not update 
       OS_TCB* p_tcb = avlDeleteNode(&waitQueue, minNode->key, NULL, &mutex2); //We dont care which task we get with this priority
       //EXT_MUTEX* mutex2 = NULL; //p_tcb->?? //TODO: save the mutex of the task in the TCB so we can retrieve it here
       
@@ -324,7 +358,7 @@ void osMuRelease(EXT_MUTEX  *p_mutex,
         //Refer to OS_POST call
         if(p_tcb->TaskState == OS_TASK_STATE_PEND){
           //OS_TaskRdy(p_tcb); removes from tickList and adds to readylist if suspended  /* Make task ready to run                            */
-          skiplistInsert(readyQueue, (int) p_tcb->ExtPtr, p_tcb, (CPU_INT32U) p_tcb->ExtPtr); //readyQueue, period, tcb, period
+          skiplistInsert(readyQueue, (int) p_tcb->Prio, p_tcb, (CPU_INT32U) p_tcb->ExtPtr); //readyQueue, period, tcb, period
           p_tcb->TaskState  = OS_TASK_STATE_RDY;
           p_tcb->PendStatus = OS_STATUS_PEND_OK;              /* Clear pend status                                 */
           p_tcb->PendOn     = OS_TASK_PEND_ON_NOTHING;        /* Indicate no longer pending                        */

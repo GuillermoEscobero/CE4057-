@@ -241,7 +241,7 @@ void  OSTaskDelRecursive (OS_TCB  *p_tcb,
     OS_CRITICAL_ENTER();
     switch (p_tcb->TaskState) {
         case OS_TASK_STATE_RDY:
-             skiplistDelete(readyQueue, (int) p_tcb->ExtPtr, p_tcb);
+             skiplistDelete(readyQueue, (int) p_tcb->Prio, p_tcb);
              break;
 
         case OS_TASK_STATE_SUSPENDED:
@@ -357,7 +357,7 @@ void releaseTask(node* taskNode){
                          p_tcb->StkSize,
                          p_tcb->Opt);
 
-  skiplistInsert(readyQueue, taskNode->period, p_tcb, taskNode->period); // Insert into our readyqueue
+  skiplistInsert(readyQueue, taskNode->data->Prio, p_tcb, taskNode->period); // Insert into our readyqueue
 
   CPU_INT32U newRelease = OSTickCtr+taskNode->period;
   insert(newRelease, p_tcb, taskNode->period, taskInfo); // Reinsert into RB-tree

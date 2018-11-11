@@ -188,6 +188,7 @@ avlnode * minValueNode(avlnode* node)
 //p_tcb is used to specify a certain tcb, that should be removed.
 //the key should be the same as p_tcb->prio.
 //if p_tcb==NULL, then any tcb may removed and returned from the node with the given key.
+//TODO: This one does not update correctly the three
 OS_TCB* avlDeleteNode(avlnode** root, int key, OS_TCB *p_tcb, EXT_MUTEX** mutex) //The last argument is an extra return value to get the mutex
 {
   OS_TCB* p_tcb_ret; //the task to return
