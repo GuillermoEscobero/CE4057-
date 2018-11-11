@@ -169,7 +169,9 @@ searched. */
 avlnode * minValueNode(avlnode* node)
 {
 	avlnode* current = node;
-
+        if(current==NULL){
+          return NULL;
+        }
 	/* loop down to find the leftmost leaf */
 	while (current->left != NULL)
 		current = current->left;

@@ -249,7 +249,7 @@ static  void  AppTaskStart (void  *p_arg)
     
     
     osMuCreate((EXT_MUTEX *) &MutexOne, (CPU_CHAR *) 2, (CPU_INT32U) TASK3PERIOD, (OS_ERR *) &err);
-    osMuCreate((EXT_MUTEX *) &MutexTwo, (CPU_CHAR *) 3, (CPU_INT32U) TASK1PERIOD, (OS_ERR *) &err);
+    osMuCreate((EXT_MUTEX *) &MutexTwo, (CPU_CHAR *) 3, (CPU_INT32U) TASK3PERIOD, (OS_ERR *) &err);
     osMuCreate((EXT_MUTEX *) &MutexThree, (CPU_CHAR *) 3, (CPU_INT32U) 100000, (OS_ERR *) &err);
     
     
@@ -305,8 +305,14 @@ static  void  AppTaskOne (void  *p_arg)
       RoboTurn(FRONT, 14, 50);
       iMove--;
     }
-    BSP_MotorStop(LEFT_SIDE);
-    BSP_MotorStop(RIGHT_SIDE);
+    
+    for(i=0; i <ONESECONDTICK; i++){
+         j = ((i * 2) + j);
+    }    
+    RoboTurn(-1, 14, 50); //stopping the motors
+    
+    //BSP_MotorStop(LEFT_SIDE);
+    //BSP_MotorStop(RIGHT_SIDE);
 
 //    OSMutexPost((OS_MUTEX *)&MutexTwo, (OS_OPT )OS_OPT_POST_NONE, (OS_ERR *)&err);
 //    OSMutexPost((OS_MUTEX *)&MutexOne, (OS_OPT )OS_OPT_POST_NONE, (OS_ERR *)&err);

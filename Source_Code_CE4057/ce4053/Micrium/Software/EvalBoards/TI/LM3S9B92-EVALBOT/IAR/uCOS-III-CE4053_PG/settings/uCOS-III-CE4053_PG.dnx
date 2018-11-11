@@ -21,7 +21,7 @@
         <StopOnThrow>_ 0</StopOnThrow>
     </Exceptions>
     <DebugChecksum>
-        <Checksum>1014951927</Checksum>
+        <Checksum>2200486677</Checksum>
     </DebugChecksum>
     <CallStack>
         <ShowArgs>0</ShowArgs>
@@ -48,15 +48,6 @@
         <Fmt0>OS_TCB-PendStatus	3	0</Fmt0>
         <Fmt1>OS_TCB-Prio	3	0</Fmt1>
     </struct_types>
-    <TermIOLog>
-        <LoggingEnabled>_ 0</LoggingEnabled>
-        <LogFile>_ ""</LogFile>
-    </TermIOLog>
-    <LogFile>
-        <LoggingEnabled>_ 0</LoggingEnabled>
-        <LogFile>_ ""</LogFile>
-        <Category>_ 0</Category>
-    </LogFile>
     <CallStackLog>
         <Enabled>0</Enabled>
     </CallStackLog>
@@ -67,24 +58,24 @@
         <mode>0</mode>
     </DisassembleMode>
     <Breakpoints>
-        <Bp0>_ "STD_CODE" "{C:\Users\ahj\Desktop\CE4057\Source_Code_CE4057\ce4053\Micrium\Software\uCOS-III\Source\OS_RecTaskServices.c}.0.1" 0 0 0 0 "" 0 ""</Bp0>
-        <Bp1>_ "STD_CODE" "{C:\Users\ahj\Desktop\CE4057\Source_Code_CE4057\ce4053\Micrium\Software\uCOS-III\Source\OS_RecTaskServices.c}.0.1" 0 0 0 0 "" 0 ""</Bp1>
-        <Bp2>_ "STD_CODE" "{C:\Users\ahj\Desktop\CE4057\Source_Code_CE4057\ce4053\Micrium\Software\uCOS-III\Source\OS_RecTaskServices.c}.0.1" 0 0 0 0 "" 0 ""</Bp2>
-        <Bp3>_ "STD_CODE" "{C:\Users\ahj\Desktop\CE4057\Source_Code_CE4057\ce4053\Micrium\Software\uCOS-III\Source\RBTree.c}.228.3" 0 0 0 0 "OSTickCtr &gt; 1190" 0 ""</Bp3>
-        <Bp4>_ "STD_CODE" "{C:\Users\ahj\Desktop\CE4057\Source_Code_CE4057\ce4053\Micrium\Software\uCOS-III\Source\OS_RecTaskServices.c}.349.11" 1 0 0 0 "" 0 ""</Bp4>
-        <Bp5>_ "STD_CODE" "{C:\Users\ahj\Desktop\CE4057\Source_Code_CE4057\ce4053\Micrium\Software\uCOS-III\Source\os_tick.c}.70.9" 0 0 0 0 "OSTickCtr &gt; 1190" 0 ""</Bp5>
-        <Bp6>_ "STD_CODE" "{C:\Users\ahj\Desktop\CE4057\Source_Code_CE4057\ce4053\Micrium\Software\uCOS-III\Source\os_task.c}.1261.5" 0 0 0 0 "OSTickCtr&gt;1190" 0 ""</Bp6>
-        <Bp7>_ "STD_CODE" "{C:\Users\ahj\Desktop\CE4057\Source_Code_CE4057\ce4053\Micrium\Software\uCOS-III\Source\os_core.c}.378.25" 0 0 0 0 "OSTickCtr &gt;1190" 0 ""</Bp7>
-        <Bp8>_ "STD_CODE" "{C:\Users\ahj\Desktop\CE4057\Source_Code_CE4057\ce4053\Micrium\Software\uCOS-III\Source\OS_RecTaskServices.c}.377.5" 0 0 0 0 "" 0 ""</Bp8>
-        <Bp9>_ "STD_CODE" "{C:\Users\ahj\Desktop\CE4057\Source_Code_CE4057\ce4053\Micrium\Software\uCOS-III\Source\OS_RecTaskServices.c}.301.5" 0 0 0 0 "" 0 ""</Bp9>
-        <Bp10>_ "STD_CODE" "{C:\Users\ahj\Desktop\CE4057\Source_Code_CE4057\ce4053\Micrium\Software\uCOS-III\Source\os_task.c}.529.5" 1 0 0 0 "" 0 ""</Bp10>
-        <Bp11>_ "STD_CODE" "{$PROJ_DIR$\app2.c}.345.2" 1 0 0 0 "" 0 ""</Bp11>
-        <Bp12>_ "STD_CODE" "{C:\Users\ahj\Desktop\CE4057\Source_Code_CE4057\ce4053\Micrium\Software\uCOS-III\Source\os_task.c}.2150.5" 1 0 0 0 "" 0 ""</Bp12>
-        <Bp13>_ "STD_CODE" "{C:\Users\GUILLECZ4057\Desktop\CE4057-\Source_Code_CE4057\ce4053\Micrium\Software\uCOS-III\Source\stack.c}.93.1" 1 0 0 0 "" 0 ""</Bp13>
-        <Count>14</Count>
+        <Bp0>_ "STD_CODE" "{C:\Users\ahj\Desktop\CE4057\Source_Code_CE4057\ce4053\Micrium\Software\uCOS-III\Source\OS_RecTaskServices.c}.349.11" 1 0 0 0 "" 0 ""</Bp0>
+        <Bp1>_ "STD_CODE" "{C:\Users\ahj\Desktop\CE4057\Source_Code_CE4057\ce4053\Micrium\Software\uCOS-III\Source\os_task.c}.2150.5" 1 0 0 0 "" 0 ""</Bp1>
+        <Bp2>_ "STD_CODE" "{$PROJ_DIR$\app2.c}.351.4" 1 0 0 0 "" 0 ""</Bp2>
+        <Bp3>_ "STD_CODE" "{C:\Users\ahj\Desktop\CE4057\Source_Code_CE4057\ce4053\Micrium\Software\uCOS-III\Source\OS_ResShareServices.c}.97.9" 1 0 0 0 "" 0 ""</Bp3>
+        <Bp4>_ "STD_CODE" "{C:\Users\ahj\Desktop\CE4057\Source_Code_CE4057\ce4053\Micrium\Software\uCOS-III\Source\OS_ResShareServices.c}.312.14" 1 0 0 0 "" 0 ""</Bp4>
+        <Count>5</Count>
     </Breakpoints>
+    <LogFile>
+        <LoggingEnabled>_ 0</LoggingEnabled>
+        <LogFile>_ ""</LogFile>
+        <Category>_ 0</Category>
+    </LogFile>
     <Aliases>
         <Count>0</Count>
         <SuppressDialog>0</SuppressDialog>
     </Aliases>
+    <TermIOLog>
+        <LoggingEnabled>_ 0</LoggingEnabled>
+        <LogFile>_ ""</LogFile>
+    </TermIOLog>
 </settings>

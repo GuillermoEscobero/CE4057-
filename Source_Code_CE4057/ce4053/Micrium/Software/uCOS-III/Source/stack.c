@@ -83,6 +83,9 @@ stacknode* pop(stacknode *head,int *element)
 
 //returns the value at the top of the stack
 CPU_INT32U peek(stacknode* head){
+  if(head==NULL){
+    return 100000; //the highest possible ceiling (lowest priority)
+  }
   return head->data;
 }
 
