@@ -354,6 +354,15 @@ void osMuRelease(EXT_MUTEX  *p_mutex,
         mutex2->OwnerNestingCtr   = (OS_NESTING_CTR)1; //the number of times the owner was granted this mutex
         ceilingStack = push(ceilingStack , mutex2->resourceCeiling); //Push the priority of this task onto the system ceiling stack
         //TODO: The push above is wrong
+        //Tell the system that the p_tcb owns one (more) mutex
+        //This is important if the task just unblocked, wants to have more than this mutex
+        node* TCBListNode = (search(resUseTask, p_tcb));
+        if(TCBListNode==NULL){ //tell that the tcb owns a mutex.
+          resUseTask = prepend(resUseTask,p_tcb, 1, NULL); //the period is used to tell the number of mutexes the task has. No task info needed.
+        }
+        else{
+          TCBListNode->period++;
+        }
         
         //Refer to OS_POST call
         if(p_tcb->TaskState == OS_TASK_STATE_PEND){

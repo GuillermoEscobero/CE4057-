@@ -58,6 +58,7 @@ avlnode* newNode(int key, OS_TCB* tcb, EXT_MUTEX* mutex)
 	node->key = key;
 	node->left = NULL;
 	node->right = NULL;
+        node->tasks = NULL; //To make sure the last element of the list always points to NULL
         node->tasks = prependQ(node->tasks,tcb, mutex);
 	node->height = 1; // new node is initially added at leaf
 	return(node);

@@ -1613,6 +1613,9 @@
                 <name>$PROJ_DIR$\..\..\..\..\..\uCOS-III\Ports\ARM-Cortex-M3\Generic\IAR\os_cpu.h</name>
             </file>
             <file>
+                <name>$PROJ_DIR$\..\..\..\..\..\uCOS-III\Source\os_extended.h</name>
+            </file>
+            <file>
                 <name>$PROJ_DIR$\..\..\..\..\..\uCOS-III\Source\os_type.h</name>
             </file>
         </group>

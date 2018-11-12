@@ -95,7 +95,7 @@ CPU_INT08U      Right_tgt;
 
 CPU_INT32U      iToken  = 0;
 CPU_INT32U      iCounter= 1;
-CPU_INT32U      iMove   = 10;
+CPU_INT32U      iMove   = 2;
 
 CPU_CHAR        g_cCmdBuf[30] = {'n','e','w',' ','l','o','g','.','t','x','t','\0'};
 

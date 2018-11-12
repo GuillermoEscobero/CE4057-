@@ -21,7 +21,7 @@
         <StopOnThrow>_ 0</StopOnThrow>
     </Exceptions>
     <DebugChecksum>
-        <Checksum>1388058462</Checksum>
+        <Checksum>156397242</Checksum>
     </DebugChecksum>
     <CallStack>
         <ShowArgs>0</ShowArgs>
@@ -48,6 +48,21 @@
         <Fmt0>OS_TCB-PendStatus	3	0</Fmt0>
         <Fmt1>OS_TCB-Prio	3	0</Fmt1>
     </struct_types>
+    <TermIOLog>
+        <LoggingEnabled>_ 0</LoggingEnabled>
+        <LogFile>_ ""</LogFile>
+    </TermIOLog>
+    <LogFile>
+        <LoggingEnabled>_ 0</LoggingEnabled>
+        <LogFile>_ ""</LogFile>
+        <Category>_ 0</Category>
+    </LogFile>
+    <CallStackLog>
+        <Enabled>0</Enabled>
+    </CallStackLog>
+    <CallStackStripe>
+        <ShowTiming>1</ShowTiming>
+    </CallStackStripe>
     <DisassembleMode>
         <mode>0</mode>
     </DisassembleMode>
@@ -58,26 +73,12 @@
         <Bp3>_ "STD_CODE" "{C:\Users\ahj\Desktop\CE4057\Source_Code_CE4057\ce4053\Micrium\Software\uCOS-III\Source\OS_ResShareServices.c}.249.5" 1 0 0 0 "" 0 ""</Bp3>
         <Bp4>_ "STD_CODE" "{C:\Users\ahj\Desktop\CE4057\Source_Code_CE4057\ce4053\Micrium\Software\uCOS-III\Source\OS_ResShareServices.c}.133.5" 1 0 0 0 "" 0 ""</Bp4>
         <Bp5>_ "STD_CODE" "{C:\Users\ahj\Desktop\CE4057\Source_Code_CE4057\ce4053\Micrium\Software\uCOS-III\Source\OS_ResShareServices.c}.99.5" 1 0 0 0 "" 0 ""</Bp5>
-        <Bp6>_ "STD_CODE" "{C:\Users\ahj\Desktop\CE4057\Source_Code_CE4057\ce4053\Micrium\Software\uCOS-III\Source\OS_ResShareServices.c}.186.17" 1 0 0 0 "" 0 ""</Bp6>
-        <Count>7</Count>
+        <Bp6>_ "STD_CODE" "{C:\Users\ahj\Desktop\CE4057\Source_Code_CE4057\ce4053\Micrium\Software\uCOS-III\Source\OS_RecTaskServices.c}.360.3" 0 0 0 0 "" 0 ""</Bp6>
+        <Bp7>_ "STD_CODE" "{C:\Users\ahj\Desktop\CE4057\Source_Code_CE4057\ce4053\Micrium\Software\uCOS-III\Source\OS_ResShareServices.c}.409.5" 0 0 0 0 "" 0 ""</Bp7>
+        <Count>8</Count>
     </Breakpoints>
-    <TermIOLog>
-        <LoggingEnabled>_ 0</LoggingEnabled>
-        <LogFile>_ ""</LogFile>
-    </TermIOLog>
-    <LogFile>
-        <LoggingEnabled>_ 0</LoggingEnabled>
-        <LogFile>_ ""</LogFile>
-        <Category>_ 0</Category>
-    </LogFile>
     <Aliases>
         <Count>0</Count>
         <SuppressDialog>0</SuppressDialog>
     </Aliases>
-    <CallStackLog>
-        <Enabled>0</Enabled>
-    </CallStackLog>
-    <CallStackStripe>
-        <ShowTiming>1</ShowTiming>
-    </CallStackStripe>
 </settings>
