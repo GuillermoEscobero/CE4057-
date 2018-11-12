@@ -276,16 +276,17 @@ void preOrder(avlnode *root);
 
 typedef struct stackNode{
     int data;
+    OS_TCB* tcb;
     struct stackNode* next;
 } stacknode;
 
 extern stacknode* ceilingStack;
  
 int empty(stacknode* head);
-stacknode* push(stacknode *s,int data);
-stacknode* pop(stacknode *s,int *data);
+stacknode* push(stacknode *s,int data, OS_TCB* tcb);
+stacknode* pop(stacknode *s,int *data, OS_TCB** tcb); //last parameter for returning the TCB
 void init(stacknode* s);
-CPU_INT32U peek(stacknode* head);
+CPU_INT32U peek(stacknode* head, OS_TCB** tcb);
 //void display(stacknode* head);
 #endif // LINKEDSTACK_H_INCLUDED
 

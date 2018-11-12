@@ -94,7 +94,8 @@ void  osMuRequest (EXT_MUTEX   *p_mutex,
         return;
     }
     
-    int systemCeiling = peek(ceilingStack);
+    OS_TCB* not_used;
+    int systemCeiling = peek(ceilingStack, &not_used);
     node* TCBListNode = (search(resUseTask, OSTCBCurPtr));
     if(OSTCBCurPtr->Prio < systemCeiling || TCBListNode!=NULL){ //Can we take the mutex (slide 15 PCP).
         /* Yes, caller may proceed                                */
@@ -107,7 +108,7 @@ void  osMuRequest (EXT_MUTEX   *p_mutex,
         p_mutex->OwnerTCBPtr       =  OSTCBCurPtr; //Save the owning task
         p_mutex->OwnerOriginalPrio =  OSTCBCurPtr->Prio; //save the owners original priority
         p_mutex->OwnerNestingCtr   = (OS_NESTING_CTR)1; //the number of times the owner was granted this mutex
-        ceilingStack = push(ceilingStack , p_mutex->resourceCeiling); //Push the resource ceiling onto the system ceiling stack
+        ceilingStack = push(ceilingStack , p_mutex->resourceCeiling, OSTCBCurPtr); //Push the resource ceiling onto the system ceiling stack
         if (p_ts != (CPU_TS *)0) {
            *p_ts                   = p_mutex->TS;
         }
@@ -130,7 +131,8 @@ void  osMuRequest (EXT_MUTEX   *p_mutex,
 
     //We did not succeed in getting the mutex
     OS_CRITICAL_ENTER_CPU_CRITICAL_EXIT();                  /* Lock the scheduler/re-enable interrupts                */
-    p_tcb = p_mutex->OwnerTCBPtr;                           /* Point to the TCB of the Mutex owner                    */
+    //p_tcb = p_mutex->OwnerTCBPtr;                           /* Point to the TCB of the Mutex owner                    */
+    peek(ceilingStack, &p_tcb); //we don't need the return value
     if (p_tcb->Prio > OSTCBCurPtr->Prio) {                  /* See if mutex owner has a lower priority than current   */
         switch (p_tcb->TaskState) {
             case OS_TASK_STATE_RDY:
@@ -330,8 +332,9 @@ void osMuRelease(EXT_MUTEX  *p_mutex,
     
     //TODO: Can we change the system ceiling
     int oldCeiling;
-    ceilingStack = pop(ceilingStack, &oldCeiling);
-    int newCeiling = peek(ceilingStack);
+    OS_TCB* not_used;
+    ceilingStack = pop(ceilingStack, &oldCeiling, &not_used);
+    int newCeiling = peek(ceilingStack, &not_used);
     p_mutex->OwnerTCBPtr     = (OS_TCB       *)0; //no owner
     if (OSTCBCurPtr->Prio != p_mutex->OwnerOriginalPrio) {
       //remove the OSTCBCurPtr from the readyQueue
@@ -352,7 +355,7 @@ void osMuRelease(EXT_MUTEX  *p_mutex,
         mutex2->OwnerTCBPtr       =  p_tcb; //Save the owning task
         mutex2->OwnerOriginalPrio =  p_tcb->Prio; //save the owners original priority
         mutex2->OwnerNestingCtr   = (OS_NESTING_CTR)1; //the number of times the owner was granted this mutex
-        ceilingStack = push(ceilingStack , mutex2->resourceCeiling); //Push the priority of this task onto the system ceiling stack
+        ceilingStack = push(ceilingStack , mutex2->resourceCeiling, p_tcb); //Push the priority of this task onto the system ceiling stack
         //TODO: The push above is wrong
         //Tell the system that the p_tcb owns one (more) mutex
         //This is important if the task just unblocked, wants to have more than this mutex

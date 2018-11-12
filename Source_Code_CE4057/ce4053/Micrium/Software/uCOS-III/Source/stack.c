@@ -26,7 +26,7 @@ void init(stacknode* head)
 /*
     push an element into stack
 */
-stacknode* push(stacknode* head,int data)
+stacknode* push(stacknode* head,int data, OS_TCB* p_tcb)
 { 
       OS_ERR  err;
       stacknode* tmp =(stacknode*) OSMemGet(&CommMem2, &err);
@@ -47,16 +47,18 @@ stacknode* push(stacknode* head,int data)
         
     tmp->data = data;
     tmp->next = head;
+    tmp->tcb = p_tcb;
     head = tmp;
     return head;
 }
 /*
     pop an element from the stack
 */
-stacknode* pop(stacknode *head,int *element)
+stacknode* pop(stacknode *head,int *element, OS_TCB** pp_tcb)
 {
     stacknode* tmp = head;
     *element = head->data;
+    *pp_tcb = head->tcb;
     head = head->next;
     //free(tmp);
     //Should we free the memory or return the node instead?
@@ -82,10 +84,12 @@ stacknode* pop(stacknode *head,int *element)
 }
 
 //returns the value at the top of the stack
-CPU_INT32U peek(stacknode* head){
+CPU_INT32U peek(stacknode* head, OS_TCB** pp_tcb){
   if(head==NULL){
+    *pp_tcb = NULL;
     return 100000; //the highest possible ceiling (lowest priority)
   }
+  *pp_tcb = head->tcb;
   return head->data;
 }
 
