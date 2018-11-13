@@ -71,17 +71,6 @@ void  osMuRequest (EXT_MUTEX   *p_mutex,
     }
 
     CPU_CRITICAL_ENTER();
-//    if (p_mutex->OwnerNestingCtr == (OS_NESTING_CTR)0) {    /* Resource available?                                    */
-//        p_mutex->OwnerTCBPtr       =  OSTCBCurPtr;          /* Yes, caller may proceed                                */
-//        p_mutex->OwnerOriginalPrio =  OSTCBCurPtr->Prio;
-//        p_mutex->OwnerNestingCtr   = (OS_NESTING_CTR)1;
-//        if (p_ts != (CPU_TS *)0) {
-//           *p_ts                   = p_mutex->TS;
-//        }
-//        CPU_CRITICAL_EXIT();
-//        *p_err                     =  OS_ERR_NONE;
-//        return;
-//    }
     
     
     if (OSTCBCurPtr == p_mutex->OwnerTCBPtr) {              /* See if current task is already the owner of the mutex  */
@@ -97,18 +86,24 @@ void  osMuRequest (EXT_MUTEX   *p_mutex,
     OS_TCB* not_used;
     int systemCeiling = peek(ceilingStack, &not_used);
     node* TCBListNode = (search(resUseTask, OSTCBCurPtr));
-    if(OSTCBCurPtr->Prio < systemCeiling || TCBListNode!=NULL){ //Can we take the mutex (slide 15 PCP).
+    //Can we take the mutex (slide 15 PCP)
+    if(OSTCBCurPtr->Prio < systemCeiling || TCBListNode!=NULL){
         /* Yes, caller may proceed                                */
-        if(TCBListNode==NULL){ //tell that the tcb owns a mutex.
-          resUseTask = prepend(resUseTask,OSTCBCurPtr, 1, NULL); //the period is used to tell the number of mutexes the task has. No task info needed.
+      //Does task already own mutex
+        if(TCBListNode==NULL){
+          //No: tell that the tcb owns a mutex
+          //the period is used to tell the number of mutexes the task has. No task info needed.
+          resUseTask = prepend(resUseTask,OSTCBCurPtr, 1, NULL);
         }
         else{
+          //Yes: increment the number of mutexes owned
           TCBListNode->period++;
         }
         p_mutex->OwnerTCBPtr       =  OSTCBCurPtr; //Save the owning task
         p_mutex->OwnerOriginalPrio =  OSTCBCurPtr->Prio; //save the owners original priority
         p_mutex->OwnerNestingCtr   = (OS_NESTING_CTR)1; //the number of times the owner was granted this mutex
-        ceilingStack = push(ceilingStack , p_mutex->resourceCeiling, OSTCBCurPtr); //Push the resource ceiling onto the system ceiling stack
+        //Push the resource ceiling and the task causing it onto the system ceiling stack
+        ceilingStack = push(ceilingStack , p_mutex->resourceCeiling, OSTCBCurPtr);
         if (p_ts != (CPU_TS *)0) {
            *p_ts                   = p_mutex->TS;
         }
@@ -131,18 +126,14 @@ void  osMuRequest (EXT_MUTEX   *p_mutex,
 
     //We did not succeed in getting the mutex
     OS_CRITICAL_ENTER_CPU_CRITICAL_EXIT();                  /* Lock the scheduler/re-enable interrupts                */
-    //p_tcb = p_mutex->OwnerTCBPtr;                           /* Point to the TCB of the Mutex owner                    */
-    peek(ceilingStack, &p_tcb); //we don't need the return value
+    peek(ceilingStack, &p_tcb); //Get the TCB/mutex owner that we wait for. We don't need the return value
     if (p_tcb->Prio > OSTCBCurPtr->Prio) {                  /* See if mutex owner has a lower priority than current   */
         switch (p_tcb->TaskState) {
             case OS_TASK_STATE_RDY:
-                 //OS_RdyListRemove(p_tcb);                   /* Remove from ready list at current priority             */
+                  //Priority inheritance and update readylist accordingly
                  skiplistDelete(readyQueue, (int) p_tcb->Prio, p_tcb); //Beaware of cast
-                 
                  p_tcb->Prio = OSTCBCurPtr->Prio;           /* Raise owner's priority                                 */
-                 //OS_PrioInsert(p_tcb->Prio);
-                 //OS_RdyListInsertHead(p_tcb);               /* Insert in ready list at new priority                   */
-                 skiplistInsert(readyQueue, (int) p_tcb->Prio, p_tcb, (CPU_INT32U) p_tcb->ExtPtr); //readyQueue, period, tcb, period
+                 skiplistInsert(readyQueue, (int) p_tcb->Prio, p_tcb, (CPU_INT32U) p_tcb->ExtPtr); //readyQueue, priority, tcb, period
                  break;
 
             case OS_TASK_STATE_DLY:
@@ -156,11 +147,11 @@ void  osMuRequest (EXT_MUTEX   *p_mutex,
             case OS_TASK_STATE_PEND_SUSPENDED:
             case OS_TASK_STATE_PEND_TIMEOUT_SUSPENDED:
 //                 OS_PendListChangePrio(p_tcb,
-//                                       OSTCBCurPtr->Prio);      //????????????????????????????????????????????????????????????????????
-                 //Maybe we should remove the owner from the waitList, update the priority and then reinsert to the waitList
+//                                       OSTCBCurPtr->Prio);
                 //The following tries to cover the function call above
-                 EXT_MUTEX* mutex2; //the mutex p_tcb2 is waiting for
-                 OS_TCB* p_tcb2 = avlDeleteNode(&waitQueue, p_tcb->Prio, p_tcb, &mutex2); //last argument is for a second return value
+              //Priority inhertance and update waitQueue accordingly
+                 EXT_MUTEX* mutex2; //the mutex p_tcb is waiting for
+                 OS_TCB* p_tcb2 = avlDeleteNode(&waitQueue, p_tcb->Prio, p_tcb, &mutex2); //last argument is for getting the mutex
                  if(p_tcb != p_tcb2){
                    //If the found tcb is not the same as as the given one, then we have a big problem
                    exit(0);
@@ -185,18 +176,14 @@ void  osMuRequest (EXT_MUTEX   *p_mutex,
     OSTCBCurPtr->PendOn = OS_TASK_PEND_ON_MUTEX;
     OSTCBCurPtr->PendStatus = OS_STATUS_PEND_OK;
     
-    waitQueue = avlInsert(waitQueue, OSTCBCurPtr->Prio, OSTCBCurPtr, p_mutex);
-    OSTCBCurPtr->TaskState = OS_TASK_STATE_PEND;
-    skiplistDelete(readyQueue, OSTCBCurPtr->Prio, OSTCBCurPtr);
+    //Insert in the waitQueue and remove from the readylist as we have to wait
+    waitQueue = avlInsert(waitQueue, OSTCBCurPtr->Prio, OSTCBCurPtr, p_mutex); //Insert the task into the wait list
+    OSTCBCurPtr->TaskState = OS_TASK_STATE_PEND; //change the state to OS_TASK_STATE_PEND (_timout)
+    skiplistDelete(readyQueue, OSTCBCurPtr->Prio, OSTCBCurPtr); //Remove the task from the readyqueue
     
-    //Insert the task into the wait list
-    //Remove the task from the readyqueue
-    //change the state to OS_TASK_STATE_PEND (_timout)
-
     OS_CRITICAL_EXIT_NO_SCHED();
 
     OSSched();                                              /* Find the next highest priority task ready to run       */
-    //RMSched();
 
     CPU_CRITICAL_ENTER();
     //Maybe we should remove this
@@ -297,15 +284,17 @@ void osMuRelease(EXT_MUTEX  *p_mutex,
         return;
     }
     
-    //decrement or remove from resUseTask list
-    node* taskNode = search(resUseTask,OSTCBCurPtr);
+    //Update that this task has one less mutex
+    node* taskNode = search(resUseTask,OSTCBCurPtr); //check that the task actually owns a mutex
     if(taskNode == NULL){
       exit(0); //A task not owning a mutex tried to release a mutex!!
     }
     if(taskNode->period>1){
+      //if more than one mutex owned: decrement
       taskNode->period--;
     }
     else{
+      //only one mutex owned: remove from list
       node* removeNode = remove_any(&resUseTask, OSTCBCurPtr);
       if(removeNode->data != OSTCBCurPtr){
         exit(0); //We somehow managed to get the wrong node/tcb
@@ -331,86 +320,59 @@ void osMuRelease(EXT_MUTEX  *p_mutex,
     }
     
     //TODO: Can we change the system ceiling - I think it is done
+    //update systemceiling and undo priority inheritance
     int oldCeiling;
     OS_TCB* not_used;
-    ceilingStack = pop(ceilingStack, &oldCeiling, &not_used);
-    int newCeiling = peek(ceilingStack, &not_used);
+    ceilingStack = pop(ceilingStack, &oldCeiling, &not_used); //Update system ceiling
+    int newCeiling = peek(ceilingStack, &not_used); //read the new ceiling
     p_mutex->OwnerTCBPtr     = (OS_TCB       *)0; //no owner
-    if (OSTCBCurPtr->Prio != p_mutex->OwnerOriginalPrio) {
-      //remove the OSTCBCurPtr from the readyQueue
+    if (OSTCBCurPtr->Prio != p_mutex->OwnerOriginalPrio) { //priority inheritance done?
+      //undo priority inheritance and update readyQueue accordingly
       skiplistDelete(readyQueue, (int) OSTCBCurPtr->Prio, OSTCBCurPtr); //Beaware of cast
       OSTCBCurPtr->Prio = p_mutex->OwnerOriginalPrio;     /* Lower owner's priority back to its original one        */
-      //insert the OSTCBCurPtr to the readyQueue
       skiplistInsert(readyQueue, (int) OSTCBCurPtr->Prio, OSTCBCurPtr, (CPU_INT32U) OSTCBCurPtr->ExtPtr); //readyQueue, period, tcb, period
       
-      OSPrioCur         = OSTCBCurPtr->Prio;//What is this used for?????
+      OSPrioCur         = OSTCBCurPtr->Prio; //TODO: What is this used for?????
     }
+    
+    //check if we may start waiting task
     avlnode* minNode = minValueNode(waitQueue);
-    while((minNode !=NULL) && (minNode->key<newCeiling)){ //check if we can remove any task from the waitqueue
-      EXT_MUTEX* mutex2;
-      OS_TCB* p_tcb = avlDeleteNode(&waitQueue, minNode->key, NULL, &mutex2); //We dont care which task we get with this priority
-      //The mutex the task is waiting for is found in the waitQueue/AVL tree together with the task
-        mutex2->OwnerTCBPtr       =  p_tcb; //Save the owning task
-        mutex2->OwnerOriginalPrio =  p_tcb->Prio; //save the owners original priority
-        mutex2->OwnerNestingCtr   = (OS_NESTING_CTR)1; //the number of times the owner was granted this mutex
-        ceilingStack = push(ceilingStack , mutex2->resourceCeiling, p_tcb); //Push the resource ceiling of the resource onto the system ceiling stack
-        //Tell the system that the p_tcb owns one (more) mutex
-        //This is important if the task just unblocked, wants to have more than this mutex
-        node* TCBListNode = (search(resUseTask, p_tcb));
-        if(TCBListNode==NULL){ //tell that the tcb owns a mutex.
-          resUseTask = prepend(resUseTask,p_tcb, 1, NULL); //the period is used to tell the number of mutexes the task has. No task info needed.
-        }
-        else{
-          TCBListNode->period++;
-        }
-        
-        //Refer to OS_POST call
-        if(p_tcb->TaskState == OS_TASK_STATE_PEND){
-          //OS_TaskRdy(p_tcb); removes from tickList and adds to readylist if suspended  /* Make task ready to run                            */
-          skiplistInsert(readyQueue, (int) p_tcb->Prio, p_tcb, (CPU_INT32U) p_tcb->ExtPtr); //readyQueue, period, tcb, period
-          p_tcb->TaskState  = OS_TASK_STATE_RDY;
-          p_tcb->PendStatus = OS_STATUS_PEND_OK;              /* Clear pend status                                 */
-          p_tcb->PendOn     = OS_TASK_PEND_ON_NOTHING;        /* Indicate no longer pending                        */
-        }
-        else{
-          //????????????????????????
-        }
-        minNode = minValueNode(waitQueue); //for next iteration
+    while((minNode !=NULL) && (minNode->key<newCeiling)){ //can we remove any task from the waitqueue
+      EXT_MUTEX* mutex2; //The mutex the task is waiting for is found in the waitQueue/AVL tree together with the task
+      OS_TCB* p_tcb = avlDeleteNode(&waitQueue, minNode->key, NULL, &mutex2); //We don't care which task we get with this priority
+      mutex2->OwnerTCBPtr       =  p_tcb; //Save the owning task
+      mutex2->OwnerOriginalPrio =  p_tcb->Prio; //save the owners original priority
+      mutex2->OwnerNestingCtr   = (OS_NESTING_CTR)1; //the number of times the owner was granted this mutex
+      ceilingStack = push(ceilingStack , mutex2->resourceCeiling, p_tcb); //update system ceiling
+      //Tell the system that the p_tcb owns one (more) mutex
+      node* TCBListNode = (search(resUseTask, p_tcb));
+      if(TCBListNode==NULL){ //tell that the tcb owns a mutex.
+        resUseTask = prepend(resUseTask,p_tcb, 1, NULL); //the period is used to tell the number of mutexes the task has. No task info needed.
+      }
+      else{
+        //or increment number of owned mutexes
+        TCBListNode->period++;
+      }
+      
+      //Refer to OS_POST call
+      //make task ready
+      if(p_tcb->TaskState == OS_TASK_STATE_PEND){
+        //OS_TaskRdy(p_tcb); removes from tickList and adds to readylist if suspended  /* Make task ready to run                            */
+        skiplistInsert(readyQueue, (int) p_tcb->Prio, p_tcb, (CPU_INT32U) p_tcb->ExtPtr); //readyQueue, period, tcb, period
+        p_tcb->TaskState  = OS_TASK_STATE_RDY;
+        p_tcb->PendStatus = OS_STATUS_PEND_OK;              /* Clear pend status                                 */
+        p_tcb->PendOn     = OS_TASK_PEND_ON_NOTHING;        /* Indicate no longer pending                        */
+      }
+      else{
+        //????????????????????????
+      }
+      minNode = minValueNode(waitQueue); //for next iteration
     }
-
-//    p_pend_list = &p_mutex->PendList;
-//    if (p_pend_list->NbrEntries == (OS_OBJ_QTY)0) {         /* Any task waiting on mutex?                             */
-//        p_mutex->OwnerTCBPtr     = (OS_TCB       *)0;       /* No                                                     */
-//        p_mutex->OwnerNestingCtr = (OS_NESTING_CTR)0;
-//        OS_CRITICAL_EXIT();
-//        *p_err = OS_ERR_NONE;
-//        return;
-//    }
-//                                                            /* Yes                                                    */
-//    if (OSTCBCurPtr->Prio != p_mutex->OwnerOriginalPrio) {
-//        OS_RdyListRemove(OSTCBCurPtr);
-//        OSTCBCurPtr->Prio = p_mutex->OwnerOriginalPrio;     /* Lower owner's priority back to its original one        */
-//        OS_PrioInsert(OSTCBCurPtr->Prio);
-//        OS_RdyListInsertTail(OSTCBCurPtr);                  /* Insert owner in ready list at new priority             */
-//        OSPrioCur         = OSTCBCurPtr->Prio;
-//    }
-//                                                            /* Get TCB from head of pend list                         */
-//    p_tcb                      = p_pend_list->HeadPtr->TCBPtr;
-//    p_mutex->OwnerTCBPtr       = p_tcb;                     /* Give mutex to new owner                                */
-//    p_mutex->OwnerOriginalPrio = p_tcb->Prio;
-//    p_mutex->OwnerNestingCtr   = (OS_NESTING_CTR)1;
-//                                                            /* Post to mutex                                          */
-//    OS_Post((OS_PEND_OBJ *)((void *)p_mutex),
-//            (OS_TCB      *)p_tcb,
-//            (void        *)0,
-//            (OS_MSG_SIZE  )0,
-//            (CPU_TS       )ts);
 
     OS_CRITICAL_EXIT_NO_SCHED();
 
     if ((opt & OS_OPT_POST_NO_SCHED) == (OS_OPT)0) {
         OSSched();                                          /* Run the scheduler                                      */
-      //RMSched();
     }
 
     *p_err = OS_ERR_NONE;

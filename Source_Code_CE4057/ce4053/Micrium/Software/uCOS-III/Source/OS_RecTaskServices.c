@@ -1,5 +1,6 @@
 #include "os_extended.h"
 #include <os.h>
+#include "os_cfg_app.h"
 
 
 void OSTaskCreateRecursive(OS_TCB        *p_tcb,
@@ -179,7 +180,7 @@ void OSTaskCreateRecursive(OS_TCB        *p_tcb,
                                                             /* --------------- ADD TASK TO READY LIST --------------- */
     OS_CRITICAL_ENTER();
 
-    insert(50, p_tcb, period, taskInfo); // We want the task to run at time 0
+    insert(OS_CFG_TICK_RATE_HZ, p_tcb, period, taskInfo); //We delay all tasks until one second after restart
 
 #if OS_CFG_DBG_EN > 0u
     OS_TaskDbgListAdd(p_tcb);
