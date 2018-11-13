@@ -318,10 +318,10 @@ void tickHandlerRecursion(){
     struct rbtNode *rem = delete(minTime);
 
     traverse(minNode->tasks, releaseTask);
-    dispose(minNode->tasks); // Remove all elements of the list
     //TODO: remove the list itself
+    dispose(minNode->tasks); // Remove all elements of the list
+    
     //TODO: remove the rbtNode
-
     OS_ERR err;
     if(rem != NULL){
       OSMemPut(&CommMem2,rem,&err);

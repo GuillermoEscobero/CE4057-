@@ -290,23 +290,47 @@ static  void  AppTaskOne (void  *p_arg)
     //OSMutexPend((OS_MUTEX *)&MutexOne, (OS_TICK )0, (OS_OPT )OS_OPT_PEND_BLOCKING, (CPU_TS *)&ts, (OS_ERR *)&err);
     osMuRequest ((EXT_MUTEX *) &MutexOne, (OS_TICK) 0, (OS_OPT) OS_OPT_PEND_BLOCKING, (CPU_TS *) &ts, (OS_ERR *) &err);
 
+//      //ADDED
+//        RoboTurn(LEFT_SIDE, 14, 50);
+//          iMove--;
+//      //END OF ADDED
 	for(i=0; i <2*ONESECONDTICK; i++){
          j = ((i * 2) + j);
 	}
+        
+//        //ADDED
+//        BSP_MotorStop(LEFT_SIDE);
+//        BSP_MotorStop(RIGHT_SIDE);
+//        //END OF ADDED
  
 	//OSMutexPend((OS_MUTEX *)&MutexTwo, (OS_TICK )0, (OS_OPT )OS_OPT_PEND_BLOCKING, (CPU_TS *)&ts, (OS_ERR *)&err);
         osMuRequest ((EXT_MUTEX *) &MutexTwo, (OS_TICK) 0, (OS_OPT) OS_OPT_PEND_BLOCKING, (CPU_TS *) &ts, (OS_ERR *) &err);
-	for(i=0; i <ONESECONDTICK; i++){
+	
+//        //ADDED
+//        RoboTurn(RIGHT_SIDE, 14, 50);
+//        iMove--;
+//        //END OF ADDED
+        
+        for(i=0; i <ONESECONDTICK; i++){
          j = ((i * 2) + j);
 	}     
 	
+        
+//        //ADDED
+//        BSP_MotorStop(LEFT_SIDE);
+//        BSP_MotorStop(RIGHT_SIDE);
+//        //END OF ADDED
+          
+      
 	if(iMove > 0)
         {
+          //BSP_LED_On(0u);
           RoboTurn(FRONT, 14, 50);
           iMove--;
         }
         else
         {
+          //BSP_LED_On(0u);
           RoboTurn(BACK, 14, 50);
           iMove++;
         }
@@ -315,10 +339,11 @@ static  void  AppTaskOne (void  *p_arg)
     for(i=0; i <ONESECONDTICK; i++){
          j = ((i * 2) + j);
     }    
-    RoboTurn(-1, 14, 50); //stopping the motors
+    //RoboTurn(-1, 14, 50); //stopping the motors
     
-    //BSP_MotorStop(LEFT_SIDE);
-    //BSP_MotorStop(RIGHT_SIDE);
+    BSP_MotorStop(LEFT_SIDE);
+    BSP_MotorStop(RIGHT_SIDE);
+    //BSP_LED_Off(0u);
 
 //    OSMutexPost((OS_MUTEX *)&MutexTwo, (OS_OPT )OS_OPT_POST_NONE, (OS_ERR *)&err);
 //    OSMutexPost((OS_MUTEX *)&MutexOne, (OS_OPT )OS_OPT_POST_NONE, (OS_ERR *)&err);
@@ -372,7 +397,7 @@ static  void  AppTaskThree (void  *p_arg)
     osMuRelease((EXT_MUTEX*) &MutexOne, (OS_OPT) OS_OPT_POST_NONE, (OS_ERR *) &err);
     osMuRelease((EXT_MUTEX*) &MutexTwo, (OS_OPT) OS_OPT_POST_NONE, (OS_ERR *) &err);
     
-	OSTaskDelRecursive((OS_TCB *)0, &err);
+    OSTaskDelRecursive((OS_TCB *)0, &err);
 }
 
 

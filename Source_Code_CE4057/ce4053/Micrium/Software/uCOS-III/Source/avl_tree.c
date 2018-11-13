@@ -189,7 +189,6 @@ avlnode * minValueNode(avlnode* node)
 //p_tcb is used to specify a certain tcb, that should be removed.
 //the key should be the same as p_tcb->prio.
 //if p_tcb==NULL, then any tcb may removed and returned from the node with the given key.
-//TODO: This one does not update correctly the three
 OS_TCB* avlDeleteNode(avlnode** root, int key, OS_TCB *p_tcb, EXT_MUTEX** mutex) //The last argument is an extra return value to get the mutex
 {
   OS_TCB* p_tcb_ret; //the task to return
@@ -224,7 +223,25 @@ OS_TCB* avlDeleteNode(avlnode** root, int key, OS_TCB *p_tcb, EXT_MUTEX** mutex)
             listNodeQ* tasknode = remove_frontQ(&((*root)->tasks));
             p_tcb_ret = tasknode->data;
             *mutex = tasknode->waitMu;
-            //TODO: free the memory of the node
+            //free the memory of the node
+            OS_ERR err;
+            OSMemPut(&CommMem2,tasknode,&err); //should we check if tasknode is NULL?
+            switch(err){
+            case OS_ERR_NONE:
+              break;
+            case OS_ERR_MEM_FULL:
+              exit(0);
+              break;
+            case OS_ERR_MEM_INVALID_P_BLK:
+              exit(0);
+              break;
+            case OS_ERR_MEM_INVALID_P_MEM:
+              exit(0);
+              break;
+            case OS_ERR_OBJ_TYPE:
+              exit(0);
+              break;
+            }
             //if list is not empty, then return without further changes
             if((*root)->tasks != NULL){
               return p_tcb_ret;
@@ -239,7 +256,25 @@ OS_TCB* avlDeleteNode(avlnode** root, int key, OS_TCB *p_tcb, EXT_MUTEX** mutex)
               //OS_TCB* tcb_ret = tasknode->data; //I think htis line is wrong
               p_tcb_ret = tasknode->data;
               *mutex = tasknode->waitMu;
-              //TODO: free the memory of the node
+              //free the memory of the node
+              OS_ERR err;
+              OSMemPut(&CommMem2,tasknode,&err); //should we check if tasknode is NULL? No - done in if clause
+              switch(err){
+              case OS_ERR_NONE:
+                break;
+              case OS_ERR_MEM_FULL:
+                exit(0);
+                break;
+              case OS_ERR_MEM_INVALID_P_BLK:
+                exit(0);
+                break;
+              case OS_ERR_MEM_INVALID_P_MEM:
+                exit(0);
+                break;
+              case OS_ERR_OBJ_TYPE:
+                exit(0);
+                break;
+              }
               //if list is not empty, then return without further changes
               if((*root)->tasks != NULL){
                 return p_tcb_ret;

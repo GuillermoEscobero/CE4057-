@@ -12,7 +12,7 @@ void  osMuRequest (EXT_MUTEX   *p_mutex,
                    OS_ERR     *p_err)
 {
 
-   //TODO: implement function that makes calling task request a resource
+   //implement function that makes calling task request a resource
   //if the mutex is already use, block this task, and put it into a wait-list for this mutex
   //remember to sort the list by priority (and maybe FIFO for same priority-tasks)
   //We return from here only when we have the mutex (or if some errors occurred that waked us up, like deleting the mutex)
@@ -240,7 +240,7 @@ void  osMuRequest (EXT_MUTEX   *p_mutex,
 void osMuRelease(EXT_MUTEX  *p_mutex,
                    OS_OPT     opt,
                    OS_ERR    *p_err){
-  //TODO: implement function that makes calling task release a resource
+  //implement function that makes calling task release a resource
   //This function should un-block a function waiting for this resource
   
   
@@ -330,7 +330,7 @@ void osMuRelease(EXT_MUTEX  *p_mutex,
       }
     }
     
-    //TODO: Can we change the system ceiling
+    //TODO: Can we change the system ceiling - I think it is done
     int oldCeiling;
     OS_TCB* not_used;
     ceilingStack = pop(ceilingStack, &oldCeiling, &not_used);
@@ -348,15 +348,12 @@ void osMuRelease(EXT_MUTEX  *p_mutex,
     avlnode* minNode = minValueNode(waitQueue);
     while((minNode !=NULL) && (minNode->key<newCeiling)){ //check if we can remove any task from the waitqueue
       EXT_MUTEX* mutex2;
-      //TODO: the avlDelete does not update 
       OS_TCB* p_tcb = avlDeleteNode(&waitQueue, minNode->key, NULL, &mutex2); //We dont care which task we get with this priority
-      //EXT_MUTEX* mutex2 = NULL; //p_tcb->?? //TODO: save the mutex of the task in the TCB so we can retrieve it here
-      
+      //The mutex the task is waiting for is found in the waitQueue/AVL tree together with the task
         mutex2->OwnerTCBPtr       =  p_tcb; //Save the owning task
         mutex2->OwnerOriginalPrio =  p_tcb->Prio; //save the owners original priority
         mutex2->OwnerNestingCtr   = (OS_NESTING_CTR)1; //the number of times the owner was granted this mutex
-        ceilingStack = push(ceilingStack , mutex2->resourceCeiling, p_tcb); //Push the priority of this task onto the system ceiling stack
-        //TODO: The push above is wrong
+        ceilingStack = push(ceilingStack , mutex2->resourceCeiling, p_tcb); //Push the resource ceiling of the resource onto the system ceiling stack
         //Tell the system that the p_tcb owns one (more) mutex
         //This is important if the task just unblocked, wants to have more than this mutex
         node* TCBListNode = (search(resUseTask, p_tcb));
@@ -424,7 +421,7 @@ void osMuCreate(EXT_MUTEX    *p_mutex,
                      CPU_INT32U resourceCeiling,
                      OS_ERR      *p_err)
 {
-  //TODO: instantiate and return a new and initialized mutex
+  //instantiate and return a new and initialized mutex
   //I think we may use the data structure OS_Mutex build into micrium
   
   
@@ -481,17 +478,17 @@ void osMuCreate(EXT_MUTEX    *p_mutex,
     *p_err = OS_ERR_NONE;
 }
 
-void osMuDel(EXT_MUTEX* mutex){
-  //TODO: delete and free the given mutex
-}
-
-void osBlock(){
-  //TODO: Utility function to block a task, if requested resource is taken
-  //refer to rules for PCP protocol of slides for blocking rules.
-  //Maybe we can use the micrium build ind OS_Pend function instead (Or maybe not as i think we need our own pend/wait list implementation)
-}
-
-void osWaitListCreate(){
-  //TODO: Create and return and empty waitlist to be used when creating a mutex for mutex->PendList
-  //Utility function
-}
+//void osMuDel(EXT_MUTEX* mutex){
+//  //TODO: delete and free the given mutex
+//}
+//
+//void osBlock(){
+//  //TODO: Utility function to block a task, if requested resource is taken
+//  //refer to rules for PCP protocol of slides for blocking rules.
+//  //Maybe we can use the micrium build ind OS_Pend function instead (Or maybe not as i think we need our own pend/wait list implementation)
+//}
+//
+//void osWaitListCreate(){
+//  //TODO: Create and return and empty waitlist to be used when creating a mutex for mutex->PendList
+//  //Utility function
+//}

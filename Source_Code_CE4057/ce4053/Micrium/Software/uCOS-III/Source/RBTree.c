@@ -322,7 +322,7 @@ void color_delete(struct rbtNode *x){
   x->color = 'b';
 }
 
-struct rbtNode* delete(int var){ //TODO: does this function take care of the fact that nodes contains a lists of tasks?? //Yep, it just returns the entire node.
+struct rbtNode* delete(int var){ //does this function take care of the fact that nodes contains a lists of tasks?? //Yep, it just returns the entire node.
   struct rbtNode *x = NULL, *y = NULL, *z;
   z=root;
   if((z->left ==NULL ) &&(z->right==NULL) && (z->key==var)){

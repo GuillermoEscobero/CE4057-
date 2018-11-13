@@ -61,7 +61,7 @@ stacknode* pop(stacknode *head,int *element, OS_TCB** pp_tcb)
     *pp_tcb = head->tcb;
     head = head->next;
     //free(tmp);
-    //Should we free the memory or return the node instead?
+    //TODO: Should we free the memory or return the node instead?
     OS_ERR err;
     OSMemPut(&CommMem2,tmp,&err); //should we check if temp is NULL?
     switch(err){
